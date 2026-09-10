@@ -1,0 +1,138 @@
+/* 이 판은 화면 전체가 하나의 캔버스다. 창틀·글자·계기까지 전부 그 안에서
+   픽셀로 그린다 - 옛 2D 알피지 만들기 게임이 320x240 한 장으로 모든 걸
+   해결하던 방식 그대로다. 터치 조작 버튼은 캔버스 아래의 DOM 영역에 둔다. */
+:root { color-scheme: dark; }
+html, body { margin: 0; padding: 0; height: 100%; background: #05070f; overflow: hidden; }
+body {
+  display: block;
+  font-family: ui-monospace, monospace;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+/* 픽셀은 픽셀로 보여야 한다. 브라우저가 보간하면 도트가 뭉개진다. */
+canvas#screen {
+  display: block;
+  width: 100vw;
+  height: 100dvh;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: crosshair;
+}
+/* 자바스크립트가 꺼져 있을 때만 보이는 줄. */
+noscript { color: #9fb6d8; display: block; padding: 20px; font-size: 14px; }
+
+/* Missing-page layout. */
+body.error-page {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  height: auto;
+  padding: 24px;
+  overflow: auto;
+  color: #eaf2ff;
+}
+.error-card {
+  max-width: 34rem;
+  padding: 28px;
+  border: 3px solid #b8d0f0;
+  background: #081538;
+  box-shadow: 6px 6px 0 #12275e;
+}
+.error-code { color: #ffd45e; }
+.error-card h1 { font-size: 1.4rem; }
+.error-card p { line-height: 1.7; }
+.error-card a { display: inline-block; margin-top: 12px; color: #ffd45e; }
+.error-card a:focus-visible { outline: 2px solid #ffd45e; outline-offset: 5px; }
+
+
+/* Keep the controller below the canvas and clear of dialogs. */
+body.game-page { display: flex; flex-direction: column; height: 100dvh; }
+.game-page canvas#screen { width: 100%; height: 0; flex: 1 1 auto; min-height: 0; }
+canvas#screen:focus-visible { outline: 2px solid #ffd45e; outline-offset: -2px; }
+#touch-controls { display: none; }
+/* Show controls only at phone and tablet viewport widths, regardless of input type. */
+@media (max-width: 1024px) {
+  #touch-controls {
+    --dial-size: 136px;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "menu menu" "pad actions"; gap: 10px 12px;
+    flex: 0 0 auto; align-items: center;
+    padding: 8px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    border-top: 2px solid #5a7bb0; background: #081538; color: #eaf2ff;
+  }
+  #touch-controls button, #touch-controls summary {
+    box-sizing: border-box; display: grid; place-items: center; min-width: 0; min-height: 44px;
+    padding: 5px; border: 2px solid #5a7bb0; border-radius: 4px; background: #12275e;
+    color: #eaf2ff; font: 600 13px/1.15 ui-monospace, "Malgun Gothic", sans-serif;
+    cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  #touch-controls button:disabled { opacity: .45; cursor: default; }
+  #touch-controls button:active, #touch-controls button.is-pressed, #touch-controls [aria-pressed="true"] { background: #285a8e; }
+  #touch-controls :focus-visible { outline: 2px solid #ffd45e; outline-offset: 2px; }
+  .touch-utilities { grid-area: menu; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .dial-area { grid-area: pad; display: grid; justify-items: center; gap: 7px; min-width: 0; }
+  .direction-pad {
+    position: relative; width: var(--dial-size); height: var(--dial-size);
+    box-sizing: border-box; border: 2px solid #5a7bb0; border-radius: 50%;
+    background: radial-gradient(circle, #173855 0 33%, #0b1b36 34% 61%, #142d4c 62%);
+    box-shadow: inset 0 0 0 4px #081020, 0 3px 0 #030918;
+    touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  .direction-pad.is-active { border-color: #8cdce4; }
+  .direction-pad[data-boost="true"] { border-color: #ffd45e; box-shadow: inset 0 0 0 4px #081020, 0 0 0 2px #ffd45e33; }
+  #touch-controls .direction-pad button {
+    position: absolute; width: 44px; height: 44px; padding: 0;
+    border: 0; border-radius: 50%; background: transparent; font-size: 21px;
+  }
+  .direction-pad .up { left: calc(50% - 22px); top: 0; }
+  .direction-pad .down { left: calc(50% - 22px); bottom: 0; }
+  .direction-pad .left { left: 0; top: calc(50% - 22px); }
+  .direction-pad .right { right: 0; top: calc(50% - 22px); }
+  #touch-controls .direction-pad [aria-pressed="true"] { color: #ffd45e; background: #285a8e88; }
+  .dial-knob {
+    pointer-events: none; position: absolute; left: calc(50% - 22px); top: calc(50% - 22px);
+    display: grid; place-items: center; width: 40px; height: 40px;
+    border: 2px solid #a7d5e6; border-radius: 50%; background: #386084;
+    box-shadow: inset 0 0 0 4px #1c3d60, 0 3px 0 #030918;
+    transform: translate(var(--stick-x, 0px), var(--stick-y, 0px));
+  }
+  .dial-knob span { width: 6px; height: 6px; background: #b8d0f0; box-shadow: 8px 0 #b8d0f0, -8px 0 #b8d0f0; }
+  .direction-pad:not(.is-active) .dial-knob { transition: transform .12s ease-out; }
+  .touch-actions { grid-area: actions; display: grid; justify-items: center; gap: 12px; min-width: 0; }
+  .action-buttons { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+  #touch-controls .primary {
+    flex: 0 0 82px; width: 82px; height: 82px; min-height: 82px;
+    align-content: center; gap: 5px; border-radius: 50%; border: 3px solid #ffe38a;
+    color: #fff0b7; background: #665321;
+    box-shadow: inset 0 0 0 4px #463516, 0 5px 0 #030918;
+  }
+  .primary .action-symbol { font-size: 24px; line-height: 24px; }
+  #touch-controls .primary.is-pressed { background: #9a7930; box-shadow: inset 0 0 0 4px #665321, 0 2px 0 #030918; transform: translateY(3px); }
+  #touch-controls .primary[data-kind="strike"] { background: #943b28; border-color: #ffbe77; color: #fff; }
+  #touch-controls .boost-button {
+    flex: 0 0 56px; width: 56px; height: 56px; min-height: 56px;
+    align-content: center; gap: 1px; border-radius: 50%; border-color: #8abdda;
+    box-shadow: inset 0 0 0 3px #0b1b36, 0 4px 0 #030918; transform: translateY(-17px);
+  }
+  .boost-button .action-symbol { font-size: 23px; line-height: 19px; }
+  .control-hint { max-width: 100%; color: #9fb6d8; font: 11px/1.3 ui-monospace, "Malgun Gothic", sans-serif; text-align: center; }
+  .touch-more { position: relative; }
+  .touch-more summary { height: 100%; list-style: none; }
+  .touch-more summary::-webkit-details-marker { display: none; }
+  .more-actions {
+    position: absolute; bottom: calc(100% + 8px); right: 0; z-index: 2;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px;
+    box-sizing: border-box; width: min(300px, calc(100vw - 24px)); padding: 8px;
+    max-height: calc(100dvh - 72px); overflow-y: auto; touch-action: pan-y;
+    background: #081538; border: 2px solid #b8d0f0;
+  }
+}
+@media (max-width: 1024px) and (orientation: landscape) and (max-height: 500px) {
+  #touch-controls { --dial-size: 112px; grid-template-columns: 136px minmax(0, 1fr) 158px; grid-template-areas: "pad menu actions"; gap: 12px; }
+  .touch-utilities { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 280px; width: 100%; justify-self: center; }
+  .control-hint { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .direction-pad:not(.is-active) .dial-knob { transition: none; }
+}

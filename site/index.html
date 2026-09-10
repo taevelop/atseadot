@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="At Sea :: DOT - 픽셀 아트 바다에서 잠수와 낚시를 즐기고 네 개 수역의 생물을 모아 도감을 채워 보세요.">
+  <meta name="theme-color" content="#05070f">
+  <meta name="version" content="dot-1.0.0">
+  <meta name="apple-mobile-web-app-title" content="At Sea DOT">
+  <title>At Sea :: DOT</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="152x152" href="./assets/icons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="./assets/icons/apple-touch-icon-167x167.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <script src="./assets/js/game.js" defer></script>
+</head>
+<body class="game-page">
+  <noscript>At Sea :: DOT을 실행하려면 브라우저에서 JavaScript를 허용해 주세요.</noscript>
+  <canvas tabindex="0" id="screen" aria-label="At Sea DOT 잠수·낚시 게임"></canvas>
+  <nav id="touch-controls" aria-label="게임 조작">
+    <div class="touch-utilities">
+      <button type="button" data-action="back" data-text="back">뒤로</button>
+      <button type="button" data-action="guide" data-text="guide">도감</button>
+      <button type="button" data-action="swap" data-play-only>배 타기</button>
+      <details class="touch-more">
+        <summary data-text="more">더 보기</summary>
+        <div class="more-actions">
+          <button type="button" data-action="help" data-text="help">조작법</button>
+          <button type="button" data-action="pause" data-text="pause" data-play-only>일시정지</button>
+          <button type="button" data-action="lang" data-text="lang">언어 전환</button>
+          <button type="button" data-action="time" data-text="time" data-play-only>하늘 바꾸기</button>
+          <button type="button" data-action="sub" data-text="sub" data-play-only>잠수함</button>
+          <button type="button" data-action="bait" data-text="bait" data-play-only>특별 미끼</button>
+          <button type="button" data-action="new" data-text="new" data-play-only>새 바다</button>
+          <button type="button" data-action="bare" data-text="bare" data-play-only>화면 UI</button>
+        </div>
+      </details>
+    </div>
+    <div class="dial-area">
+      <div id="direction-pad" class="direction-pad" role="group" data-label="pad" aria-label="이동 다이얼" aria-describedby="dial-hint">
+        <button type="button" class="up" data-direction="arrowup" data-label="up" aria-label="위로" aria-pressed="false">↑</button>
+        <button type="button" class="left" data-direction="arrowleft" data-label="left" aria-label="왼쪽으로" aria-pressed="false">←</button>
+        <button type="button" class="right" data-direction="arrowright" data-label="right" aria-label="오른쪽으로" aria-pressed="false">→</button>
+        <button type="button" class="down" data-direction="arrowdown" data-label="down" aria-label="아래로" aria-pressed="false">↓</button>
+        <span class="dial-knob" aria-hidden="true"><span></span></span>
+      </div>
+      <span id="dial-hint" class="control-hint" data-text="padHint">밀어서 이동 · 바깥쪽은 가속</span>
+    </div>
+    <div class="touch-actions">
+      <div class="action-buttons">
+        <button type="button" data-hold="shift" class="boost-button" data-play-only aria-pressed="false">
+          <span class="action-symbol" aria-hidden="true">»</span><span data-text="fast">가속</span>
+        </button>
+        <button type="button" data-action="primary" class="primary">
+          <span class="action-symbol" aria-hidden="true">◆</span><span class="action-label">선택</span>
+        </button>
+      </div>
+      <span class="control-hint" data-text="actionHint">이동하면서 액션</span>
+    </div>
+  </nav>
+</body>
+</html>

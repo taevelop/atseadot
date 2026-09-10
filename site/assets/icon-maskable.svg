@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <rect width="32" height="32" fill="#0a4c76"/>
+  <path d="M0 0h32v6H0z" fill="#7ec8e8"/>
+  <path d="M0 6h32v2H0z" fill="#dff4ff"/>
+  <!-- Keep the fish inside the central safe circle (radius: 40% of the icon). -->
+  <g transform="translate(4 4) scale(.75)">
+    <path d="M5 13h4v3h4v-3h10v3h4v7h-4v3H13v-3H9v3H5z" fill="#ffd45e"/>
+    <path d="M21 16h3v3h-3z" fill="#0a0f1a"/>
+    <path d="M13 23h10v3H13z" fill="#ff8c22"/>
+  </g>
+</svg>

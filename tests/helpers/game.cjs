@@ -6,14 +6,14 @@ const source = fs.readFileSync(path.join(__dirname, '../../site/assets/js/game.j
 
 // Execute the actual browser script with deterministic time/randomness. Canvas
 // painting is mocked here; real font metrics and controls are checked in Chrome.
-function game({ raw = null, width = 1258, height = 622, storageBlocked = false, fonts } = {}) {
+function game({ raw = null, width = 1258, height = 622, storageBlocked = false, fonts, pixelRatio = 1 } = {}) {
   const viewport = { width, height, left: 0, top: 0 };
   const events = new Map(), canvasEvents = new Map(), documentEvents = new Map();
   const storage = new Map([['atseadot.v4', raw]]), timers = new Map(), frames = [];
   let timerId = 0;
   const listen = map => (name, fn) => map.set(name, [...(map.get(name) || []), fn]);
   const context2d = () => new Proxy({
-    measureText: text => ({ width: [...String(text)].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 11 : 6), 0) }),
+    measureText: text => ({ width: [...String(text)].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 12 : c === ' ' ? 5 : 6), 0) }),
     getImageData: (x, y, w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }),
     createLinearGradient: () => ({ addColorStop() {} }),
     createRadialGradient: () => ({ addColorStop() {} })
@@ -27,7 +27,7 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false, 
   const random = Object.create(Math);
   random.random = () => 0.5;
   const context = vm.createContext({ document, Math: random, console,
-    innerWidth: width, innerHeight: height, performance: { now: () => 0 },
+    innerWidth: width, innerHeight: height, devicePixelRatio: pixelRatio, performance: { now: () => 0 },
     addEventListener: listen(events), requestAnimationFrame: fn => { frames.push(fn); return frames.length; },
     setTimeout: fn => { timers.set(++timerId, fn); return timerId; },
     clearTimeout: id => timers.delete(id),
@@ -44,10 +44,10 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false, 
     emit(name) { for (const fn of events.get(name) || []) fn(); },
     hide() { document.visibilityState = 'hidden'; for (const fn of documentEvents.get('visibilitychange') || []) fn(); },
     click(box) {
-      const size = data('({w:SW,h:SH})');
+      const size = data('({w:screenCv.width,h:screenCv.height,scale:PIXEL_SCALE})');
       const e = { pointerId: 1, button: 0,
-        clientX: (box.x + box.w / 2) / size.w * viewport.width,
-        clientY: (box.y + box.h / 2) / size.h * viewport.height };
+        clientX: (box.x + box.w / 2) * size.scale / size.w * viewport.width,
+        clientY: (box.y + box.h / 2) * size.scale / size.h * viewport.height };
       for (const fn of canvasEvents.get('pointerdown')) fn(e);
       for (const fn of canvasEvents.get('pointerup')) fn(e);
     }

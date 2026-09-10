@@ -89,7 +89,7 @@ const C = {
   frame:     "#b8d0f0",   /* 창틀 밝은 선 */
   frameDim:  "#5a7bb0",
   text:      "#eaf2ff",
-  textDim:   "#8fa8c8",
+  textDim:   "#b4c8e4",
   textWarn:  "#ffd45e",
   textShadow:"#0a0e18",
   sand:      "#c9a86a",
@@ -893,14 +893,17 @@ const sctx = screenCv.getContext("2d", { alpha: false });
 const buf = document.createElement("canvas");
 const g = buf.getContext("2d", { alpha: false });
 
-let SW = 320, SH = 200, SCALE = 3;
+let SW = 320, SH = 200, SCALE = 3, PIXEL_SCALE = 3;
+let canvasCssWidth = 0, canvasCssHeight = 0;
 let worldReady = false;
 
 function resize() {
   const bounds = screenCv.getBoundingClientRect();
-  const w = Math.max(240, Math.round(bounds.width));
-  const h = Math.max(160, Math.round(bounds.height));
-  if (worldReady && screenCv.width === w && screenCv.height === h) return;
+  const w = Math.max(240, bounds.width), h = Math.max(160, bounds.height);
+  const dpr = Math.max(1, Math.min(4, globalThis.devicePixelRatio || 1));
+  const pixelW = Math.round(w * dpr), pixelH = Math.round(h * dpr);
+  if (worldReady && canvasCssWidth === w && canvasCssHeight === h &&
+      screenCv.width === pixelW && screenCv.height === pixelH) return;
   if (worldReady) { releaseTouchKeys(); pointer.down = false; pointer.id = null; }
   const previous = { width: worldW(), top: seaTop, bed: seaBed, height: worldH };
   /* 논리 화면이 380x240 어름이 되도록 배율을 고른다. 좁은 화면에서는
@@ -912,10 +915,14 @@ function resize() {
      다시 고른다 - 창들은 아래에서 그 폭에 맞춰 접힌다. */
   if (w < 520) SCALE = Math.max(1, Math.min(3, Math.floor(w / 176)));
   else if (w / SCALE < 260) SCALE = Math.max(1, Math.floor(w / 260));
-  SW = Math.ceil(w / SCALE);
-  SH = Math.ceil(h / SCALE);
+  // Every game pixel occupies the same integer number of physical pixels.
+  // The last partial cell is clipped instead of squeezing the entire image.
+  PIXEL_SCALE = Math.max(1, Math.round(SCALE * dpr));
+  SW = Math.ceil(pixelW / PIXEL_SCALE);
+  SH = Math.ceil(pixelH / PIXEL_SCALE);
   buf.width = SW; buf.height = SH;
-  screenCv.width = w; screenCv.height = h;
+  canvasCssWidth = w; canvasCssHeight = h;
+  screenCv.width = pixelW; screenCv.height = pixelH;
   sctx.imageSmoothingEnabled = false;
   g.imageSmoothingEnabled = false;
   layoutWorld();
@@ -971,7 +978,7 @@ function koCanvas(str, color) {
 }
 
 /* 한 줄의 높이. 한글은 도트 글꼴(7)보다 커서 줄을 더 벌려야 한다. */
-function lineH() { return lang === "ko" ? 12 : 10; }
+function lineH() { return lang === "ko" ? 14 : 10; }
 
 function textWidth(s) {
   s = String(s);
@@ -2804,7 +2811,7 @@ function drawHeader() {
 /* 아래 대사창. 알피지 만들기의 그 창이다. */
 function drawMessage() {
   if (!msg.lines.length) return;
-  const h = lang === "ko" ? 44 : 38, y = SH - h - 3;
+  const h = lineH() * 3 + 8, y = SH - h - 3;
   drawWindow(3, y, SW - GAUGE_W - 9, h, { alpha: .93 });
   let left = Math.floor(msg.shown);
   for (let i = 0; i < msg.lines.length; i++) {
@@ -3274,30 +3281,38 @@ function menuLabel(i) {
 }
 function titleLayout() {
   const w = Math.min(SW - 20, Math.max(...MENU_KEYS.map((_, i) => textWidth(menuLabel(i)))) + 40);
-  const h = MENU_KEYS.length * 14 + 12;
-  const x = Math.round((SW - w) / 2), y = Math.max(48, Math.min(Math.round(SH * .42), SH - h - 36));
-  return {x, y, w, h, items: MENU_KEYS.map((_, i) => ({x: x + 4, y: y + 5 + i * 14, w: w - 8, h: 14}))};
+  const rowH = lang === "ko" ? 16 : 14, h = MENU_KEYS.length * rowH + 12;
+  const stats = T("menu.stats", save.deepest || 0, caughtTotal());
+  const statLines = textWidth(stats) <= SW - 28 ? [stats]
+    : stats.split("   ").flatMap(s => wrapLines(s, SW - 28));
+  const lines = [...wrapLines(T("menu.pick"), SW - 28), ...statLines];
+  const footerW = Math.min(SW - 12, Math.max(...lines.map(textWidth)) + 16);
+  const footerH = lines.length * lineH() + 12;
+  const maxY = Math.max(6, SH - h - footerH - 12);
+  const x = Math.round((SW - w) / 2), y = clamp(Math.round(SH * .42), Math.min(48, maxY), maxY);
+  return { x, y, w, h, rowH,
+    footer: { x: Math.round((SW - footerW) / 2), y: y + h + 8, w: footerW, h: footerH, lines },
+    items: MENU_KEYS.map((_, i) => ({ x: x + 4, y: y + 5 + i * rowH, w: w - 8, h: rowH })) };
 }
 function drawTitle() {
   const cx = SW / 2;
   const bob = Math.sin(clock * 1.2) * 2;
-  drawBigText(cx, Math.round(SH * .13 + bob), "AT SEA", C.foam, 3, "#062b45");
-  /* 부제. 말로는 app.sub 하나만 고치면 된다 - 한/영 둘 다 그 자리를 본다. */
-  drawTextCenter(cx, Math.round(SH * .13 + bob + 26), T("app.sub"), C.textWarn);
-
-  const {x: mx, y: my, w: mw, h: mh} = titleLayout();
+  const L = titleLayout(), { x: mx, y: my, w: mw, h: mh } = L;
+  if (my >= 62) {
+    drawBigText(cx, Math.round(SH * .13 + bob), "AT SEA", C.foam, 3, "#062b45");
+    drawTextCenter(cx, Math.round(SH * .13 + bob + 26), T("app.sub"), C.textWarn);
+  }
   drawWindow(mx, my, mw, mh, { alpha: .92 });
   for (let i = 0; i < MENU_KEYS.length; i++) {
     const on = i === menuIndex;
     /* 잠수부와 배는 작은 그림을 앞에 세운다 - 무엇을 고르는지 글자보다
        그림이 먼저 말한다. */
-    drawText(mx + 20, my + 8 + i * 14, menuLabel(i), on ? C.textWarn : C.textDim);
-    if (on && Math.floor(clock * 4) % 2 === 0) drawText(mx + 9, my + 8 + i * 14, ">", C.textWarn);
+    drawText(mx + 20, my + 8 + i * L.rowH, menuLabel(i), on ? C.textWarn : C.textDim);
+    if (on && Math.floor(clock * 4) % 2 === 0) drawText(mx + 9, my + 8 + i * L.rowH, ">", C.textWarn);
   }
-  /* 한글은 도트 글꼴보다 서너 칸 높다. 줄 간격을 그만큼 벌리지 않으면
-     아랫줄이 윗줄의 받침을 밟는다. */
-  drawTextCenter(cx, my + mh + 8, T("menu.pick"), C.textDim);
-  drawTextCenter(cx, my + mh + 21, T("menu.stats", save.deepest || 0, caughtTotal()), C.textDim);
+  // A dark panel keeps unshadowed text legible over both daylight and deep water.
+  drawWindow(L.footer.x, L.footer.y, L.footer.w, L.footer.h, { alpha: .96 });
+  L.footer.lines.forEach((line, i) => drawTextCenter(cx, L.footer.y + 7 + i * lineH(), line, C.textDim));
 }
 
 /* =========================================================================
@@ -3421,8 +3436,8 @@ const inBox = (p, r) => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r
 function toLogical(e) {
   const r = screenCv.getBoundingClientRect();
   return {
-    x: (e.clientX - r.left) / r.width * SW,
-    y: (e.clientY - r.top) / r.height * SH,
+    x: (e.clientX - r.left) / r.width * screenCv.width / PIXEL_SCALE,
+    y: (e.clientY - r.top) / r.height * screenCv.height / PIXEL_SCALE,
   };
 }
 screenCv.addEventListener("pointerdown", e => {
@@ -4186,9 +4201,9 @@ function render() {
     drawHeader(); drawGauge(); drawMessage();
     if (!msg.lines.length) drawHints();
     if (paused) {
-      const pw = textWidth(T("ui.paused")) + 20;
-      drawWindow(Math.round(SW / 2 - pw / 2), 6, pw, 16, { alpha: .9 });
-      drawTextCenter(SW / 2, 11, T("ui.paused"), C.textWarn);
+      const pw = textWidth(T("ui.paused")) + 20, py = SW < 260 ? 38 : 6;
+      drawWindow(Math.round(SW / 2 - pw / 2), py, pw, 16, { alpha: .9 });
+      drawTextCenter(SW / 2, py + 5, T("ui.paused"), C.textWarn);
     }
   }
   /* 앞장 - 열어 둔 창. 뒷장이 무엇이든 그 위에 뜬다. */
@@ -4198,7 +4213,7 @@ function render() {
 
   /* 논리 화면을 실제 화면으로. 정수배라 도트가 네모로 커진다. */
   sctx.imageSmoothingEnabled = false;
-  sctx.drawImage(buf, 0, 0, SW, SH, 0, 0, screenCv.width, screenCv.height);
+  sctx.drawImage(buf, 0, 0, SW, SH, 0, 0, SW * PIXEL_SCALE, SH * PIXEL_SCALE);
 }
 
 /* =========================================================================

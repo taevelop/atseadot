@@ -25,7 +25,7 @@ npm test
 npm run build
 ```
 
-`tests/game.test.cjs`, `tests/virtual-controls.test.cjs`, `tests/typography.test.cjs`의 회귀 테스트 총 25개가 통과했습니다. `build`는 JavaScript 구문 검사와 이 테스트를 모두 실행합니다. 테스트는 실제 게임 스크립트를 Node VM에서 실행하며, 시간·난수·저장소·Canvas·DOM 환경을 대체합니다.
+`tests/game.test.cjs`, `tests/keyboard.test.cjs`, `tests/virtual-controls.test.cjs`, `tests/typography.test.cjs`의 회귀 테스트 총 34개가 통과했습니다. `build`는 JavaScript 구문 검사와 이 테스트를 모두 실행합니다. 테스트는 실제 게임 스크립트를 Node VM에서 실행하며, 시간·난수·저장소·Canvas·DOM 환경을 대체합니다.
 
 ## 브라우저 검증
 
@@ -92,3 +92,27 @@ npm run build
 - [포함한 원본 WOFF2](https://raw.githubusercontent.com/quiple/galmuri/71e1cacf1437a11220307120e63e30bc275312d4/dist/Galmuri11.woff2): 505,400바이트. SHA-256: `8bad9322b3340bfb5cb26cb00f4752bf4c8e7d1b526bb07205f4af458eebed31`.
 - 원본 폰트 파일은 수정하지 않았으며 [OFL 라이선스](../site/assets/fonts/OFL-Galmuri.txt)를 함께 배포합니다.
 - 구현 참고: [폰트 로딩 API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Font_Loading_API), [Canvas 픽셀 정수 확대](https://developer.mozilla.org/en-US/docs/Games/Techniques/Crisp_pixel_art_look).
+
+## 단축키 역할 정리
+
+검증일: 2026-09-10.
+
+### 변경 내용
+
+- 방향키와 WASD로 이동합니다. 낚싯배에서는 A/D가 좌우 이동, W/S가 낚싯줄 깊이 조절이며 Shift 가속을 함께 사용할 수 있습니다.
+- 도감 단축키는 G입니다. 시작 화면·플레이·다른 창에서 도감을 열고, 도감 목록이나 상세에서 다시 누르면 도감을 닫습니다. D는 이동에만 사용합니다.
+- Space는 대사 표시 여부와 관계없이 그물·상자·낚시 액션을 실행합니다. Q/E는 도감 목록과 조작법의 페이지 이동에만 사용합니다.
+- Z/Enter는 선택 또는 대사 표시·다음 대사 진행에 사용합니다. X/Esc는 상세에서 목록으로, 열린 창에서 이전 화면으로 돌아가며 플레이 중에는 대사를 먼저 닫습니다. 닫을 대사가 없으면 시작 화면으로 돌아갑니다. 배경화면 모드는 먼저 해제합니다.
+- 포획 결과·조작법·도감 상세는 Z/Enter·D·Q로 닫히지 않습니다. 모바일 큰 버튼은 해당 화면에서 닫기 동작을 실행하며, 플레이 중 대사가 있어도 그물·낚시 액션을 표시합니다.
+- Ctrl/Alt/Meta 조합과 문자 조합 중인 키 이벤트는 게임에서 처리하지 않습니다. 브라우저 기본 동작을 막지 않고 Shift 가속을 유지합니다.
+- 한국어·영어 게임 안내와 README의 조작표를 새 배치에 맞췄습니다.
+
+### 검증 결과
+
+- `npm run build`: JavaScript 구문 검사와 전체 34개 테스트 통과. 새 `tests/keyboard.test.cjs`의 9개 테스트는 실제 등록된 keydown/keyup 핸들러를 통해 이동, 도감 전환, 대사 중 액션, 페이지 이동, 확인·닫기 분리, 조합키 보호, 가속·키 해제를 검사합니다.
+- Chrome에서 실제 키 입력으로 시작 → 대사 중 Space 그물 → G 도감 → Enter 상세 → Enter/D로 상세가 닫히지 않음 → Esc 목록 → G 플레이 복귀를 확인했습니다. 조작법의 Enter 유지, Esc 닫기, E 페이지 이동과 L 언어 전환도 확인했습니다.
+- 브라우저에서 준비한 게임 상태와 합성 KeyboardEvent로 잠수부·낚싯배의 D 이동, Shift+S 줄 내리기, Ctrl/Alt/Meta 조합 시 바다·역할·화면·일시정지 상태 유지를 확인했습니다.
+- 1258×622에서 키 입력 흐름을 확인하고, 1280×800·390×844·844×390에서 한국어·영어 조작법 16개 항목의 접근 가능 여부와 글자 폭을 검사했습니다. 화면의 가로 넘침이 없고 표시된 모바일 버튼의 터치 영역은 44px 이상이었습니다.
+- 모바일 크기에서 대사가 있는 상태의 그물 버튼과 조작법 닫기 버튼을 브라우저 포인터로 눌러 동작과 표시가 일치함을 확인했습니다.
+- 시작 화면, 데스크톱·모바일 세로·가로 조작법, 한국어·영어 안내를 캡처해 시각적으로 확인했습니다. 앱의 브라우저 JavaScript 오류와 콘솔 오류는 0건이었습니다.
+- 브라우저 검증은 로컬 Cloudflare Pages 런타임과 데스크톱 Chrome에서 수행했습니다. 실제 iOS·Android 기기 검증은 포함하지 않습니다.

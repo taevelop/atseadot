@@ -1214,20 +1214,20 @@ const STR = {
     "zone.MIDNIGHT": "암흑층", "zone.ABYSS": "심연",
     "zone.s.SUNLIGHT": "표층", "zone.s.TWILIGHT": "약광",
     "zone.s.MIDNIGHT": "암흑", "zone.s.ABYSS": "심연",
-    "hint.diver": "방향키 이동 · Shift 가속 · Space 그물 · D 도감",
-    "hint.boat": "← → 배 · ↓ ↑ 줄 · Space 던지기 · T 하늘",
-    "hint.short": "Space 던지기 · D 도감",
+    "hint.diver": "방향키/WASD 이동 · Shift 가속 · Space 그물 · G 도감",
+    "hint.boat": "← → / A D 배 · ↓ ↑ / S W 줄 · Space 액션",
+    "hint.short": "Space 액션 · G 도감",
     "hint.swap": "TAB 배↔잠수부",
     "ui.paused": "일시정지",
     "help.title": "조작법",
-    "help.close": "X 닫기",
-    "help.move": "방향키", "help.moveV": "헤엄치기 · 배 몰기",
-    "help.dash": "시프트", "help.dashV": "빠르게 이동",
-    "help.act": "스페이스", "help.actV": "그물 휘두르기 · 줄 던지기",
+    "help.close": "X / ESC 닫기",
+    "help.move": "방향키 / WASD", "help.moveV": "헤엄치기 · 배 몰기",
+    "help.dash": "시프트", "help.dashV": "빠르게 이동 · 줄 조절",
+    "help.act": "스페이스", "help.actV": "그물·상자 · 낚시 액션 (대사 중에도 작동)",
     "help.swap": "TAB", "help.swapV": "잠수부 ↔ 낚싯배 바꾸기",
-    "help.line": "↓ ↑", "help.lineV": "줄 내리기 · 감아올리기",
-    "help.ok": "Z / 엔터", "help.okV": "Z 넘기기 · 엔터 대사창 닫기",
-    "help.guide": "D", "help.guideV": "도감 열기",
+    "help.line": "↓ ↑ / S W", "help.lineV": "줄 내리기 · 감아올리기",
+    "help.ok": "Z / 엔터", "help.okV": "선택 · 대사 표시/넘기기",
+    "help.guide": "G", "help.guideV": "도감 열기/닫기",
     "help.page": "Q / E · 바퀴", "help.pageV": "도감·조작법 쪽 넘기기 (또는 < > 누르기)",
     "help.sub": "B", "help.subV": "잠수함 부르기",
     "help.bait": "M", "help.baitV": "특별 미끼 (상자를 열어야 함)",
@@ -1235,8 +1235,8 @@ const STR = {
     "help.new": "N", "help.newV": "바다 새로 만들기",
     "help.bare": "F", "help.bareV": "배경화면 모드",
     "help.lang": "L", "help.langV": "언어 바꾸기",
-    "help.back": "X / ESC", "help.backV": "뒤로 · 시작화면",
-    "help.title2": "X / ESC 로 시작화면",
+    "help.back": "X / ESC", "help.backV": "창·대사 닫기 · 뒤로 · 시작화면",
+    "help.title2": "X / ESC 로 뒤로",
     "g.title": "도감",
     "g.tab.all": "전체", "g.tab.rare": "희귀",
     "g.tab.titles": "칭호", "g.tab.trophy": "트로피",
@@ -1244,7 +1244,7 @@ const STR = {
     "g.back": "X 뒤로",
     "c.title": "포획 성공!", "c.new": "첫 포획입니다!",
     "c.rare": "희귀 개체 포획 성공!", "c.at": "잡은 수심", "c.count": "지금까지",
-    "c.close": "Z · X 닫기",
+    "c.close": "X / ESC 닫기",
     "g.seen": "{0}/{1}종 · 총 {2}마리",
     "g.rareTally": "희귀 {0}종 · 총 {1}마리",
     "g.titleTally": "칭호 {0}/{1}",
@@ -1319,18 +1319,18 @@ const STR = {
     "zone.MIDNIGHT": "MIDNIGHT", "zone.ABYSS": "ABYSS",
     "zone.s.SUNLIGHT": "SUN", "zone.s.TWILIGHT": "TWI",
     "zone.s.MIDNIGHT": "MID", "zone.s.ABYSS": "ABY",
-    "hint.diver": "ARROWS SWIM   SHIFT DASH   SPACE NET   D GUIDE",
-    "hint.boat": "< > BOAT  V ^ LINE  SPACE CAST/STRIKE  T SKY",
-    "hint.short": "SPACE CAST   D GUIDE",
+    "hint.diver": "ARROWS/WASD SWIM   SHIFT DASH   SPACE NET   G GUIDE",
+    "hint.boat": "< > / A D BOAT  V ^ / S W LINE  SPACE ACT",
+    "hint.short": "SPACE ACT   G GUIDE",
     "ui.paused": "PAUSED",
     "help.title": "HOW TO PLAY",
-    "help.close": "X CLOSE",
-    "help.move": "ARROWS", "help.moveV": "SWIM OR STEER",
-    "help.dash": "SHIFT", "help.dashV": "DASH",
-    "help.act": "SPACE", "help.actV": "NET / CAST THE LINE",
-    "help.line": "V ^", "help.lineV": "PAY OUT / REEL IN",
-    "help.ok": "Z / ENTER", "help.okV": "Z ADVANCES, ENTER CLOSES THE BOX",
-    "help.guide": "D", "help.guideV": "FIELD GUIDE",
+    "help.close": "X / ESC CLOSE",
+    "help.move": "ARROWS / WASD", "help.moveV": "SWIM OR STEER",
+    "help.dash": "SHIFT", "help.dashV": "FASTER MOVEMENT / LINE CONTROL",
+    "help.act": "SPACE", "help.actV": "NET / CHEST / FISHING (EVEN DURING DIALOGUE)",
+    "help.line": "V ^ / S W", "help.lineV": "PAY OUT / REEL IN",
+    "help.ok": "Z / ENTER", "help.okV": "SELECT / REVEAL OR ADVANCE DIALOGUE",
+    "help.guide": "G", "help.guideV": "OPEN / CLOSE FIELD GUIDE",
     "help.page": "Q / E · WHEEL", "help.pageV": "TURN GUIDE / HELP PAGES (OR CLICK < >)",
     "help.sub": "B", "help.subV": "CALL THE SUBMARINE",
     "help.bait": "M", "help.baitV": "SPECIAL BAIT (FROM THE CHEST)",
@@ -1338,7 +1338,7 @@ const STR = {
     "help.new": "N", "help.newV": "REFRESH THE SEA",
     "help.bare": "F", "help.bareV": "WALLPAPER MODE",
     "help.lang": "L", "help.langV": "SWITCH LANGUAGE",
-    "help.back": "X / ESC", "help.backV": "BACK",
+    "help.back": "X / ESC", "help.backV": "CLOSE PANEL / DIALOGUE, THEN BACK TO TITLE",
     "g.title": "FIELD GUIDE",
     "g.tab.all": "ALL", "g.tab.rare": "RARE",
     "g.tab.titles": "TITLES", "g.tab.trophy": "TROPHIES",
@@ -1346,7 +1346,7 @@ const STR = {
     "g.back": "X BACK",
     "c.title": "CAUGHT", "c.new": "FIRST OF ITS KIND!",
     "c.rare": "A RARE CATCH!", "c.at": "CAUGHT AT", "c.count": "SO FAR",
-    "c.close": "Z / X TO CLOSE",
+    "c.close": "X / ESC TO CLOSE",
     "g.seen": "{0}/{1} LOGGED   GOT {2}",
     "g.rareTally": "{0} RARE SPECIES   {1} LANDED",
     "g.titleTally": "TITLES {0}/{1}",
@@ -1400,7 +1400,7 @@ const STR = {
     "m.toboat": "YOU CLIMB BACK INTO THE BOAT.",
     "m.todiver": "YOU SLIP BACK UNDER.",
     "help.swap": "TAB", "help.swapV": "SWAP DIVER / BOAT",
-    "help.title2": "X / ESC FOR THE TITLE",
+    "help.title2": "X / ESC TO GO BACK",
     "hint.swap": "TAB SWAP",
     "time.dawn": "DAWN", "time.noon": "NOON",
     "time.dusk": "SUNSET", "time.night": "MOONLIT",
@@ -3331,6 +3331,7 @@ function keyName(e) {
 }
 
 addEventListener("keydown", e => {
+  if (e.ctrlKey || e.altKey || e.metaKey || e.isComposing) return;
   if (e.target && e.target.closest && e.target.closest("#touch-controls")) return;
   const k = keyName(e);
   /* 화면을 스크롤시키는 키는 여기서 막는다. 이 페이지는 스크롤하지 않는다. */
@@ -3350,6 +3351,7 @@ function onPress(k) {
   if (!worldReady) return;
   const ok = (k === "z" || k === "enter");
   const back = (k === "x" || k === "escape");
+  if (k === "g") { openOverlay("guide"); return; }
 
   if (mode === "title") {
     if (k === "arrowup" || k === "w") menuIndex = (menuIndex + MENU_KEYS.length - 1) % MENU_KEYS.length;
@@ -3366,13 +3368,13 @@ function onPress(k) {
   if (mode === "catch") {
     if (k === "arrowdown" || k === "pagedown") { scrollInfo(lineH() * 3); return; }
     if (k === "arrowup" || k === "pageup") { scrollInfo(-lineH() * 3); return; }
-    if (back || ok || k === "q" || k === "d") { catchCard = null; mode = "dive"; }
+    if (back) { catchCard = null; mode = "dive"; }
     return;
   }
   if (mode === "help") {
     if (["arrowright", "arrowdown", "pagedown", "e"].includes(k)) { turnHelpPage(1); return; }
     if (["arrowleft", "arrowup", "pageup", "q"].includes(k)) { turnHelpPage(-1); return; }
-    if (back || ok || k === "d") mode = returnMode;
+    if (back) mode = returnMode;
     else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
     return;
   }
@@ -3381,14 +3383,14 @@ function onPress(k) {
     if (guideDetail) {
       /* 쪽을 펼친 채로도 앞뒤 종으로 넘어간다 - 닫았다 다시 여는 것보다
          책장을 넘기는 쪽이 도감답다. */
-      if (back || ok || k === "d") { guideDetail = false; return; }
+      if (back) { guideDetail = false; return; }
       if (k === "arrowdown" || k === "pagedown") scrollInfo(lineH() * 3);
       else if (k === "arrowup" || k === "pageup") scrollInfo(-lineH() * 3);
       else if (k === "arrowright") { guideSel = (guideSel + 1) % list.length; infoScroll = 0; }
       else if (k === "arrowleft") { guideSel = (guideSel + list.length - 1) % list.length; infoScroll = 0; }
       return;
     }
-    if (back || k === "d") { mode = returnMode; return; }
+    if (back) { mode = returnMode; return; }
     if (k === "l") { setLang(lang === "ko" ? "en" : "ko"); return; }
     /* 좌우는 탭, 위아래는 칸이다. */
     /* 쪽 넘기기 - 단추를 짚기 어려운 손을 위해 열쇠도 둔다. */
@@ -3407,18 +3409,17 @@ function onPress(k) {
   }
 
   /* 바닷속 */
-  /* 엔터는 창을 통째로 접는다. Z 는 한 마디씩 넘긴다 - 급할 때와
-     읽고 싶을 때가 다르다. */
-  if (k === "enter") { closeMsg(); return; }
+  /* 확인은 대사를 넘기고, 액션은 대사 중에도 바로 실행한다. */
   if (ok) { advanceMsg(); return; }
-  /* 스페이스가 손이다 - 그물이고 낚싯대다. 대사가 떠 있으면 그것부터 넘긴다.
-     Q 는 예전 버릇을 위해 남겨 둔다. */
-  if (k === "space" || k === "q") { if ((player.role === "boat" && rod.state === "bite") || !advanceMsg()) action(); return; }
+  if (k === "space") { action(); return; }
   if (k === "tab") { swapRole(); return; }
   if (k === "t") { setTime(timeIx + 1); say(T("m.time", T("time." + timeNow().id))); return; }
-  if (k === "d") { returnMode = "dive"; mode = "guide"; guideDetail = false; return; }
   if (k === "h" || k === "?" || k === "/") { returnMode = "dive"; helpPage = 0; mode = "help"; return; }
-  if (back) { if (bare) { bare = false; return; } mode = "title"; return; }
+  if (back) {
+    if (bare) { bare = false; return; }
+    if (msg.lines.length || msg.queue.length) { closeMsg(); return; }
+    mode = "title"; return;
+  }
   if (k === "l") { setLang(lang === "ko" ? "en" : "ko"); return; }
   if (k === "p") { paused = !paused; say(paused ? T("m.hold") : T("m.move")); return; }
   if (k === "n") { respawnAll(); resetPlayer(); say(T("m.newsea")); return; }
@@ -3636,7 +3637,7 @@ function releaseTouchKeys(resetActions = true) {
   document.querySelectorAll("[data-hold]").forEach(button => button.setAttribute("aria-pressed", "false"));
 }
 function openOverlay(next) {
-  if (mode === next) { mode = returnMode; return; }
+  if (mode === next) { mode = returnMode; guideDetail = false; return; }
   if (mode === "title" || mode === "dive") returnMode = mode;
   else if (mode === "catch") { catchCard = null; returnMode = "dive"; }
   mode = next; guideDetail = false; infoScroll = 0; helpPage = 0;
@@ -3644,6 +3645,7 @@ function openOverlay(next) {
 function controlAction(name) {
   if (name === "primary") {
     if (mode === "dive" && paused) onPress("p");
+    else if (mode === "help" || mode === "catch" || (mode === "guide" && guideDetail)) onPress("escape");
     else onPress(mode === "dive" ? "space" : "enter");
   } else if (name === "guide" || name === "help") openOverlay(name);
   else if (name === "lang") setLang(lang === "ko" ? "en" : "ko");
@@ -3662,7 +3664,7 @@ function syncControls() {
   const scope = [mode, player.role, paused, guideDetail].join("|");
   if (controlsMotionScope && controlsMotionScope !== scope) releaseTouchKeys(false);
   controlsMotionScope = scope;
-  const state = [scope, lang, rod.state, !!msg.lines.length].join("|");
+  const state = [scope, lang, rod.state].join("|");
   if (state === controlsState) return;
   controlsState = state;
   controls.setAttribute("aria-label", T("controls.label"));
@@ -3671,7 +3673,7 @@ function syncControls() {
   const primary = controls.querySelector('[data-action="primary"]');
   let label = "primary";
   if (mode === "dive") {
-    label = paused ? "resume" : rod.state === "bite" && player.role === "boat" ? "strike" : msg.lines.length ? "next"
+    label = paused ? "resume" : rod.state === "bite" && player.role === "boat" ? "strike"
       : player.role === "diver" ? "net" : rod.state === "idle" ? "cast" : rod.state === "out" ? "reel" : "wait";
   } else if (mode === "help" || mode === "catch" || guideDetail) label = "close";
   primary.querySelector(".action-label").textContent = T("controls." + label);
@@ -3900,9 +3902,9 @@ function update(u, dt) {
 function stepDiver(u, fast) {
   const acc = fast ? SWIM_FAST : SWIM;
   let ax = 0, ay = 0;
-  /* D 는 도감이라 오른쪽으로 쓰지 않는다. A 만 왼쪽에 겸한다. */
+  /* 방향키와 WASD 를 같은 이동 입력으로 쓴다. */
   if (pressed("arrowleft") || pressed("a")) ax -= 1;
-  if (pressed("arrowright")) ax += 1;
+  if (pressed("arrowright") || pressed("d")) ax += 1;
   if (pressed("arrowup") || pressed("w")) ay -= 1;
   if (pressed("arrowdown") || pressed("s")) ay += 1;
   /* 손가락으로 끌면 그쪽으로 */
@@ -3938,7 +3940,7 @@ function stepBoat(u, fast) {
   const acc = (fast ? 1.9 : .8) * u * .25;
   let ax = 0;
   if (pressed("arrowleft") || pressed("a")) ax -= 1;
-  if (pressed("arrowright")) ax += 1;
+  if (pressed("arrowright") || pressed("d")) ax += 1;
   player.vx += ax * acc;
   player.vx *= Math.pow(.88, u);
   player.x += player.vx * u;

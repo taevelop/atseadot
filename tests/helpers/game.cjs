@@ -41,7 +41,7 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false, 
   const data = code => JSON.parse(JSON.stringify(run(code)));
   return { run, data, storage, timers, frames, context,
     resize(w, h) { viewport.width = w; viewport.height = h; run('resize()'); },
-    emit(name) { for (const fn of events.get(name) || []) fn(); },
+    emit(name, event) { for (const fn of events.get(name) || []) fn(event); },
     hide() { document.visibilityState = 'hidden'; for (const fn of documentEvents.get('visibilitychange') || []) fn(); },
     click(box) {
       const size = data('({w:screenCv.width,h:screenCv.height,scale:PIXEL_SCALE})');

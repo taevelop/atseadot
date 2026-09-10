@@ -15,6 +15,7 @@ site/
   assets/
     css/style.css        # 화면 스타일
     js/game.js           # 게임 로직, 픽셀 도안, 번역 데이터
+    fonts/                # Galmuri11 웹폰트와 OFL 라이선스
     favicon.svg
     icon-maskable.svg    # Android 마스크 적용용 원본
     icons/               # Apple·Android 기기별 PNG 아이콘
@@ -44,6 +45,12 @@ npm run build
 ```
 
 별도의 번들 생성 과정은 없습니다. `build`는 JavaScript 구문 검사와 회귀 테스트를 실행하며, 배포 결과물은 이미 준비된 `site/`입니다. 테스트만 실행할 때는 `npm test`를 사용합니다.
+
+## 한글 픽셀 글자
+
+[Galmuri11](https://github.com/quiple/galmuri) 폰트를 프로젝트에 포함해 기기에 설치된 글꼴과 관계없이 같은 한글을 표시합니다. 원래 격자인 12px를 기준으로 그리며, 작은 글꼴의 번짐을 줄이기 위해 3배로 그린 뒤 픽셀 중심을 샘플링합니다. 최초 폰트 로딩은 최대 2초 기다리고, 지연되거나 실패하면 기본 글꼴로 게임을 시작합니다.
+
+Retina 화면에서도 게임 픽셀을 정수 배율로 확대하며 입력 좌표를 같은 배율로 변환합니다. 한글 줄 간격과 메뉴 여백을 늘리고, 긴 기록은 의미 단위로 줄바꿈합니다. 폰트 출처, 모바일 미리보기와 검증 범위는 [검증 문서](docs/verification.md#모바일-한글-픽셀-글자)에 정리했습니다.
 
 ## 게임 조작과 저장
 

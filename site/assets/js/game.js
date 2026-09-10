@@ -930,15 +930,14 @@ function vline(x, y, h, color) { rect(x, y, 1, h, color); }
 
 /* ---------- 글자 ----------
    라틴 글자와 숫자는 위에 찍어 둔 5x7 도트 글꼴로 그린다.
-   한글은 도트 글꼴을 만들 수가 없다 - 자모 조합만 만 자가 넘는다. 대신
-   시스템 글꼴을 아주 작게 찍은 뒤 반투명한 획을 잘라내(이진화) 도트로
-   되돌린다. 옛 한글 게임의 글자가 그랬듯, 획은 한 칸이거나 없거나다. */
+   한글은 함께 배포하는 Galmuri11을 원래 격자인 12px로 그린다.
+   글꼴 로딩을 기다리고 획의 알파를 보존해 기기별 자형 손상을 막는다. */
 const ASCII_ONLY = /^[\x20-\x7E]*$/;
-const KO_SIZE = 11;                 /* 시스템 글꼴을 이 크기로 찍는다 */
-const KO_H = 14;                    /* 잘라낼 판의 높이 */
-const KO_DY = -3;                   /* 도트 글꼴과 밑선을 맞추는 보정 */
-const KO_FONT = KO_SIZE + 'px "Galmuri11","DungGeunMo","NeoDunggeunmo","Dotum",' +
-                '"Malgun Gothic","Apple SD Gothic Neo",sans-serif';
+const KO_SIZE = 12;
+const KO_H = 14;
+const KO_BASELINE = 11;             /* Galmuri11의 실제 한글 높이는 11칸 */
+const KO_DY = -2;                   /* 5x7 글자의 가운데에 맞춘다 */
+const KO_FONT = KO_SIZE + 'px "Galmuri11","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
 const koMeasure = document.createElement("canvas").getContext("2d");
 koMeasure.font = KO_FONT;
 const koCache = new Map();
@@ -953,21 +952,19 @@ function koCanvas(str, color) {
   const w = Math.max(1, koWidth(str));
   const cv = document.createElement("canvas");
   cv.width = w; cv.height = KO_H;
-  const c = cv.getContext("2d", { willReadFrequently: true });
+  // Sample the center of each font pixel after 3x rasterization. This avoids
+  // small-size font hinting halos without deleting strokes by an alpha cutoff.
+  const raster = document.createElement("canvas");
+  raster.width = w * 3; raster.height = KO_H * 3;
+  const c = raster.getContext("2d");
+  c.scale(3, 3);
   c.font = KO_FONT;
-  c.textBaseline = "top";
-  c.fillStyle = "#ffffff";
-  c.fillText(str, 0, 0);
-  /* 이진화. 옅은 획은 버리고 남은 것은 전부 같은 색 한 칸으로 만든다. */
-  const img = c.getImageData(0, 0, cv.width, cv.height);
-  const d = img.data;
-  const rgb = hex2rgb(color);
-  for (let i = 0; i < d.length; i += 4) {
-    const on = d[i + 3] > 96;
-    d[i] = rgb[0]; d[i + 1] = rgb[1]; d[i + 2] = rgb[2];
-    d[i + 3] = on ? 255 : 0;
-  }
-  c.putImageData(img, 0, 0);
+  c.textBaseline = "alphabetic";
+  c.fillStyle = color;
+  c.fillText(str, 0, KO_BASELINE);
+  const target = cv.getContext("2d");
+  target.imageSmoothingEnabled = false;
+  target.drawImage(raster, 0, 0, w, KO_H);
   if (koCache.size > 400) koCache.clear();
   koCache.set(key, cv);
   return cv;
@@ -983,7 +980,7 @@ function textWidth(s) {
 }
 function drawText(x, y, s, color, shadow) {
   s = String(s);
-  const sh = shadow === undefined ? true : shadow;
+  const sh = shadow === undefined ? ASCII_ONLY.test(s) : shadow;
   if (!ASCII_ONLY.test(s)) {
     const px0 = Math.round(x), py0 = Math.round(y) + KO_DY;
     if (sh) g.drawImage(koCanvas(s, C.textShadow), px0 + 1, py0 + 1);
@@ -1177,7 +1174,7 @@ function blitGlow(cv, x, y, color, blur, opts) {
 /* =========================================================================
    말
    처음 열면 한국어다. 타이틀의 마지막 칸에서 바꾸고, 고른 것은 이 브라우저에
-   남는다. 한글은 위 drawText 가 시스템 글꼴을 이진화해 도트로 되돌린다.
+   남는다. 한글은 위 drawText 가 함께 배포하는 픽셀 글꼴로 그린다.
    ========================================================================= */
 const LANG_KEY = "atseadot.lang";
 let lang = "ko";
@@ -2087,7 +2084,7 @@ const titleGot = () => TITLES.filter(x => save.titles[x[0]]).length;
    한 자씩 찍히고, 다 찍히면 아래에 삼각형이 깜빡인다. 이 판이 옛 게임처럼
    보이는 데 도안 못지않게 큰 몫을 한다.
    ========================================================================= */
-const msg = { lines: [], shown: 0, t: 0, hold: 0, queue: [], color: C.text };
+const msg = { text: "", lines: [], shown: 0, t: 0, hold: 0, queue: [], color: C.text };
 function say(text, color) {
   msg.queue.push({ text: String(text), color: color || C.text });
   if (!msg.lines.length) nextMsg();
@@ -2096,6 +2093,7 @@ function nextMsg() {
   const it = msg.queue.shift();
   if (!it) { msg.lines = []; return; }
   msg.color = it.color;
+  msg.text = it.text;
   msg.lines = wrapText(it.text, SW - GAUGE_W - 26);
   msg.shown = 0; msg.t = 0; msg.hold = 0;
 }
@@ -3334,6 +3332,7 @@ addEventListener("blur", () => {
 });
 
 function onPress(k) {
+  if (!worldReady) return;
   const ok = (k === "z" || k === "enter");
   const back = (k === "x" || k === "escape");
 
@@ -3427,6 +3426,7 @@ function toLogical(e) {
   };
 }
 screenCv.addEventListener("pointerdown", e => {
+  if (!worldReady) return;
   if (e.button !== 0 || (pointer.down && pointer.id !== e.pointerId)) return;
   screenCv.setPointerCapture(e.pointerId);
   pointer.id = e.pointerId;
@@ -4247,12 +4247,33 @@ function loop(now) {
 addEventListener("resize", resize);
 if (typeof ResizeObserver !== "undefined") new ResizeObserver(resize).observe(screenCv);
 
-/* 첫 판 */
-initControls();
-syncGaugeW();
-resize();
-respawnAll();
-resetPlayer();
-worldReady = true;
-cam = 0; camX = clamp(player.x - SW * .5, 0, worldW() - SW);
-requestAnimationFrame(loop);
+/* 첫 판. 느리거나 실패한 폰트 요청이 게임 실행을 막지 않게 한다. */
+let fontLoadTimer;
+function startGame() {
+  clearTimeout(fontLoadTimer);
+  if (worldReady) return;
+  initControls();
+  syncGaugeW();
+  resize();
+  respawnAll();
+  resetPlayer();
+  worldReady = true;
+  cam = 0; camX = clamp(player.x - SW * .5, 0, worldW() - SW);
+  last = performance.now();
+  requestAnimationFrame(loop);
+}
+function gameFontReady() {
+  koCache.clear();
+  if (worldReady && msg.lines.length) {
+    const done = msgDone();
+    msg.lines = wrapText(msg.text, SW - GAUGE_W - 26);
+    msg.shown = done ? msgTotal() : Math.min(msg.shown, msgTotal());
+  }
+  startGame();
+}
+if (document.fonts && typeof document.fonts.load === "function") {
+  fontLoadTimer = setTimeout(startGame, 2000);
+  document.fonts.load(KO_FONT, "한글").then(gameFontReady, startGame);
+} else {
+  startGame();
+}

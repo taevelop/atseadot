@@ -1,6 +1,13 @@
 /* 이 판은 화면 전체가 하나의 캔버스다. 창틀·글자·계기까지 전부 그 안에서
    픽셀로 그린다 - 옛 2D 알피지 만들기 게임이 320x240 한 장으로 모든 걸
    해결하던 방식 그대로다. 터치 조작 버튼은 캔버스 아래의 DOM 영역에 둔다. */
+@font-face {
+  font-family: "Galmuri11";
+  src: url("../fonts/Galmuri11.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
 :root { color-scheme: dark; }
 html, body { margin: 0; padding: 0; height: 100%; background: #05070f; overflow: hidden; }
 body {

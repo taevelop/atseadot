@@ -6,10 +6,10 @@ const source = fs.readFileSync(path.join(__dirname, '../../site/assets/js/game.j
 
 // Execute the actual browser script with deterministic time/randomness. Canvas
 // painting is mocked here; real font metrics and controls are checked in Chrome.
-function game({ raw = null, width = 1258, height = 622, storageBlocked = false } = {}) {
+function game({ raw = null, width = 1258, height = 622, storageBlocked = false, fonts } = {}) {
   const viewport = { width, height, left: 0, top: 0 };
   const events = new Map(), canvasEvents = new Map(), documentEvents = new Map();
-  const storage = new Map([['atseadot.v4', raw]]), timers = new Map();
+  const storage = new Map([['atseadot.v4', raw]]), timers = new Map(), frames = [];
   let timerId = 0;
   const listen = map => (name, fn) => map.set(name, [...(map.get(name) || []), fn]);
   const context2d = () => new Proxy({
@@ -22,13 +22,13 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false }
   const screen = { ...canvas(), getBoundingClientRect: () => viewport,
     addEventListener: listen(canvasEvents), setPointerCapture() {} };
   const document = { documentElement: { lang: '' }, visibilityState: 'visible',
-    getElementById: id => id === 'screen' ? screen : null,
+    fonts, getElementById: id => id === 'screen' ? screen : null,
     createElement: canvas, querySelectorAll: () => [], addEventListener: listen(documentEvents) };
   const random = Object.create(Math);
   random.random = () => 0.5;
   const context = vm.createContext({ document, Math: random, console,
     innerWidth: width, innerHeight: height, performance: { now: () => 0 },
-    addEventListener: listen(events), requestAnimationFrame: () => 1,
+    addEventListener: listen(events), requestAnimationFrame: fn => { frames.push(fn); return frames.length; },
     setTimeout: fn => { timers.set(++timerId, fn); return timerId; },
     clearTimeout: id => timers.delete(id),
     localStorage: {
@@ -39,7 +39,7 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false }
   vm.runInContext(source, context, { filename: 'game.js' });
   const run = code => vm.runInContext(code, context);
   const data = code => JSON.parse(JSON.stringify(run(code)));
-  return { run, data, storage, timers, context,
+  return { run, data, storage, timers, frames, context,
     resize(w, h) { viewport.width = w; viewport.height = h; run('resize()'); },
     emit(name) { for (const fn of events.get(name) || []) fn(); },
     hide() { document.visibilityState = 'hidden'; for (const fn of documentEvents.get('visibilitychange') || []) fn(); },

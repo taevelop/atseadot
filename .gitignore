@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+!.env.example
+*.log
+
+# Original downloaded HTML kept locally for comparison, outside the deploy root.
+/atseadot.html

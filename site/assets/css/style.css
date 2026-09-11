@@ -61,24 +61,24 @@ canvas#screen:focus-visible { outline: 2px solid #ffd45e; outline-offset: -2px; 
 /* Show controls only at phone and tablet viewport widths, regardless of input type. */
 @media (max-width: 1024px) {
   #touch-controls {
-    --dial-size: 136px;
+    --dial-size: 124px;
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas: "menu menu" "pad actions"; gap: 10px 12px;
+    grid-template-areas: "menu menu" "pad actions"; gap: 8px 10px;
     flex: 0 0 auto; align-items: center;
     padding: 8px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     border-top: 2px solid #5a7bb0; background: #081538; color: #eaf2ff;
   }
   #touch-controls button, #touch-controls summary {
     box-sizing: border-box; display: grid; place-items: center; min-width: 0; min-height: 44px;
-    padding: 5px; border: 2px solid #5a7bb0; border-radius: 4px; background: #12275e;
-    color: #eaf2ff; font: 600 13px/1.15 ui-monospace, "Malgun Gothic", sans-serif;
+    padding: 5px; border: 2px solid #5a7bb0; border-radius: 2px; background: #12275e;
+    color: #eaf2ff; font: 400 12px/1.25 "Galmuri11", ui-monospace, "Malgun Gothic", sans-serif;
     cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none;
   }
   #touch-controls button:disabled { opacity: .45; cursor: default; }
   #touch-controls button:active, #touch-controls button.is-pressed, #touch-controls [aria-pressed="true"] { background: #285a8e; }
   #touch-controls :focus-visible { outline: 2px solid #ffd45e; outline-offset: 2px; }
   .touch-utilities { grid-area: menu; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-  .dial-area { grid-area: pad; display: grid; justify-items: center; gap: 7px; min-width: 0; }
+  .dial-area { grid-area: pad; display: grid; justify-items: center; gap: 5px; min-width: 0; }
   .direction-pad {
     position: relative; width: var(--dial-size); height: var(--dial-size);
     box-sizing: border-box; border: 2px solid #5a7bb0; border-radius: 50%;
@@ -90,7 +90,7 @@ canvas#screen:focus-visible { outline: 2px solid #ffd45e; outline-offset: -2px; 
   .direction-pad[data-boost="true"] { border-color: #ffd45e; box-shadow: inset 0 0 0 4px #081020, 0 0 0 2px #ffd45e33; }
   #touch-controls .direction-pad button {
     position: absolute; width: 44px; height: 44px; padding: 0;
-    border: 0; border-radius: 50%; background: transparent; font-size: 21px;
+    border: 0; border-radius: 50%; background: transparent; font: 20px/1 ui-monospace, monospace;
   }
   .direction-pad .up { left: calc(50% - 22px); top: 0; }
   .direction-pad .down { left: calc(50% - 22px); bottom: 0; }
@@ -106,24 +106,24 @@ canvas#screen:focus-visible { outline: 2px solid #ffd45e; outline-offset: -2px; 
   }
   .dial-knob span { width: 6px; height: 6px; background: #b8d0f0; box-shadow: 8px 0 #b8d0f0, -8px 0 #b8d0f0; }
   .direction-pad:not(.is-active) .dial-knob { transition: transform .12s ease-out; }
-  .touch-actions { grid-area: actions; display: grid; justify-items: center; gap: 12px; min-width: 0; }
+  .touch-actions { grid-area: actions; display: grid; justify-items: center; gap: 10px; min-width: 0; }
   .action-buttons { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
   #touch-controls .primary {
-    flex: 0 0 82px; width: 82px; height: 82px; min-height: 82px;
+    flex: 0 0 74px; width: 74px; height: 74px; min-height: 74px;
     align-content: center; gap: 5px; border-radius: 50%; border: 3px solid #ffe38a;
     color: #fff0b7; background: #665321;
     box-shadow: inset 0 0 0 4px #463516, 0 5px 0 #030918;
   }
-  .primary .action-symbol { font-size: 24px; line-height: 24px; }
+  .primary .action-symbol { font-size: 20px; line-height: 20px; }
   #touch-controls .primary.is-pressed { background: #9a7930; box-shadow: inset 0 0 0 4px #665321, 0 2px 0 #030918; transform: translateY(3px); }
   #touch-controls .primary[data-kind="strike"] { background: #943b28; border-color: #ffbe77; color: #fff; }
   #touch-controls .boost-button {
-    flex: 0 0 56px; width: 56px; height: 56px; min-height: 56px;
+    flex: 0 0 52px; width: 52px; height: 52px; min-height: 52px;
     align-content: center; gap: 1px; border-radius: 50%; border-color: #8abdda;
     box-shadow: inset 0 0 0 3px #0b1b36, 0 4px 0 #030918; transform: translateY(-17px);
   }
-  .boost-button .action-symbol { font-size: 23px; line-height: 19px; }
-  .control-hint { max-width: 100%; color: #9fb6d8; font: 11px/1.3 ui-monospace, "Malgun Gothic", sans-serif; text-align: center; }
+  .boost-button .action-symbol { font-size: 20px; line-height: 18px; }
+  .control-hint { min-height: 2.8em; max-width: 100%; color: #9fb6d8; font: 10px/1.4 "Galmuri11", ui-monospace, "Malgun Gothic", sans-serif; text-align: center; }
   .touch-more { position: relative; }
   .touch-more summary { height: 100%; list-style: none; }
   .touch-more summary::-webkit-details-marker { display: none; }

@@ -891,9 +891,13 @@ spr("diver2", [       /* 잠수부 - 다른 다리를 위로 찬 참 */
 const screenCv = document.getElementById("screen");
 const sctx = screenCv.getContext("2d", { alpha: false });
 const buf = document.createElement("canvas");
-const g = buf.getContext("2d", { alpha: false });
+const worldContext = buf.getContext("2d", { alpha: false });
+const uiBuf = document.createElement("canvas");
+const uiContext = uiBuf.getContext("2d");
+let g = worldContext;
 
 let SW = 320, SH = 200, SCALE = 3, PIXEL_SCALE = 3;
+let UW = 320, UH = 200, UI_PIXEL_SCALE = 3;
 let canvasCssWidth = 0, canvasCssHeight = 0;
 let worldReady = false;
 
@@ -921,12 +925,19 @@ function resize() {
   SW = Math.ceil(pixelW / PIXEL_SCALE);
   SH = Math.ceil(pixelH / PIXEL_SCALE);
   buf.width = SW; buf.height = SH;
+  // UI has its own pixel grid: smaller panels without rescaling sea creatures.
+  UI_PIXEL_SCALE = Math.max(1, Math.round(Math.min(2, SCALE * .85) * dpr));
+  UW = Math.ceil(pixelW / UI_PIXEL_SCALE);
+  UH = Math.ceil(pixelH / UI_PIXEL_SCALE);
+  uiBuf.width = UW; uiBuf.height = UH;
+  uiContext.imageSmoothingEnabled = false;
   canvasCssWidth = w; canvasCssHeight = h;
   screenCv.width = pixelW; screenCv.height = pixelH;
   sctx.imageSmoothingEnabled = false;
   g.imageSmoothingEnabled = false;
   layoutWorld();
   if (worldReady) rescaleWorld(previous);
+  if (worldReady && msg.lines.length) reflowMessage();
 }
 
 /* ---------- 픽셀 붓 ---------- */
@@ -936,69 +947,115 @@ function hline(x, y, w, color) { rect(x, y, w, 1, color); }
 function vline(x, y, h, color) { rect(x, y, 1, h, color); }
 
 /* ---------- 글자 ----------
-   라틴 글자와 숫자는 위에 찍어 둔 5x7 도트 글꼴로 그린다.
-   한글은 함께 배포하는 Galmuri11을 원래 격자인 12px로 그린다.
+   한국어와 영어 UI는 Galmuri11을 원래 격자인 12px로 함께 그린다.
+   로고와 키캡의 기호에만 기존 5x7 도트 글꼴을 사용한다.
    글꼴 로딩을 기다리고 획의 알파를 보존해 기기별 자형 손상을 막는다. */
 const ASCII_ONLY = /^[\x20-\x7E]*$/;
-const KO_SIZE = 12;
-const KO_H = 14;
-const KO_BASELINE = 11;             /* Galmuri11의 실제 한글 높이는 11칸 */
-const KO_DY = -2;                   /* 5x7 글자의 가운데에 맞춘다 */
-const KO_FONT = KO_SIZE + 'px "Galmuri11","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
-const koMeasure = document.createElement("canvas").getContext("2d");
-koMeasure.font = KO_FONT;
-const koCache = new Map();
-function koWidth(str) {
-  koMeasure.font = KO_FONT;
-  return Math.ceil(koMeasure.measureText(str).width);
+const FONT_SIZE = 12;
+const FONT_H = 14;
+const FONT_BASELINE = 11;             /* Galmuri11의 실제 한글 높이는 11칸 */
+const FONT_DY = -2;                   /* 5x7 글자의 가운데에 맞춘다 */
+const UI_FONT = FONT_SIZE + 'px "Galmuri11","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+const fontMeasure = document.createElement("canvas").getContext("2d");
+fontMeasure.font = UI_FONT;
+const textCache = new Map();
+function fontWidth(str) {
+  fontMeasure.font = UI_FONT;
+  return Math.ceil(fontMeasure.measureText(str).width);
 }
-function koCanvas(str, color) {
+function textCanvas(str, color) {
   const key = str + "|" + color;
-  const hit = koCache.get(key);
+  const hit = textCache.get(key);
   if (hit) return hit;
-  const w = Math.max(1, koWidth(str));
+  const w = Math.max(1, fontWidth(str));
   const cv = document.createElement("canvas");
-  cv.width = w; cv.height = KO_H;
+  cv.width = w; cv.height = FONT_H;
   // Sample the center of each font pixel after 3x rasterization. This avoids
   // small-size font hinting halos without deleting strokes by an alpha cutoff.
   const raster = document.createElement("canvas");
-  raster.width = w * 3; raster.height = KO_H * 3;
+  raster.width = w * 3; raster.height = FONT_H * 3;
   const c = raster.getContext("2d");
   c.scale(3, 3);
-  c.font = KO_FONT;
+  c.font = UI_FONT;
   c.textBaseline = "alphabetic";
   c.fillStyle = color;
-  c.fillText(str, 0, KO_BASELINE);
+  c.fillText(str, 0, FONT_BASELINE);
   const target = cv.getContext("2d");
   target.imageSmoothingEnabled = false;
-  target.drawImage(raster, 0, 0, w, KO_H);
-  if (koCache.size > 400) koCache.clear();
-  koCache.set(key, cv);
+  target.drawImage(raster, 0, 0, w, FONT_H);
+  if (textCache.size > 400) textCache.clear();
+  textCache.set(key, cv);
   return cv;
 }
 
-/* 한 줄의 높이. 한글은 도트 글꼴(7)보다 커서 줄을 더 벌려야 한다. */
-function lineH() { return lang === "ko" ? 14 : 10; }
+/* 언어와 관계없이 같은 글자 크기와 줄 간격을 사용한다. */
+const KEY_H = 16;
+function lineH(text = "") { return Math.max(14, String(text).includes("[") ? KEY_H + 3 : 0); }
+function textParts(text) {
+  return String(text).split(/(\[[^\[\]]+\])/g).filter(Boolean).map(part =>
+    part.startsWith("[") && part.endsWith("]") ? { key: part.slice(1, -1) } : { text: part });
+}
+function keyWidth(key) { return Math.max(15, bitmapTextWidth(key) + (key === "Enter" ? 15 : 8)); }
+function textWidth(text) {
+  if (!String(text).includes("[")) return plainTextWidth(text);
+  return textParts(text).reduce((w, part) => w + (part.key ? keyWidth(part.key) + 2 : plainTextWidth(part.text)), 0);
+}
+function drawKeycap(x, y, key) {
+  x = Math.round(x); y = Math.round(y);
+  const w = keyWidth(key);
+  rect(x + 1, y + 3, w, KEY_H - 2, "#030b1b");
+  rect(x, y + 1, w, KEY_H - 2, "#52657d");
+  rect(x + 1, y, w - 2, KEY_H - 2, "#96a7bd");
+  rect(x + 2, y + 1, w - 4, KEY_H - 5, "#dce6f1");
+  hline(x + 2, y + 1, w - 4, "#ffffff");
+  vline(x + 1, y + 2, KEY_H - 5, "#f4f8fc");
+  hline(x + 2, y + KEY_H - 4, w - 4, "#b8c7d8");
+  const labelW = bitmapTextWidth(key), extra = key === "Enter" ? 7 : 0;
+  drawBitmapText(x + Math.floor((w - labelW - extra) / 2), y + 3, key, "#142239", false);
+  if (extra) {
+    const ax = x + w - 10, ay = y + 4;
+    vline(ax + 5, ay, 4, "#142239"); hline(ax, ay + 3, 6, "#142239");
+    px(ax + 1, ay + 2, "#142239"); px(ax + 1, ay + 4, "#142239");
+  }
+  return w + 2;
+}
+function drawText(x, y, text, color, shadow) {
+  if (!String(text).includes("[")) return drawPlainText(x, y, text, color, shadow);
+  let dx = 0;
+  for (const part of textParts(text)) {
+    if (part.key) dx += drawKeycap(x + dx, y - 3, part.key);
+    else dx += drawPlainText(x + dx, y, part.text, color, shadow);
+  }
+  return dx;
+}
 
-function textWidth(s) {
+function plainTextWidth(text) { return fontWidth(String(text)); }
+function drawPlainText(x, y, text, color, shadow = false) {
+  const value = String(text), tx = Math.round(x), ty = Math.round(y) + FONT_DY;
+  if (shadow) g.drawImage(textCanvas(value, C.textShadow), tx + 1, ty + 1);
+  g.drawImage(textCanvas(value, color), tx, ty);
+  return plainTextWidth(value);
+}
+function bitmapTextWidth(s) {
   s = String(s);
-  if (!ASCII_ONLY.test(s)) return koWidth(s);
+  if (!s.length) return 0;
+  if (!ASCII_ONLY.test(s)) return fontWidth(s);
   return s.length * (GLYPH_W + GLYPH_GAP) - GLYPH_GAP;
 }
-function drawText(x, y, s, color, shadow) {
+function drawBitmapText(x, y, s, color, shadow) {
   s = String(s);
   const sh = shadow === undefined ? ASCII_ONLY.test(s) : shadow;
   if (!ASCII_ONLY.test(s)) {
-    const px0 = Math.round(x), py0 = Math.round(y) + KO_DY;
-    if (sh) g.drawImage(koCanvas(s, C.textShadow), px0 + 1, py0 + 1);
-    g.drawImage(koCanvas(s, color), px0, py0);
-    return koWidth(s);
+    const px0 = Math.round(x), py0 = Math.round(y) + FONT_DY;
+    if (sh) g.drawImage(textCanvas(s, C.textShadow), px0 + 1, py0 + 1);
+    g.drawImage(textCanvas(s, color), px0, py0);
+    return fontWidth(s);
   }
   s = s.toUpperCase();
   for (let i = 0; i < s.length; i++) {
     const gl = GLYPHS[s[i]] || GLYPHS["?"];
     const gx = x + i * (GLYPH_W + GLYPH_GAP);
-    if (gx > SW || gx + GLYPH_W < 0) continue;
+    if (gx > (g === uiContext ? UW : SW) || gx + GLYPH_W < 0) continue;
     for (let r = 0; r < GLYPH_H; r++) {
       const row = gl[r];
       for (let c = 0; c < GLYPH_W; c++) {
@@ -1010,7 +1067,7 @@ function drawText(x, y, s, color, shadow) {
       }
     }
   }
-  return textWidth(s);
+  return bitmapTextWidth(s);
 }
 function drawTextCenter(cx, y, s, color, shadow) {
   drawText(Math.round(cx - textWidth(s) / 2), y, s, color, shadow);
@@ -1032,10 +1089,12 @@ function wrapLines(text, maxPx, limit) {
        드물어 이 자리가 실제로 자주 쓰인다. */
     let rest = word;
     while (textWidth(rest) > maxPx) {
-      let cut = rest.length;
-      while (cut > 1 && textWidth(rest.slice(0, cut)) > maxPx) cut--;
-      out.push(rest.slice(0, cut));
-      rest = rest.slice(cut);
+      // Key labels are indivisible, including while wrapping Korean particles.
+      const atoms = rest.match(/\[[^\[\]]+\]|./gu) || [];
+      let cut = atoms.length;
+      while (cut > 1 && textWidth(atoms.slice(0, cut).join("")) > maxPx) cut--;
+      out.push(atoms.slice(0, cut).join(""));
+      rest = atoms.slice(cut).join("");
     }
     line = rest;
   }
@@ -1183,6 +1242,7 @@ function blitGlow(cv, x, y, color, blur, opts) {
    처음 열면 한국어다. 타이틀의 마지막 칸에서 바꾸고, 고른 것은 이 브라우저에
    남는다. 한글은 위 drawText 가 함께 배포하는 픽셀 글꼴로 그린다.
    ========================================================================= */
+const UI_LANGUAGES = ["ko", "en"];
 const LANG_KEY = "atseadot.lang";
 let lang = "ko";
 try {
@@ -1193,7 +1253,6 @@ document.documentElement.lang = lang;
 function setLang(v) {
   lang = v;
   document.documentElement.lang = lang;
-  if (typeof syncGaugeW === "function") syncGaugeW();
   try { localStorage.setItem(LANG_KEY, v); } catch (e) {}
 }
 
@@ -1206,7 +1265,7 @@ const STR = {
     "menu.guide": "도감 보기",
     "menu.help": "조작법 보기",
     "menu.lang": "언어 : 한국어",
-    "menu.pick": "Z 또는 엔터 : 선택",
+    "menu.pick": "[Z] / [Enter] 선택",
     "menu.stats": "최고 수심 {0}M   잡은 물고기 {1}마리",
     "hud.got": "{0}마리",
     "hud.deep": "수심",
@@ -1214,37 +1273,37 @@ const STR = {
     "zone.MIDNIGHT": "암흑층", "zone.ABYSS": "심연",
     "zone.s.SUNLIGHT": "표층", "zone.s.TWILIGHT": "약광",
     "zone.s.MIDNIGHT": "암흑", "zone.s.ABYSS": "심연",
-    "hint.diver": "방향키/WASD 이동 · Shift 가속 · Space 그물 · G 도감",
-    "hint.boat": "← → / A D 배 · ↓ ↑ / S W 줄 · Space 액션",
-    "hint.short": "Space 액션 · G 도감",
-    "hint.swap": "TAB 배↔잠수부",
+    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] 이동 · [Shift] 가속 · [Space] 그물 · [G] 도감",
+    "hint.boat": "[←][→] / [A][D] 배 · [↓][↑] / [S][W] 줄 · [Space] 액션",
+    "hint.short": "[Space] 액션 · [G] 도감",
+    "hint.swap": "[Tab] 배↔잠수부",
     "ui.paused": "일시정지",
     "help.title": "조작법",
-    "help.close": "X / ESC 닫기",
-    "help.move": "방향키 / WASD", "help.moveV": "헤엄치기 · 배 몰기",
-    "help.dash": "시프트", "help.dashV": "빠르게 이동 · 줄 조절",
-    "help.act": "스페이스", "help.actV": "그물·상자 · 낚시 액션 (대사 중에도 작동)",
-    "help.swap": "TAB", "help.swapV": "잠수부 ↔ 낚싯배 바꾸기",
-    "help.line": "↓ ↑ / S W", "help.lineV": "줄 내리기 · 감아올리기",
-    "help.ok": "Z / 엔터", "help.okV": "선택 · 대사 표시/넘기기",
-    "help.guide": "G", "help.guideV": "도감 열기/닫기",
-    "help.page": "Q / E · 바퀴", "help.pageV": "도감·조작법 쪽 넘기기 (또는 < > 누르기)",
-    "help.sub": "B", "help.subV": "잠수함 부르기",
-    "help.bait": "M", "help.baitV": "특별 미끼 (상자를 열어야 함)",
-    "help.pause": "P", "help.pauseV": "바다 멈추기",
-    "help.new": "N", "help.newV": "바다 새로 만들기",
-    "help.bare": "F", "help.bareV": "배경화면 모드",
-    "help.lang": "L", "help.langV": "언어 바꾸기",
-    "help.back": "X / ESC", "help.backV": "창·대사 닫기 · 뒤로 · 시작화면",
-    "help.title2": "X / ESC 로 뒤로",
+    "help.close": "[X] / [Esc] 닫기",
+    "help.move": "[↑][←][↓][→] / [W][A][S][D]", "help.moveV": "헤엄치기 · 배 몰기",
+    "help.dash": "[Shift]", "help.dashV": "빠르게 이동 · 줄 조절",
+    "help.act": "[Space]", "help.actV": "그물·상자 · 낚시 액션 (대사 중에도 작동)",
+    "help.swap": "[Tab]", "help.swapV": "잠수부 ↔ 낚싯배 바꾸기",
+    "help.line": "[↓][↑] / [S][W]", "help.lineV": "줄 내리기 · 감아올리기",
+    "help.ok": "[Z] / [Enter]", "help.okV": "선택 · 대사 표시/넘기기",
+    "help.guide": "[G]", "help.guideV": "도감 열기/닫기",
+    "help.page": "[Q] / [E] · 마우스 휠", "help.pageV": "도감·조작법 쪽 넘기기 (또는 < > 누르기)",
+    "help.sub": "[B]", "help.subV": "잠수함 부르기",
+    "help.bait": "[M]", "help.baitV": "특별 미끼 (상자를 열어야 함)",
+    "help.pause": "[P]", "help.pauseV": "바다 멈추기",
+    "help.new": "[N]", "help.newV": "바다 새로 만들기",
+    "help.bare": "[F]", "help.bareV": "배경화면 모드",
+    "help.lang": "[L]", "help.langV": "언어 바꾸기",
+    "help.back": "[X] / [Esc]", "help.backV": "창·대사 닫기 · 뒤로 · 시작화면",
+    "help.title2": "[X] / [Esc] 뒤로",
     "g.title": "도감",
     "g.tab.all": "전체", "g.tab.rare": "희귀",
     "g.tab.titles": "칭호", "g.tab.trophy": "트로피",
-    "g.open": "Z 자세히 · X 닫기",
-    "g.back": "X 뒤로",
+    "g.open": "[Z] 자세히 · [X] 닫기",
+    "g.back": "[X] 뒤로",
     "c.title": "포획 성공!", "c.new": "첫 포획입니다!",
     "c.rare": "희귀 개체 포획 성공!", "c.at": "잡은 수심", "c.count": "지금까지",
-    "c.close": "X / ESC 닫기",
+    "c.close": "[X] / [Esc] 닫기",
     "g.seen": "{0}/{1}종 · 총 {2}마리",
     "g.rareTally": "희귀 {0}종 · 총 {1}마리",
     "g.titleTally": "칭호 {0}/{1}",
@@ -1265,9 +1324,9 @@ const STR = {
     "t.trophy": "트로피 {1}단계 : {0}",
     "tr.plain": "잡은 물고기", "tr.rare": "희귀 개체",
     "m.start.diver": "물속으로 들어갑니다.",
-    "m.start.diver2": "스페이스로 그물을 휘두릅니다. 해저에 상자가 하나 있습니다.",
-    "m.start.boat": "배를 몰고 바다로 나왔습니다. 스페이스로 줄을 던지세요.",
-    "m.start.boat2": "↓로 줄을 내리고, 입질이 오면 다시 스페이스를 눌러 챕니다.",
+    "m.start.diver2": "[Space]로 그물을 휘두릅니다. 해저에 상자가 하나 있습니다.",
+    "m.start.boat": "배를 몰고 바다로 나왔습니다. [Space]로 줄을 던지세요.",
+    "m.start.boat2": "[↓]로 줄을 내리고, 입질이 오면 다시 [Space]를 눌러 챕니다.",
     "m.newsea": "바다를 새로 만들었습니다.",
     "m.hold": "바다가 멈췄습니다.", "m.move": "바다가 다시 흐릅니다.",
     "m.got": "수심 {1}M에서 {0} 한 마리.",
@@ -1277,7 +1336,7 @@ const STR = {
     "m.subignore": "잠수함은 그물을 본 척도 하지 않습니다.",
     "m.sight": "{0} 발견.",
     "m.chest": "상자를 열었습니다!",
-    "m.chest2": "특별한 미끼를 얻었습니다. 깊은 물에서 M을 누르세요.",
+    "m.chest2": "특별한 미끼를 얻었습니다. 깊은 물에서 [M]을 누르세요.",
     "m.nobait": "미끼가 없습니다. 해저에 있는 상자를 찾아보세요.",
     "m.baitdeep": "여기는 너무 얕습니다. 더 깊이 내려가세요.",
     "m.baitalready": "이미 커다란 것이 와 있습니다.",
@@ -1289,9 +1348,9 @@ const STR = {
     "m.subcome": "잠수함이 지나갑니다.",
     "m.subnew": "잠수함입니다. 도감에 올렸습니다.",
     "m.subgo": "잠수함이 떠올라 사라집니다.",
-    "m.cast": "줄을 던졌습니다. ↓로 내려 보내세요.",
+    "m.cast": "줄을 던졌습니다. [↓]로 내려 보내세요.",
     "m.reel": "줄을 감아올렸습니다.",
-    "m.bite": "입질입니다! 지금 스페이스!",
+    "m.bite": "입질입니다! 지금 [Space]!",
     "m.miss": "놓쳤습니다. 미끼만 뜯겼습니다.",
     "m.snap": "상어가 미끼를 물고 갔습니다. 줄이 끊어졌습니다.",
     "m.deepest": "여기가 가장 깊습니다. 해저 {0}M.",
@@ -1300,18 +1359,18 @@ const STR = {
     "time.dawn": "일출", "time.noon": "정오",
     "time.dusk": "석양", "time.night": "달밤",
     "m.time": "하늘 : {0}",
-    "help.time": "T", "help.timeV": "하늘 바꾸기 (일출·정오·석양·달밤)",
+    "help.time": "[T]", "help.timeV": "하늘 바꾸기 (일출·정오·석양·달밤)",
     "lang.name": "한국어",
   },
   en: {
     "app.title": "AT SEA :: DOT",
     "app.sub": "- DOT EDITION -",
     "menu.diver": "DIVE AS A DIVER",
-    "menu.boat": "TAKE OUT THE BOAT",
+    "menu.boat": "FISH BY BOAT",
     "menu.guide": "FIELD GUIDE",
     "menu.help": "HOW TO PLAY",
-    "menu.lang": "LANGUAGE : ENGLISH",
-    "menu.pick": "Z OR ENTER TO CHOOSE",
+    "menu.lang": "LANG: ENGLISH",
+    "menu.pick": "[Z] / [Enter] PICK",
     "menu.stats": "DEEPEST {0}M   GOT {1}",
     "hud.got": "GOT {0}",
     "hud.deep": "DEEP",
@@ -1319,34 +1378,34 @@ const STR = {
     "zone.MIDNIGHT": "MIDNIGHT", "zone.ABYSS": "ABYSS",
     "zone.s.SUNLIGHT": "SUN", "zone.s.TWILIGHT": "TWI",
     "zone.s.MIDNIGHT": "MID", "zone.s.ABYSS": "ABY",
-    "hint.diver": "ARROWS/WASD SWIM   SHIFT DASH   SPACE NET   G GUIDE",
-    "hint.boat": "< > / A D BOAT  V ^ / S W LINE  SPACE ACT",
-    "hint.short": "SPACE ACT   G GUIDE",
+    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] SWIM   [Shift] DASH   [Space] NET   [G] GUIDE",
+    "hint.boat": "[←][→] / [A][D] BOAT  [↓][↑] / [S][W] LINE  [Space] ACT",
+    "hint.short": "[Space] ACT   [G] GUIDE",
     "ui.paused": "PAUSED",
     "help.title": "HOW TO PLAY",
-    "help.close": "X / ESC CLOSE",
-    "help.move": "ARROWS / WASD", "help.moveV": "SWIM OR STEER",
-    "help.dash": "SHIFT", "help.dashV": "FASTER MOVEMENT / LINE CONTROL",
-    "help.act": "SPACE", "help.actV": "NET / CHEST / FISHING (EVEN DURING DIALOGUE)",
-    "help.line": "V ^ / S W", "help.lineV": "PAY OUT / REEL IN",
-    "help.ok": "Z / ENTER", "help.okV": "SELECT / REVEAL OR ADVANCE DIALOGUE",
-    "help.guide": "G", "help.guideV": "OPEN / CLOSE FIELD GUIDE",
-    "help.page": "Q / E · WHEEL", "help.pageV": "TURN GUIDE / HELP PAGES (OR CLICK < >)",
-    "help.sub": "B", "help.subV": "CALL THE SUBMARINE",
-    "help.bait": "M", "help.baitV": "SPECIAL BAIT (FROM THE CHEST)",
-    "help.pause": "P", "help.pauseV": "PAUSE THE SEA",
-    "help.new": "N", "help.newV": "REFRESH THE SEA",
-    "help.bare": "F", "help.bareV": "WALLPAPER MODE",
-    "help.lang": "L", "help.langV": "SWITCH LANGUAGE",
-    "help.back": "X / ESC", "help.backV": "CLOSE PANEL / DIALOGUE, THEN BACK TO TITLE",
+    "help.close": "[X] / [Esc] CLOSE",
+    "help.move": "[↑][←][↓][→] / [W][A][S][D]", "help.moveV": "SWIM OR STEER",
+    "help.dash": "[Shift]", "help.dashV": "FASTER MOVEMENT / LINE CONTROL",
+    "help.act": "[Space]", "help.actV": "NET / CHEST / FISHING (EVEN DURING DIALOGUE)",
+    "help.line": "[↓][↑] / [S][W]", "help.lineV": "PAY OUT / REEL IN",
+    "help.ok": "[Z] / [Enter]", "help.okV": "SELECT / REVEAL OR ADVANCE DIALOGUE",
+    "help.guide": "[G]", "help.guideV": "OPEN / CLOSE FIELD GUIDE",
+    "help.page": "[Q] / [E] · WHEEL", "help.pageV": "TURN GUIDE / HELP PAGES (OR CLICK < >)",
+    "help.sub": "[B]", "help.subV": "CALL THE SUBMARINE",
+    "help.bait": "[M]", "help.baitV": "SPECIAL BAIT (FROM THE CHEST)",
+    "help.pause": "[P]", "help.pauseV": "PAUSE THE SEA",
+    "help.new": "[N]", "help.newV": "REFRESH THE SEA",
+    "help.bare": "[F]", "help.bareV": "WALLPAPER MODE",
+    "help.lang": "[L]", "help.langV": "SWITCH LANGUAGE",
+    "help.back": "[X] / [Esc]", "help.backV": "CLOSE PANEL / DIALOGUE, THEN BACK TO TITLE",
     "g.title": "FIELD GUIDE",
     "g.tab.all": "ALL", "g.tab.rare": "RARE",
     "g.tab.titles": "TITLES", "g.tab.trophy": "TROPHIES",
-    "g.open": "Z OPEN   X CLOSE",
-    "g.back": "X BACK",
+    "g.open": "[Z] OPEN   [X] CLOSE",
+    "g.back": "[X] BACK",
     "c.title": "CAUGHT", "c.new": "FIRST OF ITS KIND!",
     "c.rare": "A RARE CATCH!", "c.at": "CAUGHT AT", "c.count": "SO FAR",
-    "c.close": "X / ESC TO CLOSE",
+    "c.close": "[X] / [Esc] CLOSE",
     "g.seen": "{0}/{1} LOGGED   GOT {2}",
     "g.rareTally": "{0} RARE SPECIES   {1} LANDED",
     "g.titleTally": "TITLES {0}/{1}",
@@ -1367,9 +1426,9 @@ const STR = {
     "t.trophy": "TROPHY TIER {1} : {0}",
     "tr.plain": "FISH LANDED", "tr.rare": "RARE ONES",
     "m.start.diver": "YOU SLIP UNDER.",
-    "m.start.diver2": "SWING THE NET WITH SPACE. LOOK FOR A CHEST ON THE SEABED.",
-    "m.start.boat": "YOU TAKE THE BOAT OUT. PRESS SPACE TO CAST.",
-    "m.start.boat2": "PAY OUT LINE WITH THE DOWN ARROW, THEN STRIKE WITH SPACE.",
+    "m.start.diver2": "SWING THE NET WITH [Space]. LOOK FOR A CHEST ON THE SEABED.",
+    "m.start.boat": "YOU TAKE THE BOAT OUT. PRESS [Space] TO CAST.",
+    "m.start.boat2": "PAY OUT LINE WITH THE [↓] ARROW, THEN STRIKE WITH [Space].",
     "m.newsea": "A NEW SEA.",
     "m.hold": "THE SEA HOLDS STILL.", "m.move": "THE SEA MOVES AGAIN.",
     "m.got": "GOT A {0} AT {1}M.",
@@ -1379,7 +1438,7 @@ const STR = {
     "m.subignore": "THE SUB IGNORES YOUR NET.",
     "m.sight": "SIGHTED: {0}.",
     "m.chest": "OPENED THE CHEST!",
-    "m.chest2": "GOT THE SPECIAL BAIT. PRESS M IN DEEP WATER.",
+    "m.chest2": "GOT THE SPECIAL BAIT. PRESS [M] IN DEEP WATER.",
     "m.nobait": "YOU HAVE NO BAIT. LOOK FOR A CHEST ON THE SEABED.",
     "m.baitdeep": "TOO SHALLOW. TAKE IT DEEPER.",
     "m.baitalready": "SOMETHING HUGE IS ALREADY HERE.",
@@ -1391,21 +1450,21 @@ const STR = {
     "m.subcome": "A SUBMARINE PASSES BY.",
     "m.subnew": "A SUBMARINE! ADDED TO THE GUIDE.",
     "m.subgo": "THE SUB SURFACES AND IS GONE.",
-    "m.cast": "THE LINE IS OUT. PAY IT OUT WITH THE DOWN ARROW.",
+    "m.cast": "THE LINE IS OUT. PAY IT OUT WITH THE [↓] ARROW.",
     "m.reel": "YOU REEL THE LINE BACK IN.",
-    "m.bite": "A BITE! STRIKE WITH SPACE!",
+    "m.bite": "A BITE! STRIKE WITH [Space]!",
     "m.miss": "IT GOT AWAY WITH THE BAIT.",
     "m.snap": "A SHARK TOOK THE BAIT. THE LINE SNAPS.",
     "m.deepest": "THIS IS THE BOTTOM. {0}M.",
     "m.toboat": "YOU CLIMB BACK INTO THE BOAT.",
     "m.todiver": "YOU SLIP BACK UNDER.",
-    "help.swap": "TAB", "help.swapV": "SWAP DIVER / BOAT",
-    "help.title2": "X / ESC TO GO BACK",
-    "hint.swap": "TAB SWAP",
+    "help.swap": "[Tab]", "help.swapV": "SWAP DIVER / BOAT",
+    "help.title2": "[X] / [Esc] BACK",
+    "hint.swap": "[Tab] SWAP",
     "time.dawn": "DAWN", "time.noon": "NOON",
     "time.dusk": "SUNSET", "time.night": "MOONLIT",
     "m.time": "SKY : {0}",
-    "help.time": "T", "help.timeV": "CHANGE THE SKY (DAWN/NOON/SUNSET/NIGHT)",
+    "help.time": "[T]", "help.timeV": "CHANGE THE SKY (DAWN/NOON/SUNSET/NIGHT)",
     "lang.name": "ENGLISH",
   },
 };
@@ -1452,7 +1511,7 @@ const SP = {
     octopus: ["문어", "바닥에 붙어 다리를 꼬물거린다. 모래까지 내려가야 겨우 얼굴을 보여 준다."],
     angler: ["초롱아귀", "머리에 등불을 달고 다닌다. 예쁘다고 따라가면 이빨이 먼저 반겨 주니 조심하자."],
     shark: ["상어", "물지는 않는다. 대신 어깨로 쿵 밀치고 지나가니 길은 비켜 주자."],
-    sub: ["잠수함", "물고기가 아니다. B를 누르면 탐조등을 켜고 슬쩍 들어왔다가 조용히 사라진다."],
+    sub: ["잠수함", "물고기가 아니다. [B]를 누르면 탐조등을 켜고 슬쩍 들어왔다가 조용히 사라진다."],
     mega: ["메갈로돈", "상어 여덟 마리를 합쳐 놓은 크기에 몸까지 빛난다. 보고 싶으면 미끼를 뿌리고 기다리되, 너무 가까이는 가지 말자."],
   },
   en: {
@@ -1472,7 +1531,7 @@ const SP = {
     octopus: ["OCTOPUS", "STAYS ON THE BOTTOM, WIGGLING ITS ARMS. YOU HAVE TO GO ALL THE WAY DOWN TO THE SAND FOR A LOOK."],
     angler: ["ANGLERFISH", "CARRIES A LANTERN ON ITS HEAD. FOLLOW THE PRETTY LIGHT AND THE TEETH SAY HELLO FIRST."],
     shark: ["SHARK", "IT DOES NOT BITE. IT JUST SHOULDERS PAST YOU, SO GIVE IT THE ROOM."],
-    sub: ["SUBMARINE", "NOT A FISH. PRESS B AND IT SLIDES IN WITH ITS LAMPS ON, THEN QUIETLY LEAVES AGAIN."],
+    sub: ["SUBMARINE", "NOT A FISH. PRESS [B] AND IT SLIDES IN WITH ITS LAMPS ON, THEN QUIETLY LEAVES AGAIN."],
     mega: ["MEGALODON", "EIGHT SHARKS PUT TOGETHER, AND IT GLOWS. SCATTER THE BAIT AND WAIT - BUT DO NOT GET TOO CLOSE."],
   },
 };
@@ -1519,12 +1578,13 @@ const TITLE_TEXT = {
   },
 };
 
-function T(key) {
-  const table = STR[lang] || STR.en;
+function translate(language, key, ...values) {
+  const table = STR[language] || STR.en;
   let out = table[key] !== undefined ? table[key] : (STR.en[key] !== undefined ? STR.en[key] : key);
-  for (let i = 1; i < arguments.length; i++) out = out.split("{" + (i - 1) + "}").join(arguments[i]);
+  values.forEach((value, i) => { out = out.split("{" + i + "}").join(value); });
   return out;
 }
+function T(key, ...values) { return translate(lang, key, ...values); }
 const spName = id => ((SP[lang] || SP.en)[id] || SP.en[id] || [id, ""])[0];
 const spNote = id => ((SP[lang] || SP.en)[id] || SP.en[id] || [id, ""])[1];
 const titleText = id => ((TITLE_TEXT[lang] || TITLE_TEXT.en)[id] || TITLE_TEXT.en[id] || [id, ""]);
@@ -2101,8 +2161,13 @@ function nextMsg() {
   if (!it) { msg.lines = []; return; }
   msg.color = it.color;
   msg.text = it.text;
-  msg.lines = wrapText(it.text, SW - GAUGE_W - 26);
+  msg.lines = wrapText(it.text, UW - GAUGE_W - 26);
   msg.shown = 0; msg.t = 0; msg.hold = 0;
+}
+function reflowMessage() {
+  const done = msgDone();
+  msg.lines = wrapText(msg.text, UW - GAUGE_W - 26);
+  if (done) msg.shown = msgTotal();
 }
 function wrapText(s, maxPx) { return wrapLines(s, maxPx, 3); }
 function msgTotal() { return msg.lines.reduce((a, l) => a + l.length, 0); }
@@ -2771,10 +2836,9 @@ function drawParticles() {
    ========================================================================= */
 
 /* 오른쪽 수심계. 눈금이자 계기판이다. */
-let GAUGE_W = 34;
-function syncGaugeW() { GAUGE_W = lang === "ko" ? 44 : 34; }
+const GAUGE_W = 44;
 function drawGauge() {
-  const x = SW - GAUGE_W - 3, y = 3, h = SH - 6;
+  const x = UW - GAUGE_W - 3, y = 3, h = UH - 6;
   drawWindow(x, y, GAUGE_W, h, { alpha: .86 });
   const tx = x + GAUGE_W - 9;              /* 눈금 자리 */
   const top = y + 12, bot = y + h - 26;
@@ -2798,36 +2862,44 @@ function drawGauge() {
 }
 
 /* 왼쪽 위 머리말. 이름과 잡은 수. */
+function headerLayout() {
+  const got = T("hud.got", caughtTotal()), seen = seenCount() + "/" + guideList().length;
+  const gotW = Math.max(...UI_LANGUAGES.map(language => textWidth(translate(language, "hud.got", caughtTotal()))));
+  return { x: 3, y: 3, w: Math.max(100, gotW + textWidth(seen) + 22), h: 30, got, seen };
+}
+function pauseLayout() {
+  const w = Math.max(...UI_LANGUAGES.map(language => textWidth(translate(language, "ui.paused")))) + 20;
+  const x = Math.round((UW - w) / 2), header = headerLayout();
+  return { x, y: x < header.x + header.w + 4 ? header.y + header.h + 4 : 6, w, h: 16 };
+}
 function drawHeader() {
-  const got = T("hud.got", caughtTotal());
-  const seen = seenCount() + "/" + guideList().length;
-  const w = Math.max(100, textWidth(got) + textWidth(seen) + 22), h = 30;
-  drawWindow(3, 3, w, h, { alpha: .86 });
-  drawText(8, 6, T("app.title"), C.text);
-  drawText(8, 17, got, C.textWarn);
-  drawText(w - textWidth(seen) - 8, 17, seen, C.textDim);
+  const L = headerLayout();
+  drawWindow(L.x, L.y, L.w, L.h, { alpha: .86 });
+  drawText(L.x + 5, L.y + 3, T("app.title"), C.text);
+  drawText(L.x + 5, L.y + 14, L.got, C.textWarn);
+  drawText(L.x + L.w - textWidth(L.seen) - 8, L.y + 14, L.seen, C.textDim);
 }
 
 /* 아래 대사창. 알피지 만들기의 그 창이다. */
 function drawMessage() {
   if (!msg.lines.length) return;
-  const h = lineH() * 3 + 8, y = SH - h - 3;
-  drawWindow(3, y, SW - GAUGE_W - 9, h, { alpha: .93 });
+  const LH = lineH(msg.text), h = msg.lines.length * LH + 10, y = UH - h - 3;
+  drawWindow(3, y, UW - GAUGE_W - 9, h, { alpha: .93 });
   let left = Math.floor(msg.shown);
   for (let i = 0; i < msg.lines.length; i++) {
     const line = msg.lines[i];
     const cut = clamp(left, 0, line.length);
     left -= cut;
-    drawText(9, y + 6 + i * lineH(), line.slice(0, cut), msg.color);
+    drawText(9, y + 6 + i * LH, line.slice(0, cut).replace(/\[[^\]]*$/, ""), msg.color);
   }
   if (msgDone() && Math.floor(clock * 3) % 2 === 0)
-    drawText(SW - GAUGE_W - 20, y + h - 11, "~", C.frame);
+    drawText(UW - GAUGE_W - 20, y + h - 11, "~", C.frame);
 }
 
 /* 조작 안내 한 줄. 배경화면 모드에서는 사라진다. */
 function drawHints() {
   if (msg.lines.length) return;
-  const room = SW - GAUGE_W - 9;
+  const room = UW - GAUGE_W - 9;
   const full = (player.role === "boat" ? T("hint.boat") : T("hint.diver")) + "   " + T("hint.swap");
   const mid = (player.role === "boat" ? T("hint.boat") : T("hint.diver"));
   const controls = document.getElementById("touch-controls");
@@ -2835,10 +2907,10 @@ function drawHints() {
             : textWidth(full) + 16 <= room ? full
             : textWidth(mid) + 16 <= room ? mid
             : T("hint.short") + "   " + T("hint.swap");
-  /* 한글은 도트 글꼴보다 높다. 창을 두 칸 키우고 그만큼 위로 올린다. */
-  const x = 3, y = SH - 17;
-  drawWindow(x, y, Math.min(textWidth(str) + 13, room), 14, { alpha: .7 });
-  drawText(x + 5, y + 3, fit(str, room - 13), C.textDim);
+  // Keycaps need a little more height than plain touch instructions.
+  const h = lineH(str) + 6, x = 3, y = UH - h - 3;
+  drawWindow(x, y, Math.min(textWidth(str) + 13, room), h, { alpha: .7 });
+  drawText(x + 5, y + 6, fit(str, room - 13), C.textDim);
 }
 
 /* ---------- 도감 ----------
@@ -2849,34 +2921,36 @@ let guidePage = 0, guideSel = 0, guideDetail = false, guideTab = 0;
 const GUIDE_TABS = ["g.tab.all", "g.tab.rare", "g.tab.titles", "g.tab.trophy"];
 const TIER_COLORS = ["#4a5a6e", "#c98a4b", "#cfd8e0", "#ffe27a", "#f2fbff"];
 
-function guideHeading() {
+function guideHeading(language = lang) {
+  const label = (key, ...values) => translate(language, key, ...values);
   const t = tally();
-  if (guideTab === 0) return T("g.seen", seenCount(), guideList().length, t.total);
-  if (guideTab === 1) return T("g.rareTally", t.rareSpecies, t.rareTotal);
-  if (guideTab === 2) return T("g.titleTally", titleGot(), TITLES.length);
-  return T("g.trophyTally", trophyGot(trophyState(t)), TROPHY_ALL);
+  if (guideTab === 0) return label("g.seen", seenCount(), guideList().length, t.total);
+  if (guideTab === 1) return label("g.rareTally", t.rareSpecies, t.rareTotal);
+  if (guideTab === 2) return label("g.titleTally", titleGot(), TITLES.length);
+  return label("g.trophyTally", trophyGot(trophyState(t)), TROPHY_ALL);
 }
 function guideLayout() {
   /* 칸은 두 줄이다 - 한 줄로 줄여 봤더니 그림이 작아 무슨 종인지 알 수
      없고 글자가 칸을 넘쳤다. 쪽이 여럿이 되는 것은 바퀴와 단추로 넘긴다. */
-  const w = Math.min(SW - 12, 306);
+  const w = Math.min(UW - 20, 286);
   const cols = w >= 168 ? 2 : 1;
   const cellH = 30;
-  const stacked = textWidth(T("g.title")) + textWidth(guideHeading()) + 24 > w;
-  const tabY = 15 + (stacked ? lineH() : 0);
-  const head = tabY + 17;
-  const foot = 14;
+  const stacked = UI_LANGUAGES.some(language =>
+    textWidth(translate(language, "g.title")) + textWidth(guideHeading(language)) + 24 > w);
+  const tabY = 18 + (stacked ? lineH() : 0), tabH = lineH() + 2;
+  const head = tabY + tabH + 6;
+  const foot = w < 260 ? 38 : 24;
   const n = guideTab === 2 ? TITLES.length : guideList().length;
-  const maxRows = Math.max(1, Math.floor((SH - 32 - head - foot) / cellH));
+  const maxRows = Math.max(1, Math.floor((UH - 32 - head - foot) / cellH));
   const rows = Math.min(maxRows, Math.ceil(n / cols));
   const h = head + rows * cellH + foot;
-  const x = Math.round((SW - w) / 2), y = Math.round((SH - h) / 2);
+  const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
   /* 쪽 넘기는 단추. 그리는 자리와 짚는 자리가 같아야 하니 여기서 정한다. */
-  const bw = 13, by = y + h - 12;
-  return { w, h, cols, rows, cellH, head, foot, stacked, tabY, per: cols * rows,
+  const bw = 18, by = y + h - 19;
+  return { w, h, cols, rows, cellH, head, foot, stacked, tabY, tabH, per: cols * rows,
            cellW: Math.floor((w - 16) / cols), x, y,
-           prev: { x: x + w - 8 - bw * 2 - 2, y: by, w: bw, h: 10 },
-           next: { x: x + w - 8 - bw, y: by, w: bw, h: 10 } };
+           prev: { x: x + w - 8 - bw * 2 - 2, y: by, w: bw, h: 14 },
+           next: { x: x + w - 8 - bw, y: by, w: bw, h: 14 } };
 }
 
 /* 쪽 넘기기. 바퀴·단추·열쇠가 모두 이 하나를 부른다. */
@@ -2899,12 +2973,12 @@ function drawPager(L, page, pages) {
     rect(r.x, r.y, r.w, r.h, on ? "#1b4a7a" : "#0a1730");
     hline(r.x, r.y, r.w, on ? C.lure : "#16233c");
     hline(r.x, r.y + r.h - 1, r.w, on ? C.lure : "#16233c");
-    drawTextCenter(r.x + r.w / 2, r.y + 1, glyph, on ? C.textWarn : "#3d4d66");
+    drawTextCenter(r.x + r.w / 2, r.y + 3, glyph, on ? C.textWarn : "#3d4d66");
   };
   put(L.prev, "<", page > 0);
   put(L.next, ">", page < pages - 1);
   const lab = (page + 1) + "/" + pages;
-  drawText(L.prev.x - textWidth(lab) - 5, L.y + L.h - 11, lab, C.textDim);
+  drawText(L.prev.x - textWidth(lab) - 5, L.prev.y + 3, lab, C.textDim);
 }
 
 /* 그 종의 색표. 도감에서는 늘 같은 색으로 보여야 한다 - 바다에서는 개체마다
@@ -2944,9 +3018,9 @@ function fitSprite(cv, bx, by, bw, bh, upto) {
 
 function fit(text, room) {
   if (textWidth(text) <= room) return text;
-  let t = text;
-  while (t.length > 1 && textWidth(t + "…") > room) t = t.slice(0, -1);
-  return t + "…";
+  const atoms = String(text).match(/\[[^\[\]]+\]|./gu) || [];
+  while (atoms.length && textWidth(atoms.join("") + "…") > room) atoms.pop();
+  return atoms.join("") + "…";
 }
 
 function drawGuide() {
@@ -2964,8 +3038,8 @@ function drawGuide() {
   for (let i = 0; i < GUIDE_TABS.length; i++) {
     const tx = x + 6 + i * tabW;
     const on = i === guideTab;
-    rect(tx, y + L.tabY, tabW - 2, 11, on ? "#1b4a7a" : "#08152c");
-    if (on) { hline(tx, y + L.tabY, tabW - 2, C.lure); hline(tx, y + L.tabY + 10, tabW - 2, C.lure); }
+    rect(tx, y + L.tabY, tabW - 2, L.tabH, on ? "#1b4a7a" : "#08152c");
+    if (on) { hline(tx, y + L.tabY, tabW - 2, C.lure); hline(tx, y + L.tabY + L.tabH - 1, tabW - 2, C.lure); }
     const label = i === 3 && textWidth(T(GUIDE_TABS[i])) > tabW - 6 ? T("g.tab.short.trophy") : T(GUIDE_TABS[i]);
     drawTextCenter(tx + (tabW - 2) / 2, y + L.tabY + 3, fit(label, tabW - 6), on ? C.textWarn : C.textDim);
   }
@@ -3008,7 +3082,7 @@ function drawGuide() {
     drawText(cx + 32, cy + 16, fit(tag, room), has ? C.textWarn : C.textDim);
   }
   const pages = Math.ceil(list.length / L.per);
-  drawText(x + 8, y + h - 11, T("g.open"), C.textDim);
+  drawText(x + 8, y + h - L.foot + 6, T("g.open"), C.textDim);
   drawPager(L, guidePage, pages);
 }
 
@@ -3109,7 +3183,7 @@ function drawTrophyTab(L, t) {
                      on ? tc : C.textDim);
     }
   }
-  drawText(x + 8, y + h - 11, T("g.back"), C.textDim);
+  drawText(x + 8, y + h - L.foot + 6, T("g.back"), C.textDim);
 }
 
 /* 한 종의 쪽. 이름, 집계, 사는 자리, 그리고 설명 한 문단. */
@@ -3135,7 +3209,7 @@ function currentInfo() {
     tag: isCatch ? spName(e.id) : e.sight ? T(known ? "g.sighted" : "g.none") : n ? T("g.count", n) : T("g.none") };
 }
 function infoLayout(info = currentInfo()) {
-  const w = Math.min(SW - 12, 286), LH = lineH();
+  const w = Math.min(UW - 20, 266), LH = lineH(spNote(info.e.id));
   const headings = wrapLines(info.heading, w - 16);
   const tags = wrapLines(info.tag, w - 16);
   const head = 10 + (headings.length + tags.length) * LH;
@@ -3151,20 +3225,20 @@ function infoLayout(info = currentInfo()) {
   const artH = Math.max(rowY, Math.min(52, SPR[info.e.spr].h * 2 + 4));
   const notes = wrapLines(spNote(info.e.id), w - 16);
   const contentH = artH + 8 + notes.length * LH;
-  const h = Math.min(SH - 8, head + contentH + 20);
-  const x = Math.round((SW - w) / 2), y = Math.round((SH - h) / 2);
-  const viewH = Math.max(1, h - head - 20), by = y + h - 14;
+  const h = Math.min(UH - 8, head + contentH + 28);
+  const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
+  const viewH = Math.max(1, h - head - 28), by = y + h - 22;
   return { w, h, x, y, LH, head, headings, tags, rows, artW, artH, kw, metaW, notes, viewH,
     maxScroll: Math.max(0, contentH - viewH),
-    close: { x: x + 6, y: by, w: w - 78, h: 12 },
-    prev: { x: x + w - 68, y: by, w: 13, h: 12 },
-    next: { x: x + w - 52, y: by, w: 13, h: 12 },
-    up: { x: x + w - 36, y: by, w: 13, h: 12 },
-    down: { x: x + w - 20, y: by, w: 13, h: 12 } };
+    close: { x: x + 6, y: by, w: w - 78, h: 18 },
+    prev: { x: x + w - 68, y: by, w: 13, h: 18 },
+    next: { x: x + w - 52, y: by, w: 13, h: 18 },
+    up: { x: x + w - 36, y: by, w: 13, h: 18 },
+    down: { x: x + w - 20, y: by, w: 13, h: 18 } };
 }
 function smallButton(box, label, enabled = true) {
   rect(box.x, box.y, box.w, box.h, enabled ? "#1b4a7a" : "#0a1730");
-  drawTextCenter(box.x + box.w / 2, box.y + 2, label, enabled ? C.textWarn : C.textDim);
+  drawTextCenter(box.x + box.w / 2, box.y + Math.floor((box.h - GLYPH_H) / 2), label, enabled ? C.textWarn : C.textDim);
 }
 function drawInfoCard() {
   const info = currentInfo();
@@ -3188,7 +3262,7 @@ function drawInfoCard() {
   hline(x + 8, top + L.artH + 2, w - 16, C.frameDim);
   L.notes.forEach((line, i) => drawText(x + 8, top + L.artH + 8 + i * LH, line, C.textDim));
   g.restore();
-  drawText(L.close.x + 2, L.close.y + 2, fit(T("g.back"), L.close.w - 4), C.textDim);
+  drawText(L.close.x + 2, L.close.y + 5, fit(T("g.back"), L.close.w - 4), C.textDim);
   if (mode === "guide") { smallButton(L.prev, "<"); smallButton(L.next, ">"); }
   if (L.maxScroll > 0) {
     smallButton(L.up, "^", infoScroll > 0);
@@ -3222,9 +3296,9 @@ const HELP_ROWS = [
 ];
 let helpPage = 0;
 function helpLayout() {
-  const w = Math.min(SW - 12, 306), h = SH - 12, LH = lineH();
-  const x = Math.round((SW - w) / 2), y = 6;
-  const maxLines = Math.max(1, Math.floor((h - 42) / LH));
+  const w = Math.min(UW - 20, 286), h = Math.min(UH - 12, 286), LH = KEY_H + 3;
+  const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
+  const maxLines = Math.max(1, Math.floor((h - 50) / LH));
   const pages = [[]];
   HELP_ROWS.forEach(([key, value], index) => {
     const block = [
@@ -3238,10 +3312,10 @@ function helpLayout() {
     }
     if (pages.at(-1).length < maxLines) pages.at(-1).push({text: "", index});
   });
-  const by = y + h - 14;
+  const by = y + h - 22;
   return { w, h, x, y, LH, maxLines, pages,
-    prev: { x: x + w - 38, y: by, w: 13, h: 12 },
-    next: { x: x + w - 22, y: by, w: 13, h: 12 } };
+    prev: { x: x + w - 38, y: by, w: 13, h: 18 },
+    next: { x: x + w - 22, y: by, w: 13, h: 18 } };
 }
 function turnHelpPage(dir) { helpPage = clamp(helpPage + dir, 0, helpLayout().pages.length - 1); }
 function drawHelp() {
@@ -3251,7 +3325,7 @@ function drawHelp() {
   drawText(x + 8, y + 5, T("help.title"), C.textWarn);
   hline(x + 6, y + 16, w - 12, C.frameDim);
   L.pages[helpPage].forEach((line, i) => drawText(x + 8 + (line.indent || 0), y + 22 + i * L.LH, line.text, line.color || C.text));
-  drawText(x + 8, y + h - 12, T("help.close"), C.textDim);
+  drawText(x + 8, y + h - 17, T("help.close"), C.textDim);
   drawPager(L, helpPage, L.pages.length);
 }
 
@@ -3260,7 +3334,7 @@ function drawHelp() {
    그 두께가 나온다. */
 function drawBigText(cx, y, s, color, scale, shadowColor) {
   s = String(s).toUpperCase();
-  const w = textWidth(s) * scale;
+  const w = bitmapTextWidth(s) * scale;
   let x = Math.round(cx - w / 2);
   for (let i = 0; i < s.length; i++) {
     const gl = GLYPHS[s[i]] || GLYPHS["?"];
@@ -3274,37 +3348,40 @@ function drawBigText(cx, y, s, color, scale, shadowColor) {
       }
   }
 }
-function menuLabel(i) {
-  if (MENU_KEYS[i] === "menu.lang")
-    return (lang === "ko" ? "언어 : 한국어" : "LANGUAGE : ENGLISH");
-  return T(MENU_KEYS[i]);
-}
+function menuLabel(i) { return T(MENU_KEYS[i]); }
 function titleLayout() {
-  const w = Math.min(SW - 20, Math.max(...MENU_KEYS.map((_, i) => textWidth(menuLabel(i)))) + 40);
-  const rowH = lang === "ko" ? 16 : 14, h = MENU_KEYS.length * rowH + 12;
-  const stats = T("menu.stats", save.deepest || 0, caughtTotal());
-  const statLines = textWidth(stats) <= SW - 28 ? [stats]
-    : stats.split("   ").flatMap(s => wrapLines(s, SW - 28));
-  const lines = [...wrapLines(T("menu.pick"), SW - 28), ...statLines];
-  const footerW = Math.min(SW - 12, Math.max(...lines.map(textWidth)) + 16);
-  const footerH = lines.length * lineH() + 12;
-  const maxY = Math.max(6, SH - h - footerH - 12);
-  const x = Math.round((SW - w) / 2), y = clamp(Math.round(SH * .42), Math.min(48, maxY), maxY);
+  const labelWidths = UI_LANGUAGES.flatMap(language => MENU_KEYS.map(key => textWidth(translate(language, key))));
+  const w = Math.min(UW - 20, Math.max(...labelWidths) + 40);
+  const rowH = 16, h = MENU_KEYS.length * rowH + 12;
+  const room = Math.min(UW - 28, w - 16), pickLH = lineH("[Z]");
+  const contents = UI_LANGUAGES.map(language => {
+    const picks = wrapLines(translate(language, "menu.pick"), room);
+    const stats = translate(language, "menu.stats", save.deepest || 0, caughtTotal());
+    const statLines = stats.split("   ").flatMap(text => wrapLines(text, room));
+    return { picks, statLines, lines: [...picks, ...statLines] };
+  });
+  const { picks, statLines, lines } = contents[UI_LANGUAGES.indexOf(lang)];
+  // Reserve the larger translation so language changes do not resize the frame.
+  const footerW = Math.min(UW - 12, Math.max(...contents.flatMap(c => c.lines.map(textWidth))) + 16);
+  const footerH = Math.max(...contents.map(c => c.picks.length * pickLH + c.statLines.length * lineH())) + 12;
+  const maxY = Math.max(6, UH - h - footerH - 12);
+  const x = Math.round((UW - w) / 2), y = clamp(Math.round(UH * .42), Math.min(48, maxY), maxY);
   return { x, y, w, h, rowH,
-    footer: { x: Math.round((SW - footerW) / 2), y: y + h + 8, w: footerW, h: footerH, lines },
+    footer: { x: Math.round((UW - footerW) / 2), y: y + h + 8, w: footerW, h: footerH, lines, picks, pickLH, statLines },
     items: MENU_KEYS.map((_, i) => ({ x: x + 4, y: y + 5 + i * rowH, w: w - 8, h: rowH })) };
 }
 function drawTitle() {
-  const cx = SW / 2;
+  const cx = UW / 2;
   const bob = Math.sin(clock * 1.2) * 2;
   const L = titleLayout(), { x: mx, y: my, w: mw, h: mh } = L;
   if (my >= 62) {
-    drawBigText(cx, Math.round(SH * .13 + bob), "AT SEA", C.foam, 3, "#062b45");
-    drawTextCenter(cx, Math.round(SH * .13 + bob + 26), T("app.sub"), C.textWarn);
+    drawBigText(cx, Math.round(UH * .13 + bob), "AT SEA", C.foam, 3, "#062b45");
+    drawTextCenter(cx, Math.round(UH * .13 + bob + 26), T("app.sub"), C.textWarn);
   }
   drawWindow(mx, my, mw, mh, { alpha: .92 });
   for (let i = 0; i < MENU_KEYS.length; i++) {
     const on = i === menuIndex;
+    if (on) rect(mx + 5, my + 5 + i * L.rowH, mw - 10, L.rowH, "#1c3869");
     /* 잠수부와 배는 작은 그림을 앞에 세운다 - 무엇을 고르는지 글자보다
        그림이 먼저 말한다. */
     drawText(mx + 20, my + 8 + i * L.rowH, menuLabel(i), on ? C.textWarn : C.textDim);
@@ -3312,7 +3389,9 @@ function drawTitle() {
   }
   // A dark panel keeps unshadowed text legible over both daylight and deep water.
   drawWindow(L.footer.x, L.footer.y, L.footer.w, L.footer.h, { alpha: .96 });
-  L.footer.lines.forEach((line, i) => drawTextCenter(cx, L.footer.y + 7 + i * lineH(), line, C.textDim));
+  const F = L.footer;
+  F.picks.forEach((line, i) => drawTextCenter(cx, F.y + 7 + i * F.pickLH, line, C.textDim));
+  F.statLines.forEach((line, i) => drawTextCenter(cx, F.y + 7 + F.picks.length * F.pickLH + i * lineH(), line, C.textDim));
 }
 
 /* =========================================================================
@@ -3434,11 +3513,12 @@ let returnMode = "dive";
    길게 끌면 잠수부가 그쪽으로 헤엄친다 - 손가락으로도 다닐 수 있어야 한다. */
 let pointer = { down: false, id: null, x: 0, y: 0, moved: 0 };
 const inBox = (p, r) => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
-function toLogical(e) {
+function toLogical(e, ui = false) {
   const r = screenCv.getBoundingClientRect();
+  const scale = ui ? UI_PIXEL_SCALE : PIXEL_SCALE;
   return {
-    x: (e.clientX - r.left) / r.width * screenCv.width / PIXEL_SCALE,
-    y: (e.clientY - r.top) / r.height * screenCv.height / PIXEL_SCALE,
+    x: (e.clientX - r.left) / r.width * screenCv.width / scale,
+    y: (e.clientY - r.top) / r.height * screenCv.height / scale,
   };
 }
 screenCv.addEventListener("pointerdown", e => {
@@ -3446,7 +3526,7 @@ screenCv.addEventListener("pointerdown", e => {
   if (e.button !== 0 || (pointer.down && pointer.id !== e.pointerId)) return;
   screenCv.setPointerCapture(e.pointerId);
   pointer.id = e.pointerId;
-  const p = toLogical(e);
+  const p = toLogical(e, mode !== "dive");
   pointer.down = true; pointer.x = p.x; pointer.y = p.y; pointer.moved = 0;
   if (mode === "title") {
     const index = titleLayout().items.findIndex(r => inBox(p, r));
@@ -3468,7 +3548,7 @@ screenCv.addEventListener("pointerdown", e => {
     pointer.down = false;
     if (inBox(p, L.prev)) turnHelpPage(-1);
     else if (inBox(p, L.next)) turnHelpPage(1);
-    else if (!inBox(p, L) || p.y >= L.y + L.h - 17) mode = returnMode;
+    else if (!inBox(p, L) || p.y >= L.y + L.h - 24) mode = returnMode;
     return;
   }
   if (mode === "guide") {
@@ -3483,7 +3563,7 @@ screenCv.addEventListener("pointerdown", e => {
     /* 창 밖을 짚으면 도감을 걷는다. */
     if (p.x < L.x || p.x > L.x + L.w || p.y < L.y || p.y > L.y + L.h) { mode = returnMode; return; }
     /* 탭줄 */
-    if (p.y >= L.y + L.tabY && p.y <= L.y + L.tabY + 11) {
+    if (p.y >= L.y + L.tabY && p.y <= L.y + L.tabY + L.tabH) {
       const tabW = Math.floor((L.w - 12) / GUIDE_TABS.length);
       const i = Math.floor((p.x - (L.x + 6)) / tabW);
       if (i >= 0 && i < GUIDE_TABS.length) { guideTab = i; guideSel = 0; }
@@ -3503,7 +3583,7 @@ screenCv.addEventListener("pointerdown", e => {
   scatterAt(p.x + camX, p.y + cam);
 });
 screenCv.addEventListener("pointermove", e => {
-  const p = toLogical(e);
+  const p = toLogical(e, mode !== "dive");
   if (pointer.down && pointer.id === e.pointerId && (mode === "catch" || (mode === "guide" && guideDetail)))
     scrollInfo(pointer.y - p.y);
   if (pointer.down) pointer.moved += Math.abs(p.x - pointer.x) + Math.abs(p.y - pointer.y);
@@ -4125,7 +4205,7 @@ function onScreen(b) {
 function visible(b) {
   if (!onScreen(b)) return false;
   /* 계기판 아래는 눈에 들지 않는다 */
-  if (b.x - camX >= SW - GAUGE_W) return false;
+  if (b.x - camX >= SW - GAUGE_W * UI_PIXEL_SCALE / PIXEL_SCALE) return false;
   /* 어둠에 잠긴 자리도 마찬가지다 - 등불 밖은 보이지 않는다 */
   const night = clamp((depthFrac() - .40) / .45, 0, 1);
   if (night > .35) {
@@ -4194,28 +4274,36 @@ function render() {
     g.restore();
   }
 
-  /* 창들 */
-  /* 뒷장 - 타이틀이거나, 바닷속 계기판이거나. */
-  const overlay = (mode === "guide" || mode === "help" || mode === "catch");
-  if (mode === "title" || (overlay && returnMode === "title")) {
-    drawTitle();
-  } else if (!bare) {
-    drawHeader(); drawGauge(); drawMessage();
-    if (!msg.lines.length) drawHints();
-    if (paused) {
-      const pw = textWidth(T("ui.paused")) + 20, py = SW < 260 ? 38 : 6;
-      drawWindow(Math.round(SW / 2 - pw / 2), py, pw, 16, { alpha: .9 });
-      drawTextCenter(SW / 2, py + 5, T("ui.paused"), C.textWarn);
+  uiContext.clearRect(0, 0, UW, UH);
+  g = uiContext;
+  try {
+    /* 창들 */
+    /* 뒷장 - 타이틀이거나, 바닷속 계기판이거나. */
+    const overlay = (mode === "guide" || mode === "help" || mode === "catch");
+    if (mode === "title" || (overlay && returnMode === "title")) {
+      drawTitle();
+    } else if (!bare) {
+      drawHeader(); drawGauge(); drawMessage();
+      if (!msg.lines.length) drawHints();
+      if (paused) {
+        const P = pauseLayout();
+        drawWindow(P.x, P.y, P.w, P.h, { alpha: .9 });
+        drawTextCenter(P.x + P.w / 2, P.y + 5, T("ui.paused"), C.textWarn);
+      }
     }
+    /* 앞장 - 열어 둔 창. 뒷장이 무엇이든 그 위에 뜬다. */
+    if (mode === "guide") drawGuide();
+    else if (mode === "help") drawHelp();
+    else if (mode === "catch") drawCatchCard();
+
+  } finally {
+    g = worldContext;
   }
-  /* 앞장 - 열어 둔 창. 뒷장이 무엇이든 그 위에 뜬다. */
-  if (mode === "guide") drawGuide();
-  else if (mode === "help") drawHelp();
-  else if (mode === "catch") drawCatchCard();
 
   /* 논리 화면을 실제 화면으로. 정수배라 도트가 네모로 커진다. */
   sctx.imageSmoothingEnabled = false;
   sctx.drawImage(buf, 0, 0, SW, SH, 0, 0, SW * PIXEL_SCALE, SH * PIXEL_SCALE);
+  sctx.drawImage(uiBuf, 0, 0, UW, UH, 0, 0, UW * UI_PIXEL_SCALE, UH * UI_PIXEL_SCALE);
 }
 
 /* =========================================================================
@@ -4270,7 +4358,6 @@ function startGame() {
   clearTimeout(fontLoadTimer);
   if (worldReady) return;
   initControls();
-  syncGaugeW();
   resize();
   respawnAll();
   resetPlayer();
@@ -4280,17 +4367,17 @@ function startGame() {
   requestAnimationFrame(loop);
 }
 function gameFontReady() {
-  koCache.clear();
+  textCache.clear();
   if (worldReady && msg.lines.length) {
     const done = msgDone();
-    msg.lines = wrapText(msg.text, SW - GAUGE_W - 26);
+    msg.lines = wrapText(msg.text, UW - GAUGE_W - 26);
     msg.shown = done ? msgTotal() : Math.min(msg.shown, msgTotal());
   }
   startGame();
 }
 if (document.fonts && typeof document.fonts.load === "function") {
   fontLoadTimer = setTimeout(startGame, 2000);
-  document.fonts.load(KO_FONT, "한글").then(gameFontReady, startGame);
+  document.fonts.load(UI_FONT, "한글").then(gameFontReady, startGame);
 } else {
   startGame();
 }

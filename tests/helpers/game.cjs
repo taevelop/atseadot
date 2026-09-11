@@ -44,7 +44,7 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false, 
     emit(name, event) { for (const fn of events.get(name) || []) fn(event); },
     hide() { document.visibilityState = 'hidden'; for (const fn of documentEvents.get('visibilitychange') || []) fn(); },
     click(box) {
-      const size = data('({w:screenCv.width,h:screenCv.height,scale:PIXEL_SCALE})');
+      const size = data('({w:screenCv.width,h:screenCv.height,scale:UI_PIXEL_SCALE})');
       const e = { pointerId: 1, button: 0,
         clientX: (box.x + box.w / 2) * size.scale / size.w * viewport.width,
         clientY: (box.y + box.h / 2) * size.scale / size.h * viewport.height };

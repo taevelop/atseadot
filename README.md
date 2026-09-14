@@ -131,9 +131,12 @@ npm run icons:generate
 | Root directory | 저장소 루트, 하위 폴더 지정 없음 |
 | Build command | `npm run build` |
 | Build output directory | `site` |
+| Deploy command를 입력해야 하는 새 빌드 설정 | `npm run deploy:pages` |
 | 환경 변수 | 필요 없음 |
 
 `wrangler.jsonc`의 프로젝트 이름은 `atseadot`입니다. 다른 이름의 Pages 프로젝트를 사용하면 이 파일의 `name`도 해당 이름으로 맞춥니다.
+
+배포 명령에는 `npx wrangler deploy`를 사용하지 않습니다. 이 명령은 Workers 배포 명령이므로 Pages 프로젝트의 정적 결과물 위치를 찾지 못해 `Missing entry-point to Worker script or to assets directory` 오류가 발생합니다. 대시보드에 **Deploy command** 항목이 표시되면 위 표처럼 `npm run deploy:pages`로 설정합니다. 이 스크립트는 `site/`를 `wrangler.jsonc`에 지정된 Pages 프로젝트에 명시적으로 업로드합니다.
 
 ## Cloudflare Pages: 직접 업로드
 
@@ -147,7 +150,7 @@ npx wrangler pages project create atseadot --production-branch main
 npm run deploy -- --branch main
 ```
 
-이미 프로젝트가 있다면 생성 명령은 생략합니다. `deploy`는 검증 후 `wrangler.jsonc`에 지정된 `site` 폴더를 업로드합니다. 미리보기 배포에는 `--branch preview`처럼 별도 브랜치 이름을 사용합니다.
+이미 프로젝트가 있다면 생성 명령은 생략합니다. `deploy`는 검증 후 `site` 폴더를 `wrangler.jsonc`에 지정된 Pages 프로젝트에 업로드합니다. 미리보기 배포에는 `--branch preview`처럼 별도 브랜치 이름을 사용합니다. Cloudflare 빌드 단계처럼 검증이 이미 끝난 환경에서는 `npm run deploy:pages -- --branch main`을 사용해 검증을 중복 실행하지 않을 수 있습니다.
 
 직접 업로드로 만든 프로젝트에 Git 자동 배포를 연결하려면 Git 연동 프로젝트를 새로 만들어야 합니다. 기존 Git 연동 프로젝트에는 Wrangler로 수동 배포할 수 있지만, 대시보드의 드래그 앤 드롭 업로드는 사용할 수 없습니다.
 

@@ -101,9 +101,9 @@ test('resizing preserves depth, population identity, rare fish, and opened chest
 test('paused game does not move, collide, catch, or increment progress', () => {
   const app = game();
   app.run('startRun("diver"); closeMsg(); paused=true; keys.arrowdown=true');
-  const before = app.data('({x:player.x,y:player.y,net:player.net,save})');
+  const before = app.data('({x:player.x,y:player.y,spear:spear.on,save})');
   app.run('update(1,16.67); action()');
-  assert.deepEqual(app.data('({x:player.x,y:player.y,net:player.net,save})'), before);
+  assert.deepEqual(app.data('({x:player.x,y:player.y,spear:spear.on,save})'), before);
   app.run('controlAction("primary")');
   assert.equal(app.run('paused'), false);
 });
@@ -172,8 +172,9 @@ test('touch actions cover capture, role switching, overlays, language, and input
   const app = game();
   app.run(`controlAction("primary"); closeMsg();
     globalThis.fish=beings.find(b=>b.K.catchable); beings=[fish];
-    fish.x=player.x+DV_CX+14-fish.w/2; fish.y=player.y+DV_CY-fish.h/2;
-    controlAction("primary");`);
+    fish.x=player.x+DV_CX+40-fish.w/2; fish.y=player.y+16-fish.h/2;
+    controlAction("primary");
+    for (let i = 0; i < 12 && mode !== "catch"; i++) stepSpear(1);`);
   assert.equal(app.run('mode'), 'catch');
   assert.equal(app.run('save.caught[fish.gid]'), 1);
   app.run('controlAction("primary"); controlAction("swap")');

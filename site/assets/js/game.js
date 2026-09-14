@@ -1263,20 +1263,6 @@ spr("diver2", [        /* 잠수부 - 다리를 오므린 참. 앞 참과 같은
   "......................................ooooooo.",
 ]);
 
-/* 그물. 작살로 갈아탄 뒤에 지운다. */
-spr("net", [
-  "...wwwww...",
-  ".ww.....ww.",
-  "w..l...l..w",
-  "w.........w",
-  "w..l...l..w",
-  "w....l....w",
-  "w..l...l..w",
-  ".ww.....ww.",
-  "...wwwww...",
-  "..dd.......",
-  ".dd........",
-]);
 
 
 /* =========================================================================
@@ -1669,7 +1655,7 @@ const STR = {
     "zone.MIDNIGHT": "암흑층", "zone.ABYSS": "심연",
     "zone.s.SUNLIGHT": "표층", "zone.s.TWILIGHT": "약광",
     "zone.s.MIDNIGHT": "암흑", "zone.s.ABYSS": "심연",
-    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] 이동 · [Shift] 가속 · [Space] 그물 · [G] 도감",
+    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] 이동 · [Shift] 가속 · [Space] 작살 · [G] 도감",
     "hint.boat": "[←][→] / [A][D] 배 · [↓][↑] / [S][W] 줄 · [Space] 액션",
     "hint.short": "[Space] 액션 · [G] 도감",
     "hint.swap": "[Tab] 배↔잠수부",
@@ -1678,7 +1664,7 @@ const STR = {
     "help.close": "[X] / [Esc] 닫기",
     "help.move": "[↑][←][↓][→] / [W][A][S][D]", "help.moveV": "헤엄치기 · 배 몰기",
     "help.dash": "[Shift]", "help.dashV": "빠르게 이동 · 줄 조절",
-    "help.act": "[Space]", "help.actV": "그물·상자 · 낚시 액션 (대사 중에도 작동)",
+    "help.act": "[Space]", "help.actV": "작살·상자 · 낚시 액션 (대사 중에도 작동)",
     "help.swap": "[Tab]", "help.swapV": "잠수부 ↔ 낚싯배 바꾸기",
     "help.line": "[↓][↑] / [S][W]", "help.lineV": "줄 내리기 · 감아올리기",
     "help.ok": "[Z] / [Enter]", "help.okV": "선택 · 대사 표시/넘기기",
@@ -1705,7 +1691,7 @@ const STR = {
     "g.titleTally": "칭호 {0}/{1}",
     "g.trophyTally": "트로피 {0}/{1}",
     "g.depth": "수심", "g.zone": "수역", "g.pace": "속도",
-    "g.net": "채집", "g.first": "첫 포획",
+    "g.net": "작살", "g.first": "첫 포획",
     "g.yes": "가능", "g.no": "불가",
     "g.count": "{0}마리", "g.none": "아직 없음", "g.dash": "-",
     "g.sighted": "목격",
@@ -1720,7 +1706,7 @@ const STR = {
     "t.trophy": "트로피 {1}단계 : {0}",
     "tr.plain": "잡은 물고기", "tr.rare": "희귀 개체",
     "m.start.diver": "물속으로 들어갑니다.",
-    "m.start.diver2": "[Space]로 그물을 휘두릅니다. 해저에 상자가 하나 있습니다.",
+    "m.start.diver2": "[Space]로 작살을 쏩니다. 해저에 상자가 하나 있습니다.",
     "m.start.boat": "배를 몰고 바다로 나왔습니다. [Space]로 줄을 던지세요.",
     "m.start.boat2": "[↓]로 줄을 내리고, 입질이 오면 다시 [Space]를 눌러 챕니다.",
     "m.newsea": "바다를 새로 만들었습니다.",
@@ -1728,8 +1714,8 @@ const STR = {
     "m.got": "수심 {1}M에서 {0} 한 마리.",
     "m.gotnew": "처음 보는 종입니다. {0} · 수심 {1}M · 도감에 올렸습니다.",
     "m.gotrare": "희귀 개체입니다! 흰빛 {0} · 이백 마리에 한 마리꼴로 태어납니다.",
-    "m.toobig": "그물에 담기엔 너무 큽니다. 몸을 틀어 지나갑니다.",
-    "m.subignore": "잠수함은 그물을 본 척도 하지 않습니다.",
+    "m.toobig": "작살이 들지 않습니다. 몸을 틀어 지나갑니다.",
+    "m.subignore": "잠수함은 작살을 본 척도 하지 않습니다.",
     "m.sight": "{0} 발견.",
     "m.chest": "상자를 열었습니다!",
     "m.chest2": "특별한 미끼를 얻었습니다. 깊은 물에서 [M]을 누르세요.",
@@ -1838,7 +1824,7 @@ const STR = {
     "zone.MIDNIGHT": "MIDNIGHT", "zone.ABYSS": "ABYSS",
     "zone.s.SUNLIGHT": "SUN", "zone.s.TWILIGHT": "TWI",
     "zone.s.MIDNIGHT": "MID", "zone.s.ABYSS": "ABY",
-    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] SWIM   [Shift] DASH   [Space] NET   [G] GUIDE",
+    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] SWIM   [Shift] DASH   [Space] SPEAR   [G] GUIDE",
     "hint.boat": "[←][→] / [A][D] BOAT  [↓][↑] / [S][W] LINE  [Space] ACT",
     "hint.short": "[Space] ACT   [G] GUIDE",
     "ui.paused": "PAUSED",
@@ -1846,7 +1832,7 @@ const STR = {
     "help.close": "[X] / [Esc] CLOSE",
     "help.move": "[↑][←][↓][→] / [W][A][S][D]", "help.moveV": "SWIM OR STEER",
     "help.dash": "[Shift]", "help.dashV": "FASTER MOVEMENT / LINE CONTROL",
-    "help.act": "[Space]", "help.actV": "NET / CHEST / FISHING (EVEN DURING DIALOGUE)",
+    "help.act": "[Space]", "help.actV": "SPEAR / CHEST / FISHING (EVEN DURING DIALOGUE)",
     "help.line": "[↓][↑] / [S][W]", "help.lineV": "PAY OUT / REEL IN",
     "help.ok": "[Z] / [Enter]", "help.okV": "SELECT / REVEAL OR ADVANCE DIALOGUE",
     "help.guide": "[G]", "help.guideV": "OPEN / CLOSE FIELD GUIDE",
@@ -1871,7 +1857,7 @@ const STR = {
     "g.titleTally": "TITLES {0}/{1}",
     "g.trophyTally": "TROPHIES {0}/{1}",
     "g.depth": "DEPTH", "g.zone": "ZONE", "g.pace": "PACE",
-    "g.net": "NET", "g.first": "FIRST",
+    "g.net": "SPEAR", "g.first": "FIRST",
     "g.yes": "YES", "g.no": "NO",
     "g.count": "X{0}", "g.none": "NONE YET", "g.dash": "-",
     "g.sighted": "SEEN",
@@ -1886,7 +1872,7 @@ const STR = {
     "t.trophy": "TROPHY TIER {1} : {0}",
     "tr.plain": "FISH LANDED", "tr.rare": "RARE ONES",
     "m.start.diver": "YOU SLIP UNDER.",
-    "m.start.diver2": "SWING THE NET WITH [Space]. LOOK FOR A CHEST ON THE SEABED.",
+    "m.start.diver2": "FIRE THE SPEAR WITH [Space]. LOOK FOR A CHEST ON THE SEABED.",
     "m.start.boat": "YOU TAKE THE BOAT OUT. PRESS [Space] TO CAST.",
     "m.start.boat2": "PAY OUT LINE WITH THE [↓] ARROW, THEN STRIKE WITH [Space].",
     "m.newsea": "A NEW SEA.",
@@ -1894,7 +1880,7 @@ const STR = {
     "m.got": "GOT A {0} AT {1}M.",
     "m.gotnew": "NEW! {0} - {1}M. ADDED TO THE GUIDE.",
     "m.gotrare": "RARE! A PALE {0} - ONE IN TWO HUNDRED.",
-    "m.toobig": "TOO BIG FOR THE NET. IT TURNS AWAY.",
+    "m.toobig": "THE SPEAR WILL NOT HOLD IT. IT TURNS AWAY.",
     "m.subignore": "THE SUB IGNORES YOUR NET.",
     "m.sight": "SIGHTED: {0}.",
     "m.chest": "OPENED THE CHEST!",
@@ -1997,7 +1983,7 @@ const STR = {
 Object.assign(STR.ko, {
   "hint.touch": "다이얼로 이동", "controls.pad": "이동 다이얼", "controls.padHint": "밀어서 이동 · 바깥쪽은 가속", "controls.actionHint": "이동하면서 액션", "g.tab.short.trophy": "트로피", "controls.label": "게임 조작",
   "controls.up": "위로", "controls.down": "아래로", "controls.left": "왼쪽으로", "controls.right": "오른쪽으로",
-  "controls.fast": "가속", "controls.primary": "선택", "controls.net": "그물", "controls.cast": "줄 던지기",
+  "controls.fast": "가속", "controls.primary": "선택", "controls.spear": "작살", "controls.cast": "줄 던지기",
   "controls.reel": "줄 감기", "controls.strike": "챔질!", "controls.wait": "올리는 중",
   "controls.next": "계속", "controls.close": "닫기", "controls.resume": "재개",
   "controls.boat": "배 타기", "controls.diver": "잠수하기", "controls.guide": "도감", "controls.help": "조작법",
@@ -2008,7 +1994,7 @@ Object.assign(STR.ko, {
 Object.assign(STR.en, {
   "hint.touch": "MOVE WITH DIAL", "controls.pad": "Movement dial", "controls.padHint": "Slide to move. Push further to dash.", "controls.actionHint": "Move + action", "g.tab.short.trophy": "CUPS", "controls.label": "Game controls",
   "controls.up": "Move up", "controls.down": "Move down", "controls.left": "Move left", "controls.right": "Move right",
-  "controls.fast": "FAST", "controls.primary": "Choose", "controls.net": "Net", "controls.cast": "Cast",
+  "controls.fast": "FAST", "controls.primary": "Choose", "controls.spear": "Spear", "controls.cast": "Cast",
   "controls.reel": "Reel in", "controls.strike": "Strike!", "controls.wait": "Reeling",
   "controls.next": "Continue", "controls.close": "Close", "controls.resume": "Resume",
   "controls.boat": "Board boat", "controls.diver": "Dive", "controls.guide": "Guide", "controls.help": "Help",
@@ -2019,14 +2005,14 @@ Object.assign(STR.en, {
 
 const SP = {
   ko: {
-    fish3: ["네온 고비", "표층에서 제일 자주 부딪히는 친구. 그물이 오면 다 같이 달아나는데, 꼭 한 마리는 딴생각을 하고 있다."],
+    fish3: ["네온 고비", "표층에서 제일 자주 부딪히는 친구. 작살이 날아오면 다 같이 흩어지는데, 꼭 한 마리는 딴생각을 하고 있다."],
     fish5: ["흰동가리", "흰 띠 셋을 두른 멋쟁이. 산호 곁을 좀처럼 안 떠나니, 집 앞에서 기다리면 된다."],
-    puffer: ["복어", "화나면 빵빵하게 부풀어서 가시를 세운다. 찔리지 않게 조심하자. 대신 그만큼 그물에는 잘 걸린다."],
+    puffer: ["복어", "화나면 빵빵하게 부풀어서 가시를 세운다. 찔리지 않게 조심하자. 대신 그만큼 덩치가 커져 맞히기는 쉽다."],
     tang: ["블루탱", "둥근 원반에 노란 꼬리를 달고 다닌다. 색이 하도 밝아서 숨을 생각이 아예 없어 보인다."],
-    tuna: ["참다랑어", "초승달 꼬리로 물을 가른다. 뒤쫓아서는 절대 못 잡으니, 갈 길목에 그물을 놓고 기다리자."],
+    tuna: ["참다랑어", "초승달 꼬리로 물을 가른다. 뒤쫓아서는 절대 못 잡으니, 갈 길목을 겨누고 기다리자."],
     marlin: ["청새치", "긴 부리를 앞세우고 돛 같은 등지느러미를 세웠다. 폼으로는 이 바다에서 제일이다."],
     turtle: ["바다거북", "앞발을 앞뒤로 크게 저으며 느긋하게 간다. 가끔 숨 쉬러 수면까지 올라오는데, 서두르는 법이 없다."],
-    jelly: ["보름달물해파리", "헤엄칠 마음이 없다. 물이 미는 대로 둥둥 떠다니고, 그물에 들어와도 별말이 없다."],
+    jelly: ["보름달물해파리", "헤엄칠 마음이 없다. 물이 미는 대로 둥둥 떠다니고, 작살이 꽂혀도 별말이 없다."],
     seahorse: ["해마", "꼬리를 돌돌 말고 꼿꼿하게 서서 다닌다. 물고기치고는 자세가 아주 바르다."],
     squid: ["산호초오징어", "작은 몸으로 쏜살같이 오르내린다. 뒤쫓으면 약만 오르니, 앞을 막아서자."],
     ray: ["만타가오리", "날개를 접었다 폈다 하며 하늘 날듯 미끄러진다. 이 바다에서 제일 우아한 친구."],
@@ -2039,14 +2025,14 @@ const SP = {
     mega: ["메갈로돈", "상어 여덟 마리를 합쳐 놓은 크기에 몸까지 빛난다. 보고 싶으면 미끼를 뿌리고 기다리되, 너무 가까이는 가지 말자."],
   },
   en: {
-    fish3: ["NEON GOBY", "THE FIRST FRIEND YOU MEET UP HERE. THE WHOLE SCHOOL BOLTS WHEN THE NET COMES, BUT ONE IS ALWAYS DAYDREAMING."],
+    fish3: ["NEON GOBY", "THE FIRST FRIEND YOU MEET UP HERE. THE WHOLE SCHOOL SCATTERS WHEN THE SPEAR FLIES, BUT ONE IS ALWAYS DAYDREAMING."],
     fish5: ["CLOWNFISH", "THREE WHITE STRIPES AND VERY PROUD OF THEM. NEVER LEAVES THE CORAL, SO JUST WAIT BY ITS FRONT DOOR."],
     puffer: ["PUFFERFISH", "PUFFS RIGHT UP AND PUTS ITS SPINES OUT WHEN CROSS. MIND YOUR FINGERS - THOUGH IT DOES MAKE IT EASY TO NET."],
     tang: ["BLUE TANG", "A ROUND DISC WITH ONE YELLOW TAIL. FAR TOO BRIGHT TO BE TRYING TO HIDE FROM ANYONE."],
     tuna: ["BLUEFIN TUNA", "CUTS THE WATER WITH A CRESCENT TAIL. YOU WILL NEVER CATCH IT FROM BEHIND - WAIT WHERE IT IS HEADED."],
     marlin: ["BLUE MARLIN", "A LONG BILL OUT FRONT AND A DORSAL FIN LIKE A SAIL. THE BEST-DRESSED THING IN THIS SEA."],
     turtle: ["SEA TURTLE", "SWEEPS ITS FRONT FLIPPERS BACK AND FORTH, IN NO HURRY AT ALL. GOES UP FOR AIR WHEN IT FEELS LIKE IT."],
-    jelly: ["MOON JELLY", "HAS NO INTEREST IN SWIMMING. IT DRIFTS WHEREVER THE WATER GOES, AND COMES INTO THE NET WITHOUT COMPLAINT."],
+    jelly: ["MOON JELLY", "HAS NO INTEREST IN SWIMMING. IT DRIFTS WHEREVER THE WATER GOES, AND TAKES THE SPEAR WITHOUT COMPLAINT."],
     seahorse: ["SEAHORSE", "TAIL CURLED, BACK STRAIGHT. BY FAR THE BEST POSTURE OF ANY FISH DOWN HERE."],
     squid: ["REEF SQUID", "A SMALL BODY THAT SHOOTS UP AND DOWN. CHASING IT ONLY ANNOYS YOU BOTH - GET IN FRONT OF IT."],
     ray: ["MANTA RAY", "FOLDS AND SPREADS ITS WINGS AND GLIDES AS IF IT WERE FLYING. THE MOST ELEGANT THING IN THIS SEA."],
@@ -2484,7 +2470,7 @@ function makeDecor() {
   /* 상자는 바다에 딱 하나. 열면 특별한 미끼가 나온다. */
   chest = {
     x: Math.round(rnd(60, worldW() - 80)),
-    y: seaBed + 8,
+    y: seaBed + 10 - SPR.chest.h,   /* 굽이 모래에 닿게 */
     open: save.chest ? 1 : 0,
   };
 }
@@ -2728,7 +2714,7 @@ function advanceMsg() {
 
 /* =========================================================================
    조종하는 것 - 잠수부와 낚싯배
-   타이틀에서 둘 중 하나를 고른다. 잠수부는 물속을 헤엄쳐 다니며 그물을
+   타이틀에서 둘 중 하나를 고른다. 잠수부는 물속을 헤엄쳐 다니며 작살을
    휘두르고, 배는 수면 위를 오가며 줄을 내린다. 바다도 도감도 같은 것을 쓴다.
    ========================================================================= */
 const diverColors = stamp({
@@ -2742,17 +2728,24 @@ const diverColors = stamp({
   k: "#8a4a1c",   /* 창테와 허리띠 */
   y: C.lure,
 });
-/* 그물을 한 번 휘두르는 데 드는 시간(프레임). 세 걸음으로 나눠 밟는다. */
-const NET_TIME = 18;
-const netColors = stamp({
-  o: "#0b111c", d: "#8a5a2a", m: "#c7d8ea", l: "#8fb8d8",
-  h: "#ffffff", r: "#c7d8ea", w: "#eaf4ff", k: "#0b1018", y: C.lure,
+/* 작살. 한 번 쏘면 앞으로 날아갔다가 줄에 감겨 돌아온다. 그물처럼
+   곁의 것이 절로 잡히지 않으니, 무엇을 노렸는지가 손에 남는다. */
+const SPEAR_SPEED = 4.4;      /* 한 걸음에 나아가는 칸 */
+const SPEAR_BACK  = 6.0;      /* 돌아올 때는 줄이 감기니 더 빠르다 */
+const SPEAR_RANGE = 92;       /* 이만큼 나아가면 스스로 돌아온다 */
+const spear = { on: 0, x: 0, y: 0, dir: 1, gone: 0, back: 0 };
+const spearColors = stamp({
+  o: "#0b111c", d: "#7b6242", m: "#a8865a", l: "#c9d8e8",
+  h: "#eef6ff", r: "#8fb8d8", w: "#ffffff", k: "#0b1018", y: C.lure,
 });
 
-/* 잠수부의 몸피. 그물이 닿는 거리, 등불 자리, 부딪히는 판정이 모두 여기서 나온다. */
+/* 잠수부의 몸피. 작살이 나가는 자리, 등불 자리, 부딪히는 판정이 모두
+   여기서 나온다. */
 /* 잠수부는 엎드려 나아가는 자세다. 서 있는 사람이 아니라 누운 사람이라
    키가 세로가 아니라 가로다. */
-const DV_W = 32, DV_H = 22;
+/* 잠수부는 가로로 누워 나아간다. 머리에서 오리발까지가 길고 납작해
+   가로가 세로의 두 배가 넘는다. 도안과 어긋나면 판정이 전부 어긋난다. */
+const DV_W = 46, DV_H = 20;
 const DV_CX = DV_W / 2, DV_CY = DV_H / 2;
 
 const player = {
@@ -2760,7 +2753,6 @@ const player = {
   x: 0, y: 0, dir: 1,
   vx: 0, vy: 0,
   phase: 0,
-  net: 0,          /* 그물을 휘두르는 동안 남은 시간 */
   bump: 0,         /* 상어에 밀린 뒤 잠깐 */
 };
 
@@ -2791,7 +2783,7 @@ function resetPlayer() {
   player.x = Math.round(worldW() / 2);
   player.vx = player.vy = 0;
   player.dir = 1;
-  player.net = 0; player.bump = 0;
+  spear.on = 0; player.bump = 0;
   resetRod();
   if (player.role === "boat") {
     /* 뱃전(도안 15번째 줄)이 수면에 걸치도록 앉힌다. */
@@ -3069,8 +3061,9 @@ function drawChest() {
   const sx = chest.x - camX, sy = chest.y - cam;
   if (sy > SH + 20 || sy < -20) return;
   const colors = stamp({
-    o: "#2a1a0c", d: "#6b4a1e", m: "#a9762c", l: "#d3a04a",
-    h: "#f0d089", r: "#a9762c", w: "#fff", k: "#000", y: "#ffe25f",
+    o: "#241607", d: "#5f3f18", m: "#9a6a26", l: "#c4913f",
+    h: "#e6c078", r: "#3f3830",   /* 쇠테 - 나무와 같은 색이면 테가 없는 셈이다 */
+    w: "#ffd45e", k: "#120c05", y: "#ffe25f",
   });
   const cv = bake(chest.open ? SPR.chestOpen : SPR.chest, colors, false);
   if (!chest.open) {
@@ -3079,7 +3072,8 @@ function drawChest() {
     else blit(cv, sx, sy);
     /* 반짝임 하나가 상자 위를 돈다. */
     const a = clock * 2.2;
-    px(Math.round(sx + 5 + Math.cos(a) * 7), Math.round(sy - 3 + Math.sin(a) * 3), "#fff6c0");
+    px(Math.round(sx + SPR.chest.w / 2 + Math.cos(a) * 11),
+       Math.round(sy - 3 + Math.sin(a) * 4), "#fff6c0");
   } else {
     blit(cv, sx, sy);
   }
@@ -3161,26 +3155,19 @@ function drawPlayer() {
   const bob = Math.round(Math.sin(player.phase * .7) * 1.2);
   const sx = Math.round(player.x - camX), sy = Math.round(player.y - cam + bob);
   blit(cv, sx, sy);
-  /* 그물. 아래 뒤에서 위 앞으로 세 걸음에 걸쳐 훑고, 물자국을 남긴다. */
-  if (player.net > 0) {
-    const t = 1 - clamp(player.net / NET_TIME, 0, 1);
-    const step = t < .34 ? 0 : t < .68 ? 1 : 2;
-    const path = [[2, 9], [10, 4], [16, -1]][step];
-    const nx = sx + (player.dir === 1 ? DV_CX + path[0] : DV_CX - path[0] - SPR.net.w * 2);
-    const ny = sy + 2 + path[1];
-    blit(bake(SPR.net, netColors, player.dir === -1, 2), nx, ny);
-    if (step > 0) {
-      g.save();
-      g.globalAlpha = .5;
-      const prev = [[2, 9], [10, 4]][step - 1];
-      for (let i = 0; i < 5; i++) {
-        const f = i / 5;
-        const wx = sx + DV_CX + (player.dir === 1 ? 1 : -1) * (prev[0] + (path[0] - prev[0]) * f) + 6;
-        const wy = sy + 5 + prev[1] + (path[1] - prev[1]) * f;
-        px(Math.round(wx), Math.round(wy), "#cfe8ff");
-      }
-      g.restore();
+  /* 작살. 잠수부의 손에서 줄이 뻗어 나가고 그 끝에 작살이 있다. */
+  if (spear.on) {
+    const hx = sx + (player.dir === 1 ? DV_W - 4 : 4);
+    const hy = sy + 16;
+    const tx = Math.round(spear.x - camX), ty = Math.round(spear.y - cam);
+    /* 줄은 한 칸씩 띄어 찍는다 - 이어 그으면 자로 그은 선이 된다 */
+    const n = Math.max(1, Math.round(Math.abs(tx - hx) / 3));
+    for (let i = 1; i < n; i++) {
+      const f = i / n;
+      px(Math.round(hx + (tx - hx) * f), Math.round(hy + (ty - hy) * f), "#9fc4e4");
     }
+    const cv2 = bake(SPR.spear, spearColors, spear.dir === -1);
+    blit(cv2, tx - (spear.dir === 1 ? cv2.width - 3 : 3), ty - 2);
   }
 }
 
@@ -4296,7 +4283,7 @@ function syncControls() {
   let label = "primary";
   if (mode === "dive") {
     label = paused ? "resume" : rod.state === "bite" && player.role === "boat" ? "strike"
-      : player.role === "diver" ? "net" : rod.state === "idle" ? "cast" : rod.state === "out" ? "reel" : "wait";
+      : player.role === "diver" ? "spear" : rod.state === "idle" ? "cast" : rod.state === "out" ? "reel" : "wait";
   } else if (mode === "help" || mode === "catch" || guideDetail) label = "close";
   primary.querySelector(".action-label").textContent = T("controls." + label);
   primary.dataset.kind = label;
@@ -4349,13 +4336,13 @@ function scatterAt(wx, wy) {
 }
 
 /* =========================================================================
-   그물과 상자
+   작살과 상자
    ========================================================================= */
 function action() {
   if (paused) return;
-  /* 스페이스 하나로 두 판을 다 조종한다. 잠수부면 그물, 배면 줄이다. */
+  /* 스페이스 하나로 두 판을 다 조종한다. 잠수부면 작살, 배면 줄이다. */
   if (player.role === "boat") return rodAction();
-  return swingNet();
+  return fireSpear();
 }
 
 function rodAction() {
@@ -4390,32 +4377,55 @@ function rodAction() {
   say(T("m.reel"), C.textDim);
 }
 
-function swingNet() {
-  if (player.net > 0) return;
-  player.net = NET_TIME;
-  /* 상자가 손 닿는 데 있으면 그것부터. */
+function fireSpear() {
+  if (spear.on) return;                       /* 돌아오는 중에는 못 쏜다 */
+  spear.on = 1; spear.back = 0; spear.gone = 0;
+  spear.dir = player.dir;
+  spear.x = player.x + DV_CX + player.dir * 16;
+  spear.y = player.y + 16;
+}
+
+/* 작살이 무엇엔가 닿았는가. 닿았으면 거기서 멈추고 돌아온다. */
+function spearHit() {
   if (chest && !chest.open) {
-    const dx = (chest.x + 5) - (player.x + DV_CX), dy = (chest.y + 4) - (player.y + DV_CY);
-    if (dx * dx + dy * dy < 30 * 30) { openChest(); return; }
+    /* 상자 한가운데. 눈대중으로 5, 4 를 적어 두면 도안을 키우는 순간
+       작살이 허공을 찌른다. 도안에서 읽는다. */
+    const cw = SPR.chest.w, ch = SPR.chest.h;
+    const dx = (chest.x + cw / 2) - spear.x, dy = (chest.y + ch / 2) - spear.y;
+    if (Math.abs(dx) < cw / 2 + 4 && Math.abs(dy) < ch / 2 + 4) { openChest(); return 1; }
   }
-  /* 그다음 가장 가까운 한 마리. */
-  let best = null, bestD = 1e9;
-  const px0 = player.x + DV_CX + player.dir * 14, py0 = player.y + DV_CY;
   for (const b of beings) {
-    const dx = b.cx() - px0, dy = (b.cy() - py0) * 1.4;
-    const d = dx * dx + dy * dy;
-    const reach = Math.max(20, Math.min(40, b.w * .5 + 20));
-    if (d < reach * reach && d < bestD) { best = b; bestD = d; }
+    const dx = Math.abs(b.cx() - spear.x), dy = Math.abs(b.cy() - spear.y);
+    if (dx > b.w * .5 + 3 || dy > b.h * .5 + 3) continue;
+    if (!b.K.catchable) {
+      /* 상어와 메갈로돈, 잠수함에는 작살이 들지 않는다. */
+      b.scare(spear.x);
+      say(b.kind === "sub" ? T("m.subignore") : T("m.toobig"), C.textWarn);
+      if (markSeen(b.gid)) sighted(b);
+      return 1;
+    }
+    caught(b);
+    return 1;
   }
-  if (!best) return;
-  if (!best.K.catchable) {
-    /* 상어와 메갈로돈, 잠수함은 그물에 들지 않는다. */
-    best.scare(px0);
-    say(best.kind === "sub" ? T("m.subignore") : T("m.toobig"), C.textWarn);
-    if (markSeen(best.gid)) sighted(best);
+  return 0;
+}
+
+function stepSpear(u) {
+  if (!spear.on) return;
+  if (spear.back) {
+    /* 줄이 감긴다. 잠수부의 손으로 돌아오면 끝난다. */
+    const hx = player.x + DV_CX + spear.dir * 10, hy = player.y + 16;
+    const dx = hx - spear.x, dy = hy - spear.y;
+    const d = Math.hypot(dx, dy);
+    if (d < SPEAR_BACK * u + 1) { spear.on = 0; return; }
+    spear.x += dx / d * SPEAR_BACK * u;
+    spear.y += dy / d * SPEAR_BACK * u;
     return;
   }
-  caught(best);
+  spear.x += spear.dir * SPEAR_SPEED * u;
+  spear.gone += SPEAR_SPEED * u;
+  if (spearHit() || spear.gone >= SPEAR_RANGE ||
+      spear.x < 2 || spear.x > worldW() - 2) spear.back = 1;
 }
 
 function openChest() {
@@ -4423,7 +4433,8 @@ function openChest() {
   flash = 1;
   say(T("m.chest"), C.textWarn);
   say(T("m.chest2"), C.lure);
-  for (let i = 0; i < 22; i++) bubble(chest.x + rnd(0, 11), chest.y + rnd(-4, 4), true);
+  for (let i = 0; i < 22; i++)
+    bubble(chest.x + rnd(0, SPR.chest.w), chest.y + rnd(-4, SPR.chest.h * .5), true);
 }
 
 function caught(b, depth = metres()) {
@@ -4554,7 +4565,7 @@ function stepDiver(u, fast) {
   if (player.y <= seaTop + 2 && player.vy < 0) player.vy = 0;
   if (Math.random() < (.05 + Math.hypot(player.vx, player.vy) * .12) * u)
     bubble(player.x + (player.dir === 1 ? DV_W - 6 : 5), player.y + 5);
-  if (player.net > 0) player.net -= u;
+  stepSpear(u);
 }
 
 /* ---- 낚싯배 ---- */

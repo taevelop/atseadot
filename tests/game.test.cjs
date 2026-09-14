@@ -19,12 +19,17 @@ test('save recovery retains valid fields, zero first-depth, titles, and progress
     caught: { [id]: 3, [other]: -1, unknown: 9 }, seen: null,
     rare: { [id]: 1, [other]: '4' }, at: { [id]: 0, [other]: 1600 },
     titles: { [title]: true, 'trophy.plain.1': 1, unknown: 1 },
-    stat: { snap: 2, seabed: true }, chest: true, deepest: 750
+    stat: { snap: 2, seabed: true }, chest: true, deepest: 750,
+    // An aquarium cannot hold more than was caught, and no upgrade goes past UP_MAX.
+    coin: 120, up: { fins: 5, lamp: 1, bogus: 2 },
+    hold: { [id]: 99 }, holdR: { [id]: 3 }, stocked: true
   };
   const normalized = app.data('normalizeSave(inputSave)');
   assert.deepEqual(normalized, {
     caught: { [id]: 3 }, rare: { [id]: 1 }, seen: { [id]: 1 }, at: { [id]: 0 },
-    titles: { [title]: 1, 'trophy.plain.1': 1 }, stat: { snap: 2, seabed: 1 }, chest: 1, deepest: 750
+    titles: { [title]: 1, 'trophy.plain.1': 1 }, stat: { snap: 2, seabed: 1 }, chest: 1, deepest: 750,
+    coin: 120, up: { fins: 2, lamp: 1 },
+    hold: { [id]: 2 }, holdR: { [id]: 1 }, stocked: 1
   });
   app.run('save=normalizeSave(inputSave); markCaught({gid:GUIDE[0].id},800)');
   assert.equal(app.run('save.at[GUIDE[0].id]'), 0);

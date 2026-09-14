@@ -2258,6 +2258,32 @@ const SPR_SIZES = {
 };
 
 
+/* 어종별 시세. 깊은 데 사는 것, 좀처럼 안 나오는 것이 비싸다. 흰빛
+   개체는 세 배를 받는다. */
+const PRICE = {
+  fish3: 8, jelly: 12, fish5: 14, crab: 16, tang: 18, puffer: 22,
+  seahorse: 26, lantern: 30, squid: 34, tuna: 40, octopus: 48, turtle: 55,
+  ray: 60, marlin: 70, angler: 90,
+};
+const priceOf = (id, rare) => Math.round((PRICE[id] || 10) * (rare ? 3 : 1));
+
+/* 장비. 두 단계까지 올린다. 값은 뒤로 갈수록 가파르다 - 마지막 한 단이
+   쉬우면 바다에 나갈 까닭이 없어진다. */
+const UPGRADES = [
+  { id: "tank", cost: [260, 620] },
+  { id: "fins", cost: [180, 430] },
+  { id: "lamp", cost: [210, 500] },
+  { id: "line", cost: [160, 380] },
+  { id: "bait", cost: [320, 760] },
+];
+const UP_MAX = 2;
+const upLv = k => (save.up && save.up[k]) || 0;
+const heartMax = () => 10 + upLv("tank") * 2;   /* 반 칸이 1 이므로 다섯 개 */
+const swimMul = () => 1 + upLv("fins") * .15;
+const lampAdd = () => upLv("lamp") * 16;
+const rangeAdd = () => upLv("line") * 26;
+const rareMul = () => Math.pow(1.9, upLv("bait"));
+
 const RARE_CHANCE = .006;   /* 변이. 색을 잃고 흰빛으로 태어난다 - 이백에 하나 */
 
 class Being {
@@ -2271,7 +2297,7 @@ class Being {
     this.dir = Math.random() < .5 ? 1 : -1;
     /* 크기. 같은 종도 새끼와 다 자란 것이 있다. 정수배라야 도트가 산다. */
     this.sc = pick(SPR_SIZES[this.def.name] || K.sizes || [1]);
-    this.rare = !!K.pal && Math.random() < RARE_CHANCE;
+    this.rare = !!K.pal && Math.random() < RARE_CHANCE * rareMul();
     /* 도안에 제 색이 있으면 그것을 먼저 쓴다. 참다랑어는 등이 검푸르고
        배가 은빛인 것이 그 물고기의 생김새라, 다른 작은 물고기처럼 아무
        색이나 입히면 참다랑어로 보이지 않는다. 희귀 개체는 그대로 흰빛. */
@@ -2521,7 +2547,9 @@ const SAVE_KEY = "atseadot.v4";
 
 function emptySave() {
   return { seen: {}, caught: {}, rare: {}, at: {}, titles: {},
-           stat: { snap: 0, seabed: 0 }, chest: 0, deepest: 0 };
+           stat: { snap: 0, seabed: 0 }, chest: 0, deepest: 0,
+           /* 팔기 전까지 수족관에 머무는 것들과, 그것으로 산 것 */
+           coin: 0, up: {}, hold: {}, holdR: {}, stocked: 0 };
 }
 function normalizeSave(value) {
   const out = emptySave();
@@ -2536,7 +2564,22 @@ function normalizeSave(value) {
     if (out.caught[id] || out.rare[id]) out.seen[id] = 1;
     if (record(value.at) && count(value.at[id]) && value.at[id] <= MAX_METRES)
       out.at[id] = value.at[id];
+    /* 수족관에 든 것은 잡은 수를 넘을 수 없다. 손으로 고친 저장값이
+       들어와도 없는 물고기를 팔지는 못하게 한다. */
+    for (const field of ["hold", "holdR"]) {
+      const cap = field === "hold" ? (out.caught[id] || 0) - (out.rare[id] || 0)
+                                   : (out.rare[id] || 0);
+      if (record(value[field]) && count(value[field][id]) && cap > 0)
+        out[field][id] = Math.min(value[field][id], cap);
+    }
   }
+  if (count(value.coin)) out.coin = value.coin;
+  if (record(value.up)) {
+    for (const u of UPGRADES)
+      if (count(value.up[u.id]) && value.up[u.id] > 0)
+        out.up[u.id] = Math.min(UP_MAX, value.up[u.id]);
+  }
+  out.stocked = flag(value.stocked) ? 1 : 0;
   if (record(value.titles)) {
     const ids = Object.keys(TITLE_TEXT.en);
     for (const track of ["plain", "rare"])
@@ -2554,6 +2597,20 @@ function normalizeSave(value) {
 let save = emptySave();
 try { save = normalizeSave(JSON.parse(localStorage.getItem(SAVE_KEY))); }
 catch (e) { /* Unreadable storage or JSON starts with a valid in-memory record. */ }
+stockAquarium();
+/* 수족관이 생기기 전에 잡아 둔 것을 한 번만 옮겨 싣는다. 이것이 없으면
+   여태 잡은 것이 수족관에 하나도 없어, 전부 사라진 것처럼 보인다. */
+function stockAquarium() {
+  if (save.stocked) return;
+  save.stocked = 1;
+  for (const id of Object.keys(save.caught)) {
+    const rare = save.rare[id] || 0;
+    const plain = (save.caught[id] || 0) - rare;
+    if (plain > 0) save.hold[id] = plain;
+    if (rare > 0) save.holdR[id] = rare;
+  }
+}
+
 let saveTimer = 0;
 function flushSave() {
   clearTimeout(saveTimer);
@@ -3278,7 +3335,7 @@ function drawDarkness() {
   const maxA = night * .80;
   const px0 = lampX(), py0 = lampY();
   /* 등불이 닿는 자리. 좁으면 바닥이 보이지 않아 헤엄칠 데를 못 고른다. */
-  const R = (player.role === "boat" ? 78 : 88) + Math.sin(clock * 2) * 2.4;
+  const R = (player.role === "boat" ? 78 : 88) + lampAdd() + Math.sin(clock * 2) * 2.4;
   g.save();
   for (let y = 0; y < SH; y += DARK_BLOCK) {
     for (let x = 0; x < SW; x += DARK_BLOCK) {
@@ -4424,7 +4481,7 @@ function stepSpear(u) {
   }
   spear.x += spear.dir * SPEAR_SPEED * u;
   spear.gone += SPEAR_SPEED * u;
-  if (spearHit() || spear.gone >= SPEAR_RANGE ||
+  if (spearHit() || spear.gone >= SPEAR_RANGE + rangeAdd() ||
       spear.x < 2 || spear.x > worldW() - 2) spear.back = 1;
 }
 

@@ -23,7 +23,7 @@ scripts/
   generate-icons.mjs     # SVG 원본에서 PNG 아이콘 재생성
 package.json             # 로컬 실행·검증·배포 명령
 package-lock.json         # Wrangler 의존성 버전 고정
-wrangler.jsonc           # Pages 프로젝트와 배포 폴더 설정
+wrangler.jsonc           # Workers 정적 자산 프로젝트와 배포 폴더 설정
 .node-version            # Node.js 24
 ```
 
@@ -38,7 +38,7 @@ npm ci
 npm run dev
 ```
 
-브라우저에서 <http://127.0.0.1:8788>을 엽니다. Wrangler가 Pages의 정적 파일, 리다이렉트, 응답 헤더를 함께 실행합니다. 로컬 실행에는 Cloudflare 로그인이 필요하지 않습니다.
+브라우저에서 <http://127.0.0.1:8788>을 엽니다. Wrangler가 Workers Static Assets의 정적 파일, 리다이렉트, 응답 헤더를 함께 실행합니다. 로컬 실행에는 Cloudflare 로그인이 필요하지 않습니다.
 
 ```sh
 npm run build
@@ -120,9 +120,9 @@ npm run icons:generate
 
 생성된 PNG를 배포 파일에 포함하므로 일반 빌드에서는 다시 생성하지 않습니다. 홈 화면에 추가하면 `At Sea DOT` 이름과 아이콘을 사용하고 `/`에서 게임을 엽니다. 이 설정은 아이콘·실행 정보이며 오프라인 캐시는 포함하지 않습니다.
 
-## Cloudflare Pages: Git 연동
+## Cloudflare Workers: Git 연동
 
-이 프로젝트를 GitHub 또는 GitLab 저장소에 올리고 Cloudflare 대시보드의 **Workers & Pages → Create application → Pages → Import an existing Git repository**에서 연결합니다.
+이 프로젝트를 GitHub 또는 GitLab 저장소에 올리고 Cloudflare 대시보드의 **Workers & Pages → Create application → Import a repository**에서 연결합니다.
 
 | 설정 | 값 |
 | --- | --- |
@@ -130,29 +130,21 @@ npm run icons:generate
 | Production branch | 저장소의 기본 브랜치, 예: `main` |
 | Root directory | 저장소 루트, 하위 폴더 지정 없음 |
 | Build command | `npm run build` |
-| Build output directory | `site` |
-| Deploy command를 입력해야 하는 새 빌드 설정 | `npm run deploy:pages` |
+| Deploy command | `npx wrangler deploy` |
 | 환경 변수 | 필요 없음 |
 
-`wrangler.jsonc`의 프로젝트 이름은 `atseadot`입니다. 다른 이름의 Pages 프로젝트를 사용하면 이 파일의 `name`도 해당 이름으로 맞춥니다.
+`wrangler.jsonc`의 프로젝트 이름은 `atseadot`이며 `assets.directory`가 배포 결과물인 `site/`를 가리킵니다. 따라서 Cloudflare의 기본 Workers 배포 명령인 `npx wrangler deploy`도 별도 인자 없이 정적 사이트를 찾습니다. 다른 이름의 프로젝트를 사용하면 이 파일의 `name`도 해당 이름으로 맞춥니다.
 
-배포 명령에는 `npx wrangler deploy`를 사용하지 않습니다. 이 명령은 Workers 배포 명령이므로 Pages 프로젝트의 정적 결과물 위치를 찾지 못해 `Missing entry-point to Worker script or to assets directory` 오류가 발생합니다. 대시보드에 **Deploy command** 항목이 표시되면 위 표처럼 `npm run deploy:pages`로 설정합니다. 이 스크립트는 `site/`를 `wrangler.jsonc`에 지정된 Pages 프로젝트에 명시적으로 업로드합니다.
+## Cloudflare Workers: 직접 배포
 
-## Cloudflare Pages: 직접 업로드
-
-대시보드의 직접 업로드를 사용하면 `site` 폴더를 업로드합니다. 로컬에서 빌드를 추가로 실행할 필요는 없습니다.
-
-Wrangler로 업로드할 때는 먼저 로그인하고, 아직 프로젝트가 없다면 한 번 생성합니다.
+Wrangler로 업로드할 때는 먼저 로그인합니다.
 
 ```sh
 npx wrangler login
-npx wrangler pages project create atseadot --production-branch main
-npm run deploy -- --branch main
+npm run deploy
 ```
 
-이미 프로젝트가 있다면 생성 명령은 생략합니다. `deploy`는 검증 후 `site` 폴더를 `wrangler.jsonc`에 지정된 Pages 프로젝트에 업로드합니다. 미리보기 배포에는 `--branch preview`처럼 별도 브랜치 이름을 사용합니다. Cloudflare 빌드 단계처럼 검증이 이미 끝난 환경에서는 `npm run deploy:pages -- --branch main`을 사용해 검증을 중복 실행하지 않을 수 있습니다.
-
-직접 업로드로 만든 프로젝트에 Git 자동 배포를 연결하려면 Git 연동 프로젝트를 새로 만들어야 합니다. 기존 Git 연동 프로젝트에는 Wrangler로 수동 배포할 수 있지만, 대시보드의 드래그 앤 드롭 업로드는 사용할 수 없습니다.
+`deploy`는 검증 후 `site` 폴더를 `wrangler.jsonc`에 지정된 Worker의 정적 자산으로 업로드합니다. Cloudflare 빌드 단계처럼 검증이 이미 끝난 환경에서는 `npx wrangler deploy`를 사용해 검증을 중복 실행하지 않을 수 있습니다.
 
 ## 배포 확인
 
@@ -166,7 +158,6 @@ npm run deploy -- --branch main
 
 ## 공식 문서
 
-- [Pages 정적 HTML 배포](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/)
-- [Pages Wrangler 설정](https://developers.cloudflare.com/pages/functions/wrangler-configuration/)
-- [Pages 직접 업로드](https://developers.cloudflare.com/pages/get-started/direct-upload/)
-- [Pages 리다이렉트](https://developers.cloudflare.com/pages/configuration/redirects/)
+- [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
+- [Static Assets 구성](https://developers.cloudflare.com/workers/static-assets/binding/)
+- [Static Assets 리다이렉트](https://developers.cloudflare.com/workers/static-assets/redirects/)

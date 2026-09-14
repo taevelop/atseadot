@@ -93,9 +93,11 @@ test('action fires on the second finger down without waiting for release or doub
   app.context.testPad = pad; app.context.testButton = button;
   app.run(`startRun("diver"); closeMsg(); initDial(testPad); bindPrimaryAction(testButton);
     globalThis.fish=beings.find(b=>b.K.catchable); beings=[fish];
-    fish.x=player.x+DV_CX+14-fish.w/2; fish.y=player.y+DV_CY-fish.h/2;`);
+    fish.x=player.x+DV_CX+40-fish.w/2; fish.y=player.y+16-fish.h/2;`);
   pad.emit('pointerdown', { pointerId: 1, clientX: 98 });
   button.emit('pointerdown', { pointerId: 2, isPrimary: false });
+  // 작살은 쏜 자리에서 잡지 않는다. 물고기에 닿을 때까지 나아간다.
+  app.run('for (let i = 0; i < 12 && mode !== "catch"; i++) stepSpear(1);');
   assert.equal(app.run('mode'), 'catch');
   assert.equal(app.run('save.caught[fish.gid]'), 1);
   button.emit('pointerdown', { pointerId: 3, isPrimary: false });
@@ -127,11 +129,11 @@ test('focus loss releases a held action button so the next press can act again',
   app.context.testButton = button;
   app.run('startRun("diver"); closeMsg(); beings=[]; bindPrimaryAction(testButton)');
   button.emit('pointerdown');
-  assert.ok(app.run('player.net') > 0);
+  assert.ok(app.run('spear.on') > 0);
   app.emit('blur');
   assert.equal(button.classes.has('is-pressed'), false);
   assert.equal(button.captured.size, 0);
-  app.run('player.net=0');
+  app.run('spear.on=0');
   button.emit('pointerdown', { pointerId: 2 });
-  assert.ok(app.run('player.net') > 0);
+  assert.ok(app.run('spear.on') > 0);
 });

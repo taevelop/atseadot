@@ -89,8 +89,9 @@ const C = {
   frame:     "#b8d0f0",   /* 창틀 밝은 선 */
   frameDim:  "#5a7bb0",
   text:      "#eaf2ff",
-  textDim:   "#b4c8e4",
+  textDim:   "#8fa8c8",
   textWarn:  "#ffd45e",
+  coin:      "#ffcf3d",   /* 판 값 */
   textShadow:"#0a0e18",
   sand:      "#c9a86a",
   sandDark:  "#8f7442",
@@ -189,485 +190,658 @@ function spr(name, rows) {
 }
 
 /* ---- 작은 물고기들. 머리가 오른쪽이다 ---- */
-spr("fish3", [        /* 고비 - 등지느러미와 뒷지느러미가 몸 밖으로 돋고, 꼬리 앞이 잘록하다 */
-  "........oo......",
-  ".o.....orro.....",
-  "oro....orrroo...",
-  "orro..oodddddo..",
-  "orrroodddddwkdo.",
-  ".orrddddlllllldo",
-  "..ormmllmmmmmooo",
-  ".orrhllmlrrrllho",
-  "orrrohhllrrrlho.",
-  "orro.oohhhhhho..",
-  "oro...orroooo...",
-  ".o....oro.......",
-  ".......o........",
+spr("fish3", [        /* 고비 - 통통한 산호초 물고기. 갈라진 부채꼬리 */
+  "..........orrrro.....",
+  "o........orrrrro.....",
+  "roo......orrddddoo...",
+  "rrro....odddddddddo..",
+  "orrroooodddddddddddo.",
+  "orrrrrrddddmmmmmddddo",
+  ".orrrrddmmmmmmmmkkmdo",
+  ".orrrrmmmmmmmmmmkkmmo",
+  ".orrrrllmmmmmmmmmmmlo",
+  "orrrrrrllllmmmmmllllo",
+  "orrroooolllllrrrrrro.",
+  "rrro....ollllrrrrro..",
+  "roo......orrllrrrro..",
+  "o.........orrrrrro...",
+  "...........ooorro....",
+  ".............oro.....",
 ]);
-spr("fish5", [        /* 흰동가리 - 둥근 몸에 흰 띠 셋. 주신 시트의 그것 */
-  ".........ooooo.......",
-  ".o......orrrrro......",
-  "oro.....orrrrrro.....",
-  "orro...orddwwddwoo...",
-  "orrro.owwddwwddwwdoo.",
-  "orrrrodwwddwwddwwdddo",
-  ".orrrddwwmmwwmmwkmddo",
-  "..orrmmwwmmwwmmwwmooo",
-  ".orrrhlwwmmwwrrwwlmlo",
-  "orrrrohwwllwwrrwwllho",
-  "orrro.owwllwwlrwwhho.",
-  "orro..orwhhwwhhwwoo..",
-  "oro....orrrrooooo....",
-  ".o.....orrro.........",
-  "........ooo..........",
+spr("fish5", [        /* 흰동가리 - 굵은 흰 띠 둘 */
+  "............orrrro.......",
+  "............orrrrro......",
+  "oo.........orrrrrrro.....",
+  "rro.......orrrddwwddoo...",
+  "orro......odwwddwwddddo..",
+  "orrroo...oddwwddwwdddddo.",
+  "orrrrrooodddwwddwwdddddo.",
+  ".orrrrrddddmwwmmwwmmkkddo",
+  ".orrrrrddmmmwwmmwwmmkkmdo",
+  ".orrrrrmmmmmwwmmwwmmmmmmo",
+  ".orrrrrlmmmmwwmmwwmmmmmlo",
+  ".orrrrrlllmmwwmmwwmmmlllo",
+  "orrrrrooolllwwmmwwmllllo.",
+  "orrroo...ollwwlrrrrrrrlo.",
+  "orro......olwwllrrrrrro..",
+  "rro........orrllrrrrro...",
+  "oo..........orrrrrrrro...",
+  ".............orrrrrro....",
+  "..............ororro.....",
+  "...............ooro......",
 ]);
-spr("tuna", [         /* 참다랑어 - 방추형 몸, 등과 배의 곁지느러미, 초승달 꼬리 */
-  ".o...............ooo..........",
-  "oro.............orrro.........",
-  "orro.......oo.ooorrrroo.......",
-  "orrro....oorrorddddddddoo.....",
-  "orrrro..oroddddddddddddddooo..",
-  ".orrrrooddddddddddddddddddddo.",
-  "..orrrdddddmmmdllllllllwwddddo",
-  "...orrmmmllllllmmmmmmmmwkloooo",
-  "..orrrhhllmlllmmrrrrrmmmlmllho",
-  ".orrrroohhllllllrrrrrlllllhho.",
-  "orrrro..orhhhhllllllrlllhhoo..",
-  "orrro....oorrohhhhhhhhhhoo....",
-  "orro.......ooorrrroooooo......",
-  "oro...........orrro...........",
-  ".o.............ooo............",
+spr("tuna", [         /* 참다랑어 - RefImage/images.png 에서 그대로 떴다.
+                         등이 검푸르고 배가 은빛, 꼬리는 가는 자루에 달린 초승달 */
+  ".....................o..........",
+  "..................ooodo.........",
+  ".o...........oo..odddddo........",
+  "odoo......o.oddoommmmmmmoooo....",
+  ".oddo....odomdmmmmmmmmmmdmmdoo..",
+  "..oddo..oodmmmmmmmmdmmmdmmmkkmo.",
+  "...oddoodmmmmmlllldddddddllkkmmo",
+  "..odddodmllllllllllddddddlllllmo",
+  ".oddoo.oooldllhhhllldddddllllmo.",
+  "odoo......oddddhhhhhhhhmdlllmo..",
+  ".o........oddoooooodhhhhmoooo...",
+  "...........odo.....oooooo.......",
 ]);
-spr("puffer", [       /* 복어 - 온전한 공에 사방으로 돋은 가시 */
-  ".......o...o......",
-  ".....ooro.oroo....",
-  "....oroororooro...",
-  "..o.oroodddooro.o.",
-  ".oro.odddddddo.oro",
-  "..orodddddddddoro.",
-  ".ooodddddddddddo..",
-  "orrmmmmmmmmmwwmmo.",
-  "orrmmmmmmmmmwkmmo.",
-  "orrmmmmmmmmmmmmmo.",
-  "orrmmmmmmmmmmmmmo.",
-  "orrllllllllloollo.",
-  ".ooolllllllllllo..",
-  "..orollllllllloro.",
-  ".oro.ohhhhhhho.oro",
-  "..o.oroohhhooro.o.",
-  "....oroororooro...",
-  ".....ooro.oroo....",
-  ".......o...o......",
+spr("puffer", [        /* 복어 - 가시가 몸에 붙어 사방으로 선다 */
+  "........o..oo..oo.........",
+  ".......oroorroorro........",
+  ".....ooorrorrrrrrooo......",
+  "....orrorrrrdrrrrrrro.....",
+  "....orrrdddddddddrrro.....",
+  "...oorrdddddddddddrooo....",
+  "..orrrdddddddddddddrrro...",
+  "..orrdddddmmmmmmkkkdro....",
+  ".ooordmmmmmmmmmmkkkdrro...",
+  "orrrmmmmmmmmmmmmkkkrrrro..",
+  ".orrmmmmmmmmmmmmmmmrrrro..",
+  "..ormmmmmmmmmmmmmmmrrrrro.",
+  ".orrmmmmmmmmmmmmmmmrrrrro.",
+  "..orllmmmmmmmmmrrrmrroorro",
+  "...orlllllmmmrrrrrllrrooo.",
+  "..orrlllllllllrrrrllrro...",
+  "...ooolllllllllrrrlroo....",
+  "....orrllllllllrrlrro.....",
+  "....orrrlllllllrrorro.....",
+  ".....ooorrrrlrorrooo......",
+  ".......orroorrooro........",
+  "........oo..oo..o.........",
 ]);
-spr("marlin", [       /* 청새치 - 긴 부리와 돛 지느러미. 몸은 길이의 육분의 일만큼만 깊다 */
-  "orro..........o.................",
-  ".orro.......ooroo...............",
-  ".orro.....oorrrrroo.............",
-  "..orro...orrrrrrrrro............",
-  "..orro..orrrrrrrrrrro...........",
-  "...orro.orrrrrrrrrrro...........",
-  "...orrooorrdddddddddooooo.......",
-  "....orrddddddddddddddddddooooo..",
-  "...omrrddddddddddddddddwkllllloo",
-  "...ommmmmmmmmmmmmmmmmmmmmlllllll",
-  "...omrrllllllllllllllllllooooooo",
-  "....orrllllllllllllllllllo......",
-  "...orrooooolllllllllooooo.......",
-  "...orro....orrrrrooo............",
-  "..orro......ooooo...............",
-  "..orro..........................",
-  ".orro...........................",
+spr("marlin", [        /* 청새치 - 초승달 꼬리와 낮은 돛, 긴 부리 */
+  "...............................ooo..........................................",
+  "..............................orrrooo.......................................",
+  ".oo..........................orrrrrrroo.....................................",
+  "orroo........................orrrrrrrrroo...................................",
+  ".orrrooo....................orrrrrrrrrrrro..................................",
+  "..orrrrroo.................orrrrrrrrrrrrrro.................................",
+  "...orrrrrro................orrrrrrrrrrrrrrroo...............................",
+  "....orrrrrroo.............orrrrrrrrrrrrrrrrrro..............................",
+  ".....orrrrrrro...........orrrrrrrrrrrrrrrrrrrro.............................",
+  "......orrrrrrro........oorrrrrrrrrrrrrrrrrrrrrro............................",
+  ".......orrrrrrro......orrrrrrdddddddddmmmmddddoooo..........................",
+  "........orrrrrrroo.ooorrrdddddmmmmmmmmmmmmmmmmmdddoo........................",
+  ".........orrrrrrrrorrrrddddmmmmmmmmmmmmmmmmmmmmmmdddo.......................",
+  ".........orrrrrrrrroodddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmoo.....................",
+  "..........orrrrrrrrddmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkmddo....................",
+  "...........orrrrrddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkmmdo....................",
+  "...........orrrrrdmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkmmmmooooooooooooooooooo.",
+  "............orrrddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllo",
+  "............orrrllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllo",
+  "...........orrrrrllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlooooooooooooooooooooo.",
+  "...........orrrrrllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllo......................",
+  "..........orrrrrrrrlllllmmmmmmmmmmmmmmmmmmmmmmmmmlllo.......................",
+  "..........orrrrrrroolllllllmmmmmmmmmmmmmmmmmmmmmlloo........................",
+  ".........orrrrrrro..olllllllllmmmmmmmmmmmmmllllllo..........................",
+  "........orrrrrrro..orrrlllllllllllllllllllllllloo...........................",
+  "........orrrrrro...orrrrrlllllllllllllllllllloo.............................",
+  ".......orrrrrro.....orrrrrrorlllllllllllloooo...............................",
+  "......orrrrrro.......orrrro.orrrrrrrroooo...................................",
+  ".....orrrrroo........orrro..orrrrrrro.......................................",
+  ".....orrrro..........orro...orrrrrro........................................",
+  "....orrroo............oo....orrrrro.........................................",
+  "...orrro....................orrroo..........................................",
+  "..orooo.....................orro............................................",
+  "...o.........................oo.............................................",
 ]);
-spr("tang", [         /* 블루탱 - 원반 몸, 노란 꼬리, 눈을 지나는 검은 띠 */
-  ".........ooooo........",
-  "........orrrrrooo.....",
-  ".o.....oorrrrrrrro....",
-  "oro...orrdddddoodoo...",
-  "orro..odddddddoodddo..",
-  "orrrooddddddddoowwddo.",
-  ".orrrodddmmmmmoowkdddo",
-  ".orrrdmmmmmmmmoommmmdo",
-  "..orrmmmmmmmmmoommmooo",
-  ".orrrhlmmmmmrroommmllo",
-  ".orrrolllllllloollllho",
-  "orrroohlllllrroolllho.",
-  "orro..ohhhhhhhoohhho..",
-  "oro...orhhhhhhoohoo...",
-  ".o.....orrrrrrrro.....",
-  "........orrrrroo......",
-  ".........ooooo........",
+spr("tang", [        /* 블루탱 - 높고 둥근 몸에 등의 가시줄 */
+  "..............orrrro.......",
+  ".............orrrrrro......",
+  "............orrrrrrrro.....",
+  ".oo........orrrdddddro.....",
+  "orro.......ordddddddddoo...",
+  "orrro.....odddddddddddddo..",
+  ".orrro....odddddddddddddo..",
+  ".orrrroo.odddddddddddddddo.",
+  "..orrrrroodddmmmmmmmmddddo.",
+  "..orrrrrdddmmmmmmmmmmmkkddo",
+  "..orrrrrddmmmmmmmmmmmmkkmdo",
+  "..orrrrrmmmmmmmmmmmmmmmmmmo",
+  "..orrrrrlmmmmmmmmmmmmmmmmlo",
+  "..orrrrrlllmmmmmmmmmmmmlllo",
+  "..orrrrroollmmmmmmmmmmlllo.",
+  ".orrrroo.olllllmmmmllllllo.",
+  ".orrro....olllllllllllllo..",
+  "orrro.....olllllrrrrrrrlo..",
+  "orro.......orllllrrrrrro...",
+  ".oo.........orrllrrrrro....",
+  ".............orrrrrrrro....",
+  ".............orrrrrrro.....",
+  "..............orrrrro......",
+  "...............oooro.......",
 ]);
 
-spr("lantern", [      /* 발광어 - 배를 따라 발광점이 늘어선다 */
-  "........oo......",
-  ".......orro.....",
-  ".oo....orroo....",
-  "orro..ooddddoo..",
-  "orrroodddddwkdo.",
-  ".orrddddmmmmdddo",
-  "..ormmmmmmmmmooo",
-  ".orrhhymlrrrmlho",
-  "orrroohlyryryho.",
-  "orro..ohhhhhho..",
-  ".oo...orroooo...",
-  ".......oo.......",
+spr("lantern", [        /* 발광어 - 배를 따라 발광점이 늘어선다 */
+  "..........orro.....",
+  ".o.......orrro.....",
+  "oro.....orrdddoo...",
+  "orrooo.oddddddddo..",
+  ".orrrroddddddddddo.",
+  ".orrrrdddmmmmmkkddo",
+  "..orrrmmmmmmmmkkmmo",
+  ".orrrrlllmmmmmmmllo",
+  ".orrrrolylylyllllo.",
+  "orrooo.ollllllllo..",
+  "oro.....orrllloo...",
+  ".o.......orroo.....",
+  "..........oo.......",
 ]);
 
 /* ---- 해파리. 종 모양 삿갓에 실 같은 촉수 ---- */
-spr("jelly", [        /* 해파리 - 줄무늬 갓, 톱니 갓끝, 곧게 내린 구완과 긴 촉수 */
-  "....ooooo....",
-  "..oohhhhhoo..",
-  ".ohhhhhhhhho.",
-  ".ohhlhhlhhho.",
-  "ohhlhhlhhlhho",
-  "ohlhhlhhlhhlo",
-  "ohlhhlhhlhhlo",
-  "olmhlmhlmhlmo",
-  "ommmmmmmmmmmo",
-  "oo.ooo.ooo.oo",
-  "l..ww...ww..l",
-  "l..ww...ww..l",
-  ".l.ww...ww.l.",
-  ".l.ww...ww.l.",
-  "..l.ww.ww..l.",
-  "..l.ww.ww.l..",
-  "...l.www..l..",
-  "...l..w...l..",
+spr("jelly", [        /* 해파리 - 갓에 세로줄, 아랫단이 물결치고 촉수가 길게 늘어진다 */
+  ".........ooooooo.........",
+  ".......oohhhhhhhoo.......",
+  ".....oohhhhhhhhhhhoo.....",
+  "....ohhhllhhhhhllhhho....",
+  "...ohhhhllhhhhhllhhhho...",
+  "..olhhhhllhhhhhllhhhhlo..",
+  "..olhhhkkkhhhhhkkkhhhlo..",
+  ".ollhhhkkkhhhhhkkkhhhllo.",
+  ".ollhhhkkkhhhhhkkkhhhllo.",
+  "ohllhhhhllhhhhhllhhhhllho",
+  "ohllhhhhllhhhhhllhhhhllho",
+  "ommmmmmmmmmmmmmmmmmmmmmmo",
+  "ommmmmmmmmmmmmmmmmmmmmmmo",
+  "mmmmmmmmmmlmmmlmmmmmmmmmm",
+  "oommmmmmmmmmmllmmmlmmmmmo",
+  "..mmmmmmmlmmmlllmmlmmmm..",
+  "...mmmmmmlmm.lllmmm.mmm..",
+  "...mmmmmm.mm.ll.mmm.mm...",
+  "....mmmmllmmmlllmmmmmm...",
+  "....mmmmllmmmllllmmmm....",
+  "....mmmmlllmmmlllmmmm....",
+  "....mmmmllllmmlllmmmm....",
+  "....mmmmllllmmlllmmm.....",
+  "....mmmmmlllmmmlmmmm.....",
+  "....mm.mmllllmmlmmmm.....",
+  "....mm.mmmlllmmlmmmmm....",
+  "...mmm..mmlllmmmm..mm....",
+  "...mmm..mmmllmmmm..mm....",
+  "...mmm...mmllmmmm..mm....",
+  "...m.mm..mmmlmmmm...mm...",
+  "..mm.mm...mmlmmmm...mm...",
+  "..mm.mmm..mmlmmmm...mm...",
+  "..mm..mm...mmm..mm...m...",
+  "...m...mm..mmm..mm...m...",
+  "...mm..mm..mmm..mm...m...",
+  "...mm...mm.mmm...mm.mm...",
+  "....m...mm.m.m...mm.mm...",
+  "....mm...mmm.mm...m.m....",
+  ".....m...mm..mm...m.m....",
 ]);
 
 /* ---- 해마 ---- */
 spr("seahorse", [     /* 해마 - 왕관·긴 주둥이·고리 몸통·똬리 튼 꼬리 */
   "...o.o.o......",
-  "..ooooooo.....",
-  ".oolllllo.....",
-  ".olwkdddo.....",
-  ".oddddddoooo..",
+  "..odododo.....",
+  ".odlllllo.....",
+  ".olkkdddo.....",
+  ".odddddddooo..",
   ".oddllldlllo..",
   "..odlldoo.....",
   "..odlro.......",
-  ".oodllro......",
-  "oolddllro.....",
+  ".oddllro......",
+  "odlddllro.....",
   "olddllro......",
   "odddllo.......",
   ".oddllo.......",
   "..oddlo.......",
-  "..oddloo......",
-  "...oddloo.....",
+  "..oddldo......",
+  "...oddldo.....",
   "...od.dlo.....",
   "...odd.do.....",
   "....oddo......",
   ".....oo.......",
 ]);
 
-spr("squid", [        /* 오징어 - 짧은 팔 다발에, 바깥으로 둥글게 휘는 긴 촉수 둘 */
-  "...........ohmdo...........",
-  "..........ohhmddo..........",
-  ".........oohhmddoo.........",
-  ".......oollhhmmdlloo.......",
-  "......olllhhhmmddlllo......",
-  "......olllhhhmmddlllo......",
-  ".....ollllhhhmmddllllo.....",
-  "......olllhhmmmddlllo......",
-  "......olllhhmmmddlllo......",
-  "......ollhhhmmmdddllo......",
-  ".......oohhhmmmdddoo.......",
-  "........ohhhmmmdddo........",
-  "........ohhhmmmdddo........",
-  ".........ohhmmmddo.........",
-  ".........ohhhmmddo.........",
-  "........ommmmmmmmmo........",
-  "........omwkmmmkwmo........",
-  "........ommmmmmmmmo........",
-  "........ommmmmmmmmo........",
-  "........omommommomo........",
-  "........ommomomommo........",
-  ".......omomomomomomo.......",
-  ".......omdodo.ododmo.......",
-  ".......omdodo.ododmo.......",
-  "......odo.........odo......",
-  "....odo.............odo....",
-  "..odo.................odo..",
-  "..oldo...............odlo..",
-  ".olllo...............olllo.",
-  "..ooo.................ooo..",
+spr("squid", [        /* 오징어 - 꼭대기의 삼각 지느러미, 아래로 퍼지는 부챗살 팔 */
+  ".........odo.........",
+  ".........odo.........",
+  "........odhdo........",
+  ".......odmhmdo.......",
+  "......oddmhmddo......",
+  "......oddmhmddo......",
+  ".....odddmhmdddo.....",
+  "....odddmmhmmdddo....",
+  "...oddddmmhmmddddo...",
+  "..odddddmhhhmdddddo..",
+  "...oodddmhhhmdddoo...",
+  ".....oddmhhhmddo.....",
+  ".....odmmhhhmmdo.....",
+  ".....odmmhhhmmdo.....",
+  "....oddmmhhhmmddo....",
+  "....oddmmhhhmmddo....",
+  "....oddmmhhhmmddo....",
+  "....oddmmhhhmmddo....",
+  "....oddmmhhhmmddo....",
+  "...oddmmmhhhmmmddo...",
+  "....odmmmmmmmmmdo....",
+  ".....okkmmmmmkko.....",
+  "....odmmmmmmmmmdo....",
+  "...odmmmmmmmmmmmdo...",
+  ".oodddmmmmmmmmmdddoo.",
+  "oddddddmmmmmmmmmddddo",
+  ".oodddmmmmdmmmmdddoo.",
+  "...oddddmdddmddddo...",
+  "...oddddddoddddddo...",
+  "..odoodddo.odddoodo..",
+  "...o..odo...odo..o...",
+  ".....odo.....odo.....",
 ]);
 
-spr("octopus", [      /* 문어 - 달걀꼴 머리에 까만 점 눈 둘 */
-  ".........ohhhhho..........",
-  "........ohhhhhhho.........",
-  ".......ohhhhhhhhho........",
-  "......omhhhhhhhhhmo.......",
-  "......ommhhhhhhhmmo.......",
-  ".....ommmmmhhhmmmmmo......",
-  ".....omkkmmmmmmmkkmo......",
-  ".....omkkmmmmmmmkkmo......",
-  "....odmmmmmmmmmmmmmdo.....",
-  "....odddmmmmmmmmmdddo.....",
-  "....ommmddmmmmmddmmmo.....",
-  "....ommmdmmmdmmmdmmmmo....",
-  "...ommmmommmommmommmmo....",
-  "...ommmmommmommmommmmo....",
-  "..omdmmoommmommmoomdddo...",
-  ".oodddo.ommmommmo.oddddo..",
-  "odddddo.odmmommdmo.oddddo.",
-  "dddddo.odddo.odddo..oddddo",
-  "ddddo..odddo.odddo...oddo.",
-  "odoo...odddo.odddo....oo..",
-  ".o.....odddo.odddo........",
-  ".......odddo.odddo........",
-  ".......oddddodddo.........",
-  "........oddo.odo..........",
-  ".........oo...o...........",
+spr("octopus", [        /* 문어 - 둥근 머리와 말려 올라간 팔 여덟. 목을 죄어 머리와 팔을 갈랐다 */
+  "...........ooooooo...........",
+  ".........oomhhhhhmoo.........",
+  "........omhhhhhhhhhmo........",
+  ".......ohhhhhhhhhhhhho.......",
+  "......omhhhhhhhhhhhhhmo......",
+  ".....omhhhhhhhhhhhhhhhmo.....",
+  ".....omhhhhhhhhhhhhhhhmo.....",
+  "....ommhhhhhhhhhhhhhhhmmo....",
+  "....ommhkkkhhhhhhhkkkhmmo....",
+  "....ommmkkkhhhhhhhkkkmmmo....",
+  "....ommmkkkhhhhhhhkkkmmmo....",
+  "....ommmmmmmmmmmmmmmmmmmo....",
+  "....ommmmmmmmmmmmmmmmmmmo....",
+  ".....ommmmmmmmmmmmmmmmmo.....",
+  "...ooommmmmmmmmmmmmmmmmooo...",
+  ".oodddddddddddddddddddddddoo.",
+  "odddddddddddddddddddddddddddo",
+  ".oooooodddddddddddddddoooooo.",
+  ".....odddddddddddddddddo.....",
+  "....odddddddddddddddddddo....",
+  "...odddoodddddddddddoodddo...",
+  "...oddoodddoddoddodddooddo...",
+  "....ooodddooddoddoodddooo....",
+  "......oddo.oddoddo.oddo......",
+  ".....oddo..oddoddo..oddo.....",
+  "....oddo...oddoddo...oddo....",
+  "....odo....oddoddo....odo....",
+  ".....o......ododo......o.....",
+  ".............o.o.............",
 ]);
 
 /* ---- 가오리. 날개를 젓는다 ---- */
-spr("ray", [          /* 가오리 - 옆모습. 날개를 내리친 참 */
-  "....................................",
-  "....................................",
-  "....................................",
-  "....................................",
-  "....................................",
-  "....................................",
-  "....................................",
-  "................ooooooooooooo.......",
-  ".............oooddddddddmmmmmo......",
-  "............odddmmmmmmmmmmmmmkoooo..",
-  "oooooooooooodmmllllllmmmmmmmmmmdmmo.",
-  "mmmmmmddddddlllllllmmmmmmmmmmmllmmmo",
-  "oooooooooooodmmllddddmmmmmmmmmmdooo.",
-  "............odddddddddmmmmmmmmoo....",
-  ".........oooddddddddddmmmmmmmo......",
-  ".......oodddddddddddddmmmmmoo.......",
-  "......oddddddddddddddmooooo.........",
-  ".......ooddddddoddoooo..............",
-  ".......odoooooo.oo..................",
-  "........o...........................",
-  "....................................",
-  "....................................",
+spr("ray", [        /* 가오리 - ray.jpg 에서 그대로 떠 왔다. 날개를 걷어올린 참 */
+  "....oddo..................................................................",
+  "...odddo..................................................................",
+  ".oodmddo..................................................................",
+  "odddmmdo..................................................................",
+  "odddmdo...................................................................",
+  "odddddo...................................................................",
+  "ddddddo...................................................................",
+  "ddddddo...................................oooooo..........................",
+  "odddddo.................................ooddddddo.........................",
+  "odddmmdo...............................omddddddddo........................",
+  "oddmmmdo.............................oommllllldmmdooo....ooooo............",
+  "oddmmmdo...........................oommllhhhhhlllmmddo.oodddddoo..........",
+  ".oddmmmdo.........................odmmllhhhhhhhhllllddoddddddddmo.........",
+  "..oddmmddo......................ooddmllhhhhhhhhhhhlllldddddlllmdo.........",
+  "...oddmmdo.....................odddmllhhhhhhhhhhhhhllllhhhlllllmdo........",
+  "....oddmmdoo..................oddddllhhhhhhhhhhhhhhhhhhhhhhhhhllmdo.......",
+  ".....oddmmddoooooooooooooooooodddmllllhhhhhhhhhhhhhhhhhhhhhhhhhllmmo......",
+  "......oddmmmmmddddddddddddddddddmmmmlllllllhhhllhhhhhhhhhhhhhhhhllmdo.....",
+  ".......odmmlllmddddmmdddddddddddmmmmllllllhhhhllhhhhhhhhmmmmhhhhhlmdo.....",
+  "........oddllllmmlllllllllllllllllllllllllllllllllhhhhllmmmmmmmhhhmdo.....",
+  ".........odddddmmlllllllllllllllllllllllllllllllllmmlllllhhhhmmmmmmmo.....",
+  "..........oodddddddddddlllllllllllmmllllllllllllllmmlllllhhhhhhmmmmmo.....",
+  "............ooooddddddddddddmmmmmmmmmllllllllllllmmlllllllllhhhhhhmdo.....",
+  "................oddddmddddddmmmmmmmmmllllmmmmmlllmllllllllllllhhhhhldo....",
+  "..............ooddddmmmmmlllllllllllllllmmmmmmmllllllllllllllllllhhhldo...",
+  "............ooddddlllmmmlllllllllllllllllllllmmllllllllmllllllllllhhhmdo..",
+  "...........oddddlllllllllllllllllllllllllllllllllllllllllllllllllllllmmo..",
+  "..........odddllllllllllllllllllllllllllllllllllmmmllllllllllmmmmlllllmdo.",
+  "..........oddllllllllllllllllllllllllllllllllllmmmmmllllllllmmmmmmllllmddo",
+  "..........odlllllmllllllllllllllllllllllllllllllllmmmlhhllllmmmmmmlllllmdo",
+  "..........odmmlddddllllllllllllllllllllllllllllllllmmdlkkllmmmmmmmllllllmo",
+  "...........ommoooodllllllllllllllldddlllllllllllllllmddkkhllmmmdddmmlllllo",
+  "............oo...ohhlllllllllllldddddllllllllllllllllmdddllmmmmmmmmmmllllo",
+  "..................ohllllllllllllddllllllllllllllllllllldddmmmmmmmmmmlllllo",
+  "...................ollllllllllmmdlllllllllllllllllllllllllmmmmmmmmmlllllo.",
+  "...................ollllllllmmmmlllllllllllllllllllllllllllllllllllllldo..",
+  "...................omlollmmmmmmldllhlllllllllllllllllllllllllllllhhlddo...",
+  "....................oo.ommmmmlldoddohllllllllllllllllllllllllllhllmooo....",
+  "........................ooollloo.oo.olhhlllllllllllllmllllllhhhlmoo.......",
+  "...........................ooo.......odhhllllllllllllllllllhhomoo.........",
+  "......................................odhhhlllllllllllllllooommo..........",
+  ".......................................oddhlhllllllllllloo...oo...........",
+  "........................................ooodllhhhhhhhhho..................",
+  "..........................................oddoooooohdddo..................",
+  "...........................................oo......oooo...................",
 ]);
-spr("ray2", [         /* 가오리 - 날개를 걷어올린 참. 둘을 번갈아 밟는다 */
-  "....................................",
-  "....................................",
-  "....................................",
-  "........o...........................",
-  ".......odoooooo.oo..................",
-  ".......ooddddddoddoooo..............",
-  "......oddddddddddddddmooooo.........",
-  ".......oodddddddddddddmmmmmoo.......",
-  ".........oooddddddddddmmmmmmmo......",
-  "............odddddddddmmmmmmmkoooo..",
-  "oooooooooooodmmllddddmmmmmmmmmmdmmo.",
-  "mmmmmmddddddlllllllmmmmmmmmmmmllmmmo",
-  "oooooooooooodmmllllllmmmmmmmmmmdooo.",
-  "............odddmmmmmmmmmmmmmmoo....",
-  ".............oooddddddddmmmmmo......",
-  "................ooooooooooooo.......",
-  "....................................",
-  "....................................",
-  "....................................",
-  "....................................",
-  "....................................",
-  "....................................",
+spr("ray2", [        /* 가오리 - 날개를 내린 참. 가까운 쪽 날개가 낮아 보인다 */
+  "....oddo..................................................................",
+  ".oodmddo..................................................................",
+  "odddmmdo..................................................................",
+  "odddmdo...................................................................",
+  "ddddddo...................................................................",
+  "ddddddo...................................oooooo..........................",
+  "odddddo.................................ooddddddo.........................",
+  "oddmmmdo.............................oommllllldmmdooo....ooooo............",
+  "oddmmmdo...........................oommllhhhhhlllmmddo.oodddddoo..........",
+  ".oddmmmdo.........................odmmllhhhhhhhhllllddoddddddddmo.........",
+  "..ooddmmdo.....................odddmllhhhhhhhhhhhhhllllhhhlllllmdo........",
+  "....oddmmdoo..................oddddllhhhhhhhhhhhhhhhhhhhhhhhhhllmdo.......",
+  ".....oddmmddoooooooooooooooooodddmllllhhhhhhhhhhhhhhhhhhhhhhhhhllmmo......",
+  "......oodmmlllmddddmmdddddddddddmmmmllllllhhhhllhhhhhhhhmmmmhhhhhlmdo.....",
+  "........oddllllmmlllllllllllllllllllllllllllllllllhhhhllmmmmmmmhhhmdo.....",
+  ".........odddddmmlllllllllllllllllllllllllllllllllmmlllllhhhhmmmmmmmo.....",
+  "..........ooooooddddddddddddmmmmmmmmmllllllllllllmmlllllllllhhhhhhmdo.....",
+  "............oooooddddmddddddmmmmmmmmmllllmmmmmlllmllllllllllllhhhhhldo....",
+  "............ooooddddmmmmmlllllllllllllllmmmmmmmllllllllllllllllllhhhldo...",
+  "............ooddddlllmmmlllllllllllllllllllllmmllllllllmllllllllllhhhmdo..",
+  "...........oddddlllllllllllllllllllllllllllllllllllllllllllllllllllllmmo..",
+  "..........odddllllllllllllllllllllllllllllllllllmmmllllllllllmmmmlllllmdo.",
+  "..........oddllllllllllllllllllllllllllllllllllmmmmmllllllllmmmmmmllllmddo",
+  "..........odlllllmllllllllllllllllllllllllllllllllmmmlhhllllmmmmmmlllllmdo",
+  "..........odmmlddddllllllllllllllllllllllllllllllllmmdlkkllmmmmmmmllllllmo",
+  "...........ommoooodllllllllllllllldddlllllllllllllllmddkkhllmmmdddmmlllllo",
+  "............oo...ohhlllllllllllldddddllllllllllllllllmdddllmmmmmmmmmmllllo",
+  "..................ohllllllllllllddllllllllllllllllllllldddmmmmmmmmmmlllllo",
+  "...................ollllllllllmmdlllllllllllllllllllllllllmmmmmmmmmlllllo.",
+  "...................ollllllllmmmmlllllllllllllllllllllllllllllllllllllldo..",
+  "...................omlollmmmmmmldllhlllllllllllllllllllllllllllllhhlddo...",
+  "....................oo.ommmmmlldoddohllllllllllllllllllllllllllhllmooo....",
+  "........................ooollloo.oo.olhhlllllllllllllmllllllhhhlmoo.......",
+  "...........................ooo.......odhhllllllllllllllllllhhomoo.........",
+  "......................................odhhhlllllllllllllllooommo..........",
+  ".......................................oddhlhllllllllllloo...oo...........",
+  "........................................ooodllhhhhhhhhho..................",
+  "..........................................oddoooooohdddo..................",
+  "...........................................oo......oooo...................",
 ]);
-
 /* ---- 바다거북. 둥근 등딱지에 갑판 무늬, 큰 물갈퀴 둘 ---- */
-spr("turtle", [       /* 바다거북 - 앞다리는 앞, 뒷다리는 뒤. 굵기는 같다 */
-  ".......ooooo...........",
-  "....ooolllllooo........",
-  "...olllddmddlllo.......",
-  "..oldmdddmdddmdlo......",
-  "..ommmmmmmmmmmmmo..oo..",
-  ".olddmdddmdddmddlookwoo",
-  ".odddmdddmdddmdddlllllo",
-  "..oddmdddmdddmdddlllllo",
-  "..odmmmmmmmmmmmmmldlldo",
-  "...odmdddmdddmddldoddoo",
-  "..ordmdddddddmdrro.oo..",
-  "..orrrrooooorrrrrlo....",
-  "...ollllo...ollllo.....",
-  "..ollllo.....ollllo....",
-  ".olldo........olldo....",
-  ".olldo.........olldo...",
-  ".ooo............ooo....",
+spr("turtle", [        /* 바다거북 - turtle.jpg 에서 떠 왔다. 등딱지 무늬가 그대로 있다 */
+  "................ooo.o.................",
+  "..........oo.o.odddodooo..............",
+  ".........oddooolllldddddoooo..........",
+  "........odlllllllllmmdddddddo...oo....",
+  ".......olllllldddddmdddmmmdddooommoo..",
+  ".....oomlllllmmmdddlllmmmmdddohhmmhho.",
+  "...ooommmdddmmllldllllmmmddoolhhhkkhho",
+  ".oohhmmmmdddomllldmllodddddolllhhkkho.",
+  "oohhlmmoooooodddommooddddolloooooooo..",
+  ".ommloooooooodddommmdddhhhlloo........",
+  "..ooooodoooooododdddodmhhhdoo.........",
+  "......odmmoooooooooommhhhddoo.........",
+  ".......ooo.......oommhhhhdmmo.........",
+  ".................ohhhhhhddmo..........",
+  "................omhhhhhddddo..........",
+  "...............omhhhhldddddo..........",
+  "..............omhhhhooooooo...........",
+  "...............ooooo..................",
 ]);
-spr("turtle2", [      /* 바다거북 - 앞다리는 뒤, 뒷다리는 앞. 정반대다 */
-  ".......ooooo...........",
-  "....ooolllllooo........",
-  "...olllddmddlllo.......",
-  "..oldmdddmdddmdlo......",
-  "..ommmmmmmmmmmmmo..oo..",
-  ".olddmdddmdddmddlookwoo",
-  ".odddmdddmdddmdddlllllo",
-  "..oddmdddmdddmdddlllllo",
-  "..odmmmmmmmmmmmmmldlldo",
-  "...odmdddmdddmddldoddoo",
-  "..ordmdddddddmdrro.oo..",
-  "..orrrrooooorrrrrlo....",
-  "...ollllo...ollllo.....",
-  "....ollllo.ollllo......",
-  ".....olldoolldo........",
-  ".....olldoolldo........",
-  "......ooo..ooo.........",
+spr("turtle2", [        /* 바다거북 - 앞물갈퀴를 뒤로, 뒷물갈퀴를 앞으로 저은 참 */
+  "................ooo.o.................",
+  "..........oo.o.odddodooo..............",
+  ".........oddooolllldddddoooo..........",
+  "........odlllllllllmmdddddddo...oo....",
+  ".......olllllldddddmdddmmmdddooommoo..",
+  ".....oomlllllmmmdddlllmmmmdddohhmmhho.",
+  "...ooommmdddmmllldllllmmmddoolhhhkkhho",
+  ".oohhmmmmdddomllldmllodddddolllhhkkho.",
+  "oohhlmmoooooodddommooddddolloooooooo..",
+  ".ommloooooooodddommmdddhhhlloo........",
+  "..ooooodoooooododdddodmhhhdoo.........",
+  "......oommoooooooooommhhddooo.........",
+  "........ooo.......omhhhhdmmo..........",
+  "..................ohhhhddmo...........",
+  ".................omhhhddddo...........",
+  "................oohhddddddo...........",
+  "................omooooooo.............",
+  ".................ooooo................",
+]);
+spr("turtle3", [        /* 바다거북 - 그 반대로 저은 참 */
+  "................ooo.o.................",
+  "..........oo.o.odddodooo..............",
+  ".........oddooolllldddddoooo..........",
+  "........odlllllllllmmdddddddo...oo....",
+  ".......olllllldddddmdddmmmdddooommoo..",
+  ".....oomlllllmmmdddlllmmmmdddohhmmhho.",
+  "...ooommmdddmmllldllllmmmddoolhhhkkhho",
+  ".oohhmmmmdddomllldmllodddddolllhhkkho.",
+  "oohhlmmoooooodddommooddddolloooooooo..",
+  ".ommloooooooodddommmdddhhhlloo........",
+  "..ooooodoooooododdddodmhhhdoo.........",
+  "......ddmmoooooooooommhhhhddo.........",
+  "......ooo.......oom..mhhhhdmmo........",
+  "................ohh..hhhhddmo.........",
+  "...............omhh..hhhddddo.........",
+  "..............mmhhh...llddddo.........",
+  "............omhhhh....ooooooo.........",
+  ".............ooooo....................",
 ]);
 
 /* ---- 게. 모래 위를 옆으로 걷는다 ---- */
-spr("crab", [         /* 게 - 넓적한 등, 치켜든 집게, 등 위로 솟은 눈 */
-  ".oo.........oo.",
-  "orro.......orro",
-  "orro..o.o..orro",
-  ".orro.w.w.orro.",
-  "..oro.k.k.oro..",
-  "...ollllllllo..",
-  "..ollmmmmmmllo.",
-  ".olldmmmmmddllo",
-  ".oddddmmmddddo.",
-  "..o.o.o.o.o.o..",
+spr("crab", [         /* 꽃게 - RefImage 의 그 그림 그대로.
+                         집게를 세우고 등딱지가 밝다. 눈은 등딱지 안쪽에 */
+  "..ommmmo.......ommmmo..",
+  ".ommmmmo.......ommmmmo.",
+  "ommmmmo.........ommmmmo",
+  "mmmmoomo.......omoommmm",
+  "mmmmmmmo.......ommmmmmm",
+  "mmmmmmmo.......ommmmmmm",
+  "mmmmmmo.........ommmmmm",
+  "mmmooo...........ooommm",
+  "mmmo...............ommm",
+  "ommmoo...........oommmo",
+  ".oommmolllllllllommmoo.",
+  "ooommmolkklllkklommmo.o",
+  "ddoommllkklllkkllmmoood",
+  "odddmmllkklllkkllmmdddo",
+  ".ooommlllllllllllmmooo.",
+  ".ooommlllllllllllmmooo.",
+  "odddmmlllllllllllmmdddo",
+  "ddooommlllllllllmmooodd",
+  "do.ooomlllllllllmooo.od",
+  "o.odddommmmmmmmmodddo.o",
+  ".odooo.ooooooooo.ooodo.",
+  "oddo...............oddo",
+  "oddo...............oddo",
 ]);
 
 /* ---- 불가사리·산호·해초 ---- */
-spr("star", [
-  "...o...",
-  "..olo..",
-  "oolmloo",
-  ".olmlo.",
-  "..omo..",
-  ".om.mo.",
-  "o.o.o.o",
+spr("star", [        /* 불가사리 - 다섯 갈래, 가운데가 밝다 */
+  "......omo......",
+  ".....ommmo.....",
+  ".....omlmo.....",
+  ".....ommmo.....",
+  ".oooommmmmoooo.",
+  "ommmmmlllmmmmmo",
+  "olmmmlllllmmmlo",
+  ".ommlllllllmmo.",
+  "..omlllllllmo..",
+  "...olllllllo...",
+  "..ommlllllmmo..",
+  "..ommmlllmmmo..",
+  "..ommmooommmo..",
+  "..olmo...omlo..",
+  "...oo.....oo...",
 ]);
-spr("coral1", [       /* 가지산호 - 갈라지는 가지, 밝은 끝 */
-  "......oo..oo.......",
-  "......oo..olo......",
-  "...ooolo..olloo....",
-  "...oolllo.olllo....",
-  ".....olllolllo.....",
-  "......olmmllo..o...",
-  "..ooo.ommmmo..olo..",
-  "oollo..ommmo..olloo",
-  "olllo..ommmo..olllo",
-  "olllo..ommmo..olllo",
-  ".olllo.odddo.olllo.",
-  "..ollo.odddo.ollo..",
-  "..ommmodddddommmo..",
-  "...ommmmdddmmmmo...",
-  "...ooooooooooooo...",
+spr("coral1", [        /* 가지산호 - 갈라지는 가지, 밝은 끝 */
+  ".......o........o......",
+  "......olo......olo.....",
+  ".....olllo....olllo....",
+  "......olmo....omloo....",
+  "....o.ommo....ommolo...",
+  "...oloommo...ommmlllo..",
+  "..olllommmo.ommmomlo...",
+  "...olmmmmmlommmmmmmo...",
+  "..oommmmmlllmmmmmmo..o.",
+  ".oloommmmmlmmmmmmmo.olo",
+  "ollloommmmmmmmmmmo.olll",
+  ".olmoommmmmmmmmmmoommlo",
+  ".ommmmommmmmmmmmommmmo.",
+  "..ommmmmmmmmmmmmmmmmmo.",
+  "..ommmmmmmmmmmmmmmmmo..",
+  "...oommmmmmmmmmmmmoo...",
+  ".....ooommmmmmmooo.....",
+  "........oommmoo........",
 ]);
-spr("coral2", [       /* 부채산호 - 밑동에서 방사로 뻗는다. 끝이 밝다 */
-  ".......ll..ll......",
-  ".......ll..ll......",
-  "....ll.mm..mm.ll...",
-  "....ll..mmmm..ll...",
-  ".....mm.mmmm.mm....",
-  ".ll..mm......mm..ll",
-  ".llm..mmmmmmmm..mll",
-  "...mm.mmmmmmmm.mm..",
-  "....mmmmmmmmmmmm...",
-  "lm...mmmmmmmmmm...m",
-  "lmm..mmmmmmmmmm..mm",
-  "..mmmmmmmmmmmmmmmm.",
-  ".....mmmmmmmmmm....",
-  "......mmmmmmm......",
-  "......ddddddd......",
-]);
-spr("coral3", [       /* 말미잘 - 구근에 촉수가 방사로 돋는다 */
-  "........l........",
-  ".....l.....l.....",
-  "...l..r.r.r..l...",
-  ".l..r.r.r.r.r..l.",
-  "..r..r.rrr.r..r..",
-  "l...r.rrrrr.r...l",
-  ".rrr.rrrrrrr.rrr.",
-  ".....rrrdrrr.....",
-  "lrrrrrodddorrrrrl",
-  ".....omdddmo.....",
-  "....ommmdmmmo....",
-  "....ommmmmmmo....",
-  "....ommmmmmmo....",
-  "....ommmmmmmo....",
-  ".....ommmmmo.....",
-  "......ooooo......",
-]);
-spr("coral4", [       /* 관산호 - 대롱이 다발로 선다 */
-  ".....olo.......",
-  ".....omo.......",
-  ".olo.omo.......",
-  ".omo.omo.olo...",
-  ".omo.omo.omo...",
-  ".omo.omo.omo...",
-  ".omo.omo.omo.ol",
-  ".omo.omo.omo.om",
-  ".omo.omo.omo.om",
-  ".omo.omo.omo.om",
-  "ommmommmommmomm",
-  "ommmmmmmmmmmmmm",
-  "ommmmmmmmmmmmmm",
-  "ooooooooooooooo",
-]);
-spr("weed2", [        /* 미역 다발 - 밑동에서 굵은 잎이 부챗살로 벌어진다 */
-  "..........ooo..........",
-  ".........omldo.........",
-  ".........omldo.........",
-  ".........omldo.........",
-  "..ooo....omldo....ooo..",
-  ".omldo...omldo...omldo.",
-  "..omldo..omldo..omldo..",
-  "...omldooomldooomldo...",
-  "....omlldomldomlldo....",
-  ".....oomldmldmldoo.....",
-  "ooooooomldmldmldooooooo",
-  "mllmlldomldldldomlldlld",
-  "ooooomllllllllllldooooo",
-  ".....ooomllllldooo.....",
-  "........omllldo........",
+spr("coral2", [        /* 부채산호 - 밑동에서 방사로 뻗는다 */
+  ".....ooo..ooo..ooo.....",
+  "....ollloollloolllo....",
+  "....ollloollloolllo....",
+  ".oooollloollloollloooo.",
+  "ollloommoommmoommoolllo",
+  "ollloommmommmommmoolllo",
+  "olllmommmommmommmomlllo",
+  ".ommmmommmmmmmmmommmmo.",
+  "..ommmmmmmmmmmmmmmmmo..",
+  "..ommmmmmmmmmmmmmmmmo..",
+  "...ommmmmmmmmmmmmmmo...",
+  "....ommmmmmmmmmmmmo....",
+  ".....oommmmmmmmmoo.....",
   ".......ommmmmmmo.......",
+  "........ommmmmo........",
 ]);
-spr("weed", [         /* 미역 한 마디 - 넓은 잎. 가운데로 밝은 줄이 지난다 */
-  "...ommlllddo..",
-  "...ommlllddo..",
-  "....ommlllddo.",
-  ".....ommlllddo",
-  ".....ommlllddo",
-  ".....ommlllddo",
-  ".....ommlllddo",
-  "....ommlllddo.",
-  "...ommlllddo..",
-  "..ommlllddo...",
-  ".ommlllddo....",
-  "ommlllddo.....",
-  "ommlllddo.....",
-  "ommlllddo.....",
-  "ommlllddo.....",
-  ".ommlllddo....",
-  "..ommlllddo...",
-  "..ommlllddo...",
+spr("coral3", [        /* 말미잘 - 구근에 촉수가 방사로 돋는다 */
+  "........o.o.o........",
+  "......oorororoo......",
+  "....oorororororoo....",
+  "...ororrrrrrrrroro...",
+  "...orrrrrrrrrrrrro...",
+  "..orrrrrrrrrrrrrrro..",
+  "..orrrrrrrrrrrrrrro..",
+  ".orrrrrrrmmmrrrrrrro.",
+  ".oorrrmmlllllmmrrroo.",
+  "orrrrmmlllllllmmrrrro",
+  ".ooormlllllllllmrooo.",
+  "...ommmlllllllmmmo...",
+  "....ommmlllllmmmo....",
+  "....ommmmmmmmmmmo....",
+  ".....ommmmmmmmmo.....",
+]);
+spr("coral4", [        /* 관산호 - 대롱이 다발로 선다 */
+  ".........o.........",
+  "....o...olo...o....",
+  "...olo.olllo.olo...",
+  "..olllo.olo.olllo..",
+  "...olmoommmoomlo...",
+  ".o.ommoommmoommo.o.",
+  "oloommoommmoommoolo",
+  "lllommoommmoommolll",
+  "olmommoommmoommomlo",
+  "ommommmommmommmommo",
+  "ommoommmmmmmmmoommo",
+  "ommmmmmmmmmmmmmmmmo",
+  ".ommmmmmmmmmmmmmmo.",
+  "..ommmmmmmmmmmmmo..",
+  "...oommmmmmmmmoo...",
+  ".....ommmmmmmo.....",
+]);
+spr("weed2", [        /* 미역 다발 - 밑동에서 여러 갈래로 */
+  "..oo......oo...oooo.....",
+  ".ommo....ommo.ommmmo....",
+  "ommmo....ommo.ommmmo....",
+  "ommo....ommo..ommmmmo...",
+  "ommo...ommmo...ommmmo...",
+  "ommo...ommo....ommmmmo..",
+  "ommmo.ommmo....ommmmmo..",
+  ".ommo.ommo....ommmommmo.",
+  ".ommmommmo....ommmoommo.",
+  ".ommmommmo...ommmo.ommmo",
+  "..ommmmmmo...ommmo.ommmo",
+  "..ommmmmmo..ommmo..ommmo",
+  "...ommmmmo.ommmmo..ommmo",
+  "...ommmmmo.ommmo...ommmo",
+  "....ommmmmommmmo...ommmo",
+  "....ommmmmommmo...ommmmo",
+  "....ommmmmmmmmo...ommmo.",
+  "....ommmmmmmmmo..ommmmo.",
+  "....ommmmmmmmmo.ommmmo..",
+  "....ommmommmmmo.ommmmo..",
+  "...ommmmommmmmmoommmmo..",
+  "...ommmmmmmmmmmoommmmo..",
+  "..ommmmommmmmmmmommmmo..",
+  "..ommmmommmmmmmmoommmo..",
+]);
+spr("weed", [        /* 미역 한 마디 */
+  "..oo......",
+  ".ommo.....",
+  ".ommo.....",
+  "ommmo.....",
+  "ommmo.....",
+  "ommmo.....",
+  ".ommmo....",
+  ".ommmo....",
+  "..ommmo...",
+  "...ommmo..",
+  "...ommmmo.",
+  "....ommmo.",
+  ".....ommmo",
+  ".....ommmo",
+  ".....ommmo",
+  ".....ommmo",
+  "....ommmmo",
+  "...ommmmmo",
+  "..ommmmmo.",
+  "..ommmmo..",
 ]);
 
-spr("boat", [
-  "...............................................d..",
-  "...............................................d..",
-  "...................ooooo.....................dd...",
-  "..................ohhhhho..................dd.....",
-  "................ooohhhhhooo..............dd.......",
-  "...................owwwk...............dd.........",
-  "...................owwwo.............dd...........",
-  "...................owwwo...........dd.............",
-  "..................orrrrro........dd...............",
-  "..................orrrrrwo.....dd.................",
-  "..................orrrrro.o..dd...................",
-  "...ooo............orrrrro..od...............ooo...",
-  "...ommoooo........ooorrro..oo...........oooommo...",
-  "....odmmmmooooo......orrrooo.......ooooommmmdo....",
-  "....oddmmmmmmmmoooooolllllllooooooommmmmmmmddo....",
-  ".....ooddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmddoo.....",
-  ".......oddddmmmmmmmmmmmmmmmmmmmmmmmmmmddddo.......",
-  "........odddddddmmmmmmmmmmmmmmmmmmdddddddo........",
-  ".........ooddddddddddddddddddddddddddddoo.........",
-  "...........ooddddddddddddddddddddddddoo...........",
-  ".............oooddddddddddddddddddooo.............",
-  "................ooooooddddddoooooo................",
-  "......................oooooo......................",
+spr("boat", [         /* 낚싯배 - 흰 삼각돛, 밀짚모자 쓴 낚시꾼 */
+  "......................oo..............................",
+  ".....................okwo.............................",
+  ".....................oklo.............................",
+  ".....................okwlo............................",
+  ".....................okwwo............................",
+  "....................owkwwwo...........................",
+  "....................owkwwwo...........................",
+  "...................owwkwwwwo..........................",
+  "...................owwkwwwwo........................o.",
+  "..................owwwklwwwo.......................odo",
+  "..................owwwkwlwwwo.....................oddo",
+  ".................owwwwkwwlwwo....................oddo.",
+  ".................owwwwkwwwlwwo.......ooooo......oddo..",
+  "................owwwwwkwwwwlwo......ohhhhho.....oddo..",
+  "................owwwwwkwwwwwlwo....ohhhhhhho...oddo...",
+  "...............owwwwwwkwwwwwwlo...ohhhhhhhhho.oddo....",
+  "...............owwwwwwklwwwwwwo....ooyyykyoo.oddo.....",
+  "..............owwwwwwwkwlwwwwwwo....oyyyyyo..oddo.....",
+  "..............owwwwwwwkwwlwwwwwo....oyyyyyo.oddo......",
+  ".............owwwwwwwwkwwwlwwwwwo....oyyyoooydo.......",
+  ".............owwwwwwwwkwwwwlwwwwo...orrrrryyyyo.......",
+  "............owwwwwwwwwkwwwwwlwwwwo...orrryyyyo........",
+  "............owwwwwwwwwkwwwwwwwwwwo...orrroooo.........",
+  "..oooooooooooooooooooooooooooooooooooorrroooooooooooo.",
+  ".olllllllllllllllllllllllllllllllllllllllllllllllllllo",
+  ".ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo.",
+  "..ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo..",
+  "...oommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmoo...",
+  ".....ooddddddddddddddddddddddddddddddddddddddddoo.....",
+  ".......oooddddddddddddddddddddddddddddddddddooo.......",
+  "..........oooddddddddddddddddddddddddddddooo..........",
+  ".............oooodddddddddddddddddddddooo.............",
+  ".................ooooooooooooooooooooo................",
+  "......................................................",
 ]);
 /* 낚싯대 끝. 줄이 시작되는 자리다. */
-const ROD_TIP = { x: 47, y: 1 };
+const ROD_TIP = { x: 52, y: 9 };
+/* 배가 왼쪽으로 가면 그림이 뒤집히므로 낚싯대 끝도 반대편으로 간다. */
+function rodTipX() {
+  return player.dir === 1 ? ROD_TIP.x : SPR.boat.w - 1 - ROD_TIP.x;
+}
 
 spr("rock", [
   "...oooo....",
@@ -692,25 +866,49 @@ spr("cup", [
 ]);
 
 /* ---- 보물 상자. 이 바다에서 유일하게 '열리는' 것 ---- */
-spr("chest", [
-  "..ooooooo..",
-  ".ohhhhhhho.",
-  "ohmmmmmmmho",
-  "ohmmmmmmmho",
-  "oooooyooooo",
-  "ohmmmyhmmho",
-  "ohmmmyymmho",
-  "ooooooooooo",
+spr("chest", [       /* 보물상자 - 문어만 하게. 쇠테 둘과 금빛 자물쇠 */
+  "......ooohhhhhhhhhhooo......",
+  "....oorhhhhhhhhhhhhhhroo....",
+  "...orrrhhhhhhhhhhhhhhrrro...",
+  "..ohrrrhhllllllllllhhrrrho..",
+  ".ohhrrrllllllllllllllrrrhho.",
+  ".ohlrrrllmmmmmmmmmmllrrrlho.",
+  ".olmrrrmmmmmmmmmmmmmmrrrmlo.",
+  "ohmmrrrmmmmmwwwwmmmmmrrrmmho",
+  ".ooooooooooowwwwooooooooooo.",
+  ".ooooooooooowoowooooooooooo.",
+  "ommmrrrmmmmmwoowmmmmmrrrmmmo",
+  "ommmrrrmmmmmwowwmmmmmrrrmmmo",
+  "ommmrrrmmmmmwwwwmmmmmrrrmmmo",
+  "odddrrrddddddddddddddrrrdddo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "odddrrrddddddddddddddrrrdddo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "odddrrrddddddddddddddrrrdddo",
+  "odddrrrddddddddddddddrrrdddo",
 ]);
-spr("chestOpen", [
-  ".ohhhhhhho.",
-  "ohmmmmmmmho",
-  "ohddddddmho",
-  "...........",
-  "ooyyyyyyyoo",
-  "ohmyyyyymho",
-  "ohmmyyymmho",
-  "ooooooooooo",
+spr("chestOpen", [   /* 열린 보물상자 - 뚜껑이 돌쩌귀로 젖혀지고 금붙이가 수북하다 */
+  "..ohhhhhhhhhhhhhhhhhhhhhho..",
+  ".ohllllllllllllllllllllllho.",
+  "orrrrrrrrrrrrrrrrrrrrrrrrrro",
+  ".oorroooooooooooooooooorroo.",
+  "..orro...oooooooooo...orro..",
+  "..orrooooyyyyyyyyyyoooorro..",
+  "...oowyyywyyywyyywyyywooo...",
+  "...oyyyyyyyyyyyyyyyyyyyyo...",
+  "...oyyyyyyyyyyyyyyyyyyyyo...",
+  ".ooyyyyyyyyyyyyyyyyyyyyyyoo.",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "odddrrrddddddddddddddrrrdddo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "odddrrrddddddddddddddrrrdddo",
+  "ommmrrrmmmmmmmmmmmmmmrrrmmmo",
+  "odddrrrddddddddddddddrrrdddo",
+  "odddrrrddddddddddddddrrrdddo",
 ]);
 
 /* =========================================================================
@@ -719,169 +917,353 @@ spr("chestOpen", [
    ========================================================================= */
 
 /* ---- 상어 ---- */
-spr("shark", [         /* 백상아리 - 두툼한 머리에 뾰족한 코, 짙은 등과 흰 배 */
-  "ooooo....................ooooo.................",
-  "ollllo..................olllllo................",
-  ".odddloo...............oldddddlo...............",
-  "..odddllo.......o.oooooldddddddloooo...........",
-  "...oddddloo....olollllldddddddddllllooooo......",
-  "....oddddllooooldlddddddddddddddddddllllloo....",
-  ".....odddddlllldddddddddddddddddddddmddddwkoo..",
-  "......odddddddddddddddddddddddddddddddmdmddllo.",
-  ".......oddddddddmmmmmmmmmmmmmmmmmmmmmdmdmdmddko",
-  ".......oddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkdo",
-  "......oldddddddddlmmmmmmmmmmmmmmmmmmmmmmmkdooo.",
-  ".....olddddooooooddllllllllllllllllldddddoo....",
-  "....oldddoo......oodlddddddddlllllldooooo......",
-  "...olddoo..........odoooooooodlllldo...........",
-  "....ooo............oo........ollldo............",
-  "...................o........oddllo.............",
-  "..................o.........oooddo.............",
-  "...............................oo..............",
+spr("shark", [        /* 상어 - shark.jpg 그대로. 지느러미는 휜 날 일곱 장, 등은 짙고 배는 희다 */
+  "...........................................................................................................o.......................................................................",
+  "..........................................................................................................odoo.....................................................................",
+  "..........................................................................................................odddoo...................................................................",
+  ".........................................................................................................oddddddo..................................................................",
+  "........................................................................................................oddddddddoo................................................................",
+  ".oo.....................................................................................................oddddddddddo...............................................................",
+  "oddooo.................................................................................................oddddddddddddoo.............................................................",
+  ".oodddooo..............................................................................................oddddddddddddddo............................................................",
+  "...odddddoo...........................................................................................oddddddddddddddddo...........................................................",
+  "....oddddddoo........................................................................................oddddddddddddddddddo..........................................................",
+  ".....ooddddddoo......................................................................................odddddddddddddddddddo.........................................................",
+  ".......odddddddoo...................................................................................odddddddddddddddddddddo........................................................",
+  "........oddddddddo.................................................................................odddddddddddddddddddddddo.......................................................",
+  ".........oddddddddoo..............................................................................odddddddddddddddddddddddddo......................................................",
+  "..........odddddddddoo........................................oo.................................odddddddddddddddddddddddddddo.....................................................",
+  "...........oddddddddddo......................................oddo...............................oddddddddddddddddddddddddddddo.....................................................",
+  "............oddddddddddo....................................oddddo............................ooddddddddddddddddddddddddddddddoooooooo.............................................",
+  ".............oddddddddddoo..................................odddddo......................oooooddddddddddddddddddddddddddddddddddddddddooooooo......................................",
+  "..............odddddddddddo.................................oddddddo...............ooooooddddddddddddddddddddddddddddddddddddddddddddddddddddoooooo................................",
+  "...............odddddddddddo...............................oddddddddo........ooooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddoooo............................",
+  "...............oddddddddddddo.............................oddddddddddo.ooooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddoooo........................",
+  "................oddddddddddddo............................odddddddddddoddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooo.....................",
+  ".................oddddddddddddo..........................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooo..................",
+  "..................oddddddddddddo........................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmdddddddddddddddddddddddddddddddoo................",
+  "..................odddddddddddddo...................ooooddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmddddddddddddddddddddddoo..............",
+  "...................odddddddddddddo..............oooodddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmdddddddddddddddddoo............",
+  "...................oddddddddddddddo.........oooodddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmddddddddddddddoo..........",
+  "....................oddddddddddddddo.....oooddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmdddddddddddddo.........",
+  ".....................oddddddddddddddooooodddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmddddkkddddddoo.......",
+  ".....................odddddddddddddoodddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmdkkkkdddddddo......",
+  "......................oddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmmkkkkddddddddoo....",
+  "......................oddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmmkkkkddddddddddo...",
+  ".......................odddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmmmkkmmddddddddddo..",
+  ".......................oddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmmmmmmmmmdddddddddo.",
+  ".......................odddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmmmmmmmmmmmddddddddo",
+  ".......................oddmddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmmmmmmmmmmlllddddddo",
+  ".......................oddmllddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdmmmmmdmmmmmdmmmmmdmmmmmdmmmmmmmmmmmmmmmmmmmmllllllllllllo",
+  "......................oddddlllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllo",
+  "......................odddddllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllloo.",
+  "......................oddddddlllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllloo...",
+  ".....................odddddddddollllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllloo.....",
+  ".....................odddddddddooolllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllkkklllllllllllooo.......",
+  "....................odddddddddddo.ooollllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllkkklllllloo..........",
+  "....................oddddddddddddo...oooollllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllkkkooo............",
+  "...................oddddddddddddo........ooollllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllllllllllllllllloooo...............",
+  "...................odddddddddddo............ooddllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllllllllllllllllllllllllllloooo...................",
+  "..................odddddddddddo...............odddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllooo.......................",
+  ".................odddddddddddo.................odddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllooo..........................",
+  ".................oddddddddddo...................oddddddddddddllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddo.............................",
+  "................oddddddddddo.....................odddddddddddddddolllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddoo..............................",
+  "...............oddddddddddo.......................odddddddddddddo.ooooolllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddo................................",
+  "..............odddddddddoo.........................odddddddddddo....oddddddddllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddddo.................................",
+  ".............odddddddddo...........................oddddddddddo......odddddddddddddllllllllllllllllllllllllllllllllllllllllllllllllllllddddddddoo..................................",
+  "............oddddddddoo.............................oddddddddo........oddddddddddddddddddoollllllllllllllllllllllllllllllllllllllllddddddddddoo....................................",
+  "...........ooddddddoo...............................odddddddo..........oddddddddddddddddo..oooooooooolllllllllllllllllllloooooooodddddddddddo......................................",
+  "..........oddddddoo..................................odddddo............odddddddddddddddo............oooooooooooooooooooo......oddddddddddoo.......................................",
+  ".........odddddoo....................................oddddo.............oddddddddddddddo.......................................oddddddddoo.........................................",
+  "........odddooo......................................odddo...............oddddddddddddo.......................................oddddddddo...........................................",
+  ".........ooo..........................................ooo.................oddddddddddo.......................................odddddddoo............................................",
+  "..........................................................................odddddddddo.......................................oddddddoo..............................................",
+  "...........................................................................odddddddo.......................................odddddoo................................................",
+  "...........................................................................oddddddo.......................................oddddoo..................................................",
+  "...........................................................................odddddo......................................oodddoo....................................................",
+  "............................................................................oddoo......................................odddoo......................................................",
+  ".............................................................................oo......................................ooddoo........................................................",
+  "...................................................................................................................ooddoo..........................................................",
+  "..................................................................................................................odooo............................................................",
+  "...................................................................................................................o...............................................................",
 ]);
 
 /* ---- 아귀. 발광구(y)가 이 바다에서 가장 밝다 ---- */
-spr("angler", [       /* 초롱아귀 - 등의 가시, 주황 꼬리, 벌린 입의 이빨, 발광구 */
-  "......................oo..",
-  ".....................oyyo.",
-  ".....................oyyo.",
-  "...r..r..r..........olo...",
-  "..rrr.rrr.rrr......olo....",
-  "..rrrrrrrrrrrr....olo.....",
-  ".orrrrrrrrrrrroooolo......",
-  ".oooohhhhhhhhhhhhhoo......",
-  "roohhmmmmmmmmmmmmmmhoo....",
-  "rroohmmmmmmmmmmmwkmmhoo...",
-  "rroohmmmmmmmmmmmmmmmmhoo..",
-  "rroohmmmmmmmmmmmmwwwwwwko.",
-  "rroohmmmmmmmmmmmmwkwkwkwo.",
-  "rroohmmmmmmmmmmmmmwwwwwko.",
-  ".oooodmmmmmmmmmmmmmmmhoo..",
-  "..oooddmmmmmmmmmmmmmhoo...",
-  "....ooodddddddddddddoo....",
-  ".......oooooooooooooo.....",
+spr("angler", [        /* 초롱아귀 - 가로로 길게. 벌린 입 속은 비우고 이빨은 위턱에만 다섯 */
+  "........................................llllllll........",
+  "......................o.o.o.o........lll........ll......",
+  "....................oororororoo.....ll...........ll.y...",
+  "..................oororororrroroo..ll.............yyyyy.",
+  "................oororrrrrrrrrrrrrollo.............yyyyy.",
+  "...............ororrrrrrrrrrrrrrrrrddooo.........yyyyyyy",
+  "..............orrrrrrrrrrrrrrrrrrrrrrdddo.........yyyyy.",
+  "..............orrrrrrrrddddddddrrrrrrrdddo........yyyyy.",
+  "...............oooddddddddddddddddddddddddo.........y...",
+  "................oddddddddddddddddddddddddddo............",
+  "..............ooddddddddddddddddddddddddddddo...........",
+  "........ooo..oddddddddddddddddddddddddddddddo...........",
+  ".....ooorrroodddddddddddddddddddddddkkkddddddo..........",
+  "....orrrrrroodddddddddddddddddddddddkkkddddddo..........",
+  "..oorrrrrrrodddddddddddddddddddddddmkkkmmmmmmo..........",
+  ".orrrrrrrrrmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo.........",
+  "orrrrrrrrrrmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo.........",
+  ".oooorrrrrrmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo.........",
+  ".....oorrrrmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkko.........",
+  ".......orrrmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkwkkko........",
+  "........orrollllmmmmmmmmmmmmmmmmmmmmmwkkwkkkkkko........",
+  ".........orolllllmmmmmmmmmmmmmmmmmwkkkkkkkkkkko.........",
+  "..........o.ollllllmmmmmmmmmmmmwkkkkkkkkkkkkkko.........",
+  ".............ollllllmmmmmmmmmkkkkkkkkkkkkkkkko..........",
+  "..............ollllllmmmmmmkkkkkkkkkkkkkkkkko...........",
+  "...............olllllllmmmmkkkkkkkkkkkkkkkoo............",
+  "................oollllllllmmmmkkkkkkkkkloo..............",
+  "..................ooolllrrrrrrrllllllooo................",
+  ".....................ooorrrrrrllllooo...................",
+  "........................orrrrooooo......................",
+  "........................orrro...........................",
+  "........................orro............................",
 ]);
 
-spr("sub", [          /* 잠수함 - 사령탑과 잠망경, 둥근 창 셋, 프로펠러 */
-  ".................oo.............",
-  ".................o..............",
-  ".................o..............",
-  ".................o..............",
-  "...............oohoo............",
-  "o.............ohhmhhooo.........",
-  ".o........oooohmmwwmhhhoooo.....",
-  ".oo....ooohhhhmmmmmmmmmhhhhooo..",
-  ".odo..ohhhmmmmmmmmmmmmmmmmmhooo.",
-  ".odhoohmmmmowommmowommmowomowlwo",
-  ".oddhhmmmmmwwwmmmwwwmmmwwwmowwwo",
-  ".odooodmmmmowommmowommmowomowwwo",
-  ".oo...odddmmmmmmmmmmmmmmmmmdooo.",
-  ".o.....ooorrrrrrrrrrrrrrrrrooo..",
-  "o.........oooorrrrrrrrroooo.....",
-  "..............ooooooooo.........",
+spr("sub", [          /* 잠수함 - 사령탑과 잠망경, 둥근 창, 붉은 배 */
+  ".............................................o...................................",
+  ".............................................o...................................",
+  ".............................................o...................................",
+  ".............................................o...................................",
+  ".............................................o...................................",
+  ".............................................o...................................",
+  ".............................................o...................................",
+  "....o...........................ooooooooooooohooooooooo..........................",
+  "...o............................ohhhhhhhhhhhhhhhhhhhhho..........................",
+  "...o............................ohhhhhhhhhhhhhhhhhhhhho..........................",
+  "..o.............................ohhhhhhhhhhhhhhhhhhhhho..........................",
+  "..o.............................ohhhhhhhhhhhhhhhhhhhhho..........................",
+  ".o..............................ohhhhhhhhhhhhhhhhhhhhho..........................",
+  ".o..............................ohhhhhhhhhhhhhhhhhhhhho..........................",
+  "o...............................ohhhhhhhhhhhhhhhhhhhhho..........................",
+  "o.............................oodhhhhhhhhhhhhhhhhhhhhho..........................",
+  ".....................ooooooooohhhhhhhhhhhhhhhhhhhhhhhhhooooooooo.................",
+  "..............ooooooohhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhooooooo..........",
+  "........oooooohhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhoooooo....",
+  "...ooooohhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhoooo",
+  "...ohhhhhhhhhhhhhhhhhhhwwwhhhhhhhhhhhhwwwhhhhhhhhhhhhwwwhhhhhhhhhhhhhhhhhhwwwhhho",
+  "...ohhhhhhhhhhhhhhhhhmwwwwwmmmmmmmmmmwwwwwmmmmmmmmmmwwwwwmmmmmmmhhhhhhhhhwwwwwhho",
+  "...ohmmmmmmmmmmmmmmmmwwwwwwwmmmmmmmmwwwwwwwmmmmmmmmwwwwwwwmmmmmmmmmmmmmmwwwwwwwmo",
+  "...ommmmmmmmmmmmmmmmmwwwwwwwmmmmmmmmwwwwwwwmmmmmmmmwwwwwwwmmmmmmmmmmmmmwwwwwwwwwo",
+  "...ommmmmmmmmmmmmmmmmwwwwwwwmmmmmmmmwwwwwwwmmmmmmmmwwwwwwwmmmmmmmmmmmmmwwwwwwwwwo",
+  "...ommmmmmmmmmmmmmmmmmwwwwwmmmmmmmmmmwwwwwmmmmmmmmmmwwwwwmmmmmmmmmmmmmmwwwwwwwwwo",
+  "...orrrrrrrrrrrrrrrrrrrrrrrrmmmmmmmmmmmwmmmmmmmmmmmmmmwmmrrrrrrrrrrrrrrrrrrrrrrro",
+  "...orrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrro",
+  "...orrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrro",
+  "...ooooorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrroooo",
+  "........oooooorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrroooooo....",
+  "..............ooooooorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrooooooo..........",
+  ".....................ooooooooorrrrrrrrrrrrrrrrrrrrrrrrrooooooooo.................",
+  "o.............................ooooooooooooooooooooooooo..........................",
+  "o................................................................................",
+  ".o...............................................................................",
+  ".o...............................................................................",
+  "..o..............................................................................",
+  "..o..............................................................................",
+  "...o.............................................................................",
+  "...o.............................................................................",
+  "....o............................................................................",
 ]);
 
 /* ---- 메갈로돈. 상어의 여덟 배. 이 도안은 다시 두 배로 키워 그린다 ---- */
-spr("mega", [
-  "...o.....................................ooo............................................",
-  "...oo...................................olllo...........................................",
-  "..ollo.................................oldddlo..........................................",
-  "..oddloo..............................oldddddlo.........................................",
-  ".oldddllo............................oldddddddlo........................................",
-  ".oddddddlo..........................oldddddddddloo......................................",
-  "oodddddddlo........................oldddddddddddlloooooooooooooooooooooooooo............",
-  "..odddddddloo.....................olddddddddddddddlllllllllllllllllllllllllloooo........",
-  "...odddddddllo...................oldddddddddddddddddddddddddddddddddddddddddllllooo.....",
-  "....oddddddddlo.........o......oolddddddddddddddddddddddddddddddddddddddddddddddllloo...",
-  ".....oodddddddlo.......oloooooollddddddddddddddddddddddddddddddddddddddddddddddddddllo..",
-  ".......odddddddloo....oldlllllldddddddddddddddddddddddddddddddddddoddoddoddoddodwkdddlo.",
-  "........odddddddo...ooldddddddddddddddddddddddddddddddddddddddddddoddoddoddoddodddddddo.",
-  ".........ooddddo..oollddddddddddddddddddddddddddddddddddddddddddddoddoddoddoddodddddddo.",
-  "...........odddloolldddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmommommommomdodddddddlo",
-  "............ododllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmommommommommommmmwmmmo",
-  ".............o.ododddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmommommommommowmmmkkkdo",
-  "...............oo.ooodlllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlmmlmmlmmwmmmkkkmmmmo.",
-  "..............olo....ollllddlllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmwmmmkkkmmmmmmllo.",
-  ".............oldo....ollddoodddlllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkmmmmllllllddo.",
-  "............olddo....oddoo..ooodlllddlllllllllllllllllllllllllllllllllllllllllllllddoo..",
-  "...........oldddo....ooo.......odddooddddddlllllllllllllllllllllllllllllllllllldddoo....",
-  "..........olddooo....o........odooo..ooooooddddddllllllllllllllllllllllldddddddooo......",
-  ".........olooo................oo...........oooooodllllllldddddddddddddddooooooo.........",
-  "........ooo..................o...................olllllldooooooooooooooo................",
-  ".......o.......................................oolllllddo...............................",
-  "..............................................olllllddoo................................",
-  "............................................ooodddldoo..................................",
-  "...............................................ooodo....................................",
-  "..................................................o.....................................",
+spr("mega", [        /* 메갈로돈 - 같은 도안을 두 배 판에. 이빨을 드러낸다 */
+  ".....................................................................................................................................................................................................................oo.............................................................................................................................................",
+  "....................................................................................................................................................................................................................oddoo...........................................................................................................................................",
+  "...................................................................................................................................................................................................................odddddoo.........................................................................................................................................",
+  "...................................................................................................................................................................................................................odddddddoo.......................................................................................................................................",
+  "..................................................................................................................................................................................................................oddddddddddo......................................................................................................................................",
+  "..................................................................................................................................................................................................................odddddddddddoo....................................................................................................................................",
+  ".................................................................................................................................................................................................................oddddddddddddddoo..................................................................................................................................",
+  ".................................................................................................................................................................................................................oddddddddddddddddo.................................................................................................................................",
+  "................................................................................................................................................................................................................oddddddddddddddddddoo...............................................................................................................................",
+  ".oo.............................................................................................................................................................................................................oddddddddddddddddddddo..............................................................................................................................",
+  "oddooo.........................................................................................................................................................................................................oddddddddddddddddddddddo.............................................................................................................................",
+  ".oddddooo.....................................................................................................................................................................................................oddddddddddddddddddddddddoo...........................................................................................................................",
+  "..oodddddoo...................................................................................................................................................................................................oddddddddddddddddddddddddddo..........................................................................................................................",
+  "....oddddddooo...............................................................................................................................................................................................oddddddddddddddddddddddddddddo.........................................................................................................................",
+  ".....oodddddddoo............................................................................................................................................................................................oddddddddddddddddddddddddddddddo........................................................................................................................",
+  ".......oddddddddooo.........................................................................................................................................................................................odddddddddddddddddddddddddddddddo.......................................................................................................................",
+  "........oddddddddddoo......................................................................................................................................................................................odddddddddddddddddddddddddddddddddo......................................................................................................................",
+  ".........ooddddddddddoo...................................................................................................................................................................................odddddddddddddddddddddddddddddddddddo.....................................................................................................................",
+  "...........odddddddddddoo................................................................................................................................................................................odddddddddddddddddddddddddddddddddddddo....................................................................................................................",
+  "............oddddddddddddoo..............................................................................................................................................................................oddddddddddddddddddddddddddddddddddddddo...................................................................................................................",
+  ".............odddddddddddddoo...........................................................................................................................................................................oddddddddddddddddddddddddddddddddddddddddo..................................................................................................................",
+  "..............oddddddddddddddoo........................................................................................................................................................................oddddddddddddddddddddddddddddddddddddddddddo.................................................................................................................",
+  "...............ooddddddddddddddo......................................................................................................................................................................oddddddddddddddddddddddddddddddddddddddddddddo................................................................................................................",
+  ".................oddddddddddddddoo...................................................................................................................................................................oddddddddddddddddddddddddddddddddddddddddddddddo...............................................................................................................",
+  "..................odddddddddddddddoo................................................................................................................................................................oddddddddddddddddddddddddddddddddddddddddddddddddo..............................................................................................................",
+  "...................oddddddddddddddddo..............................................................................................................................................................oddddddddddddddddddddddddddddddddddddddddddddddddddo.............................................................................................................",
+  "....................oddddddddddddddddoo...........................................................................................................................................................oddddddddddddddddddddddddddddddddddddddddddddddddddddo............................................................................................................",
+  ".....................odddddddddddddddddo...................................................................................oo....................................................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddo...........................................................................................................",
+  "......................odddddddddddddddddoo................................................................................oddo..................................................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddo...........................................................................................................",
+  ".......................oddddddddddddddddddo..............................................................................oddddoo...............................................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddo..........................................................................................................",
+  "........................oddddddddddddddddddoo............................................................................oddddddo.............................................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddddo.........................................................................................................",
+  ".........................odddddddddddddddddddo...........................................................................odddddddo..........................................................oodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooooooooooo..............................................................................................",
+  "..........................odddddddddddddddddddo.........................................................................odddddddddo........................................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooooooooo.....................................................................................",
+  "..........................oddddddddddddddddddddoo.......................................................................oddddddddddo.................................................ooooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooooooo..............................................................................",
+  "...........................odddddddddddddddddddddo.....................................................................oddddddddddddo..........................................oooooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddoooooo........................................................................",
+  "............................odddddddddddddddddddddo....................................................................odddddddddddddo..................................ooooooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooooo...................................................................",
+  ".............................odddddddddddddddddddddo..................................................................odddddddddddddddo...........................oooooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooooo..............................................................",
+  "..............................odddddddddddddddddddddoo................................................................oddddddddddddddddo....................ooooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddoooo..........................................................",
+  "...............................oddddddddddddddddddddddo..............................................................oddddddddddddddddddo.............ooooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddoooo......................................................",
+  "...............................odddddddddddddddddddddddo.............................................................odddddddddddddddddddo......ooooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddoooo..................................................",
+  "................................odddddddddddddddddddddddo...........................................................odddddddddddddddddddddooooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooo...............................................",
+  ".................................odddddddddddddddddddddddo.........................................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooo............................................",
+  ".................................oddddddddddddddddddddddddo........................................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooo.........................................",
+  "..................................oddddddddddddddddddddddddo......................................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooo......................................",
+  "...................................oddddddddddddddddddddddddo....................................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddooo...................................",
+  "...................................odddddddddddddddddddddddddo..................................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmddddddddddddddddddddddddddddddddddddddddddddddddddddddoo.................................",
+  "....................................odddddddddddddddddddddddddo...............................................oodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmddddddddddddddddddddddddddddddddddddddddddddddoo...............................",
+  ".....................................odddddddddddddddddddddddddo..........................................oooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmddddddddddddddddddddddddddddddddddddddddoo.............................",
+  ".....................................oddddddddddddddddddddddddddo.....................................oooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddddddddddddddddddddddddddddddddddoo...........................",
+  "......................................oddddddddddddddddddddddddddo...............................oooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmdddddddddddddddddddddddddddddddoo.........................",
+  ".......................................oddddddddddddddddddddddddddo..........................oooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmddddddddddddddddddddddddddddoo.......................",
+  ".......................................odddddddddddddddddddddddddddo.....................ooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmddddddddddddddddddddddddddoo.....................",
+  "........................................odddddddddddddddddddddddddddo.................ooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmdddddddddddddddddddddddddoo...................",
+  "........................................oddddddddddddddddddddddddddddo............oooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmdddddddddddddddddddddddddo..................",
+  ".........................................oddddddddddddddddddddddddddddo.......oooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmdddddddddkkkddddddddddddoo................",
+  ".........................................oddddddddddddddddddddddddddddo....ooodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmdddddkkkkkdddddddddddddo...............",
+  "..........................................oddddddddddddddddddddddddddo..oooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmddkkkkkkkdddddddddddddoo.............",
+  "..........................................odddddddddddddddddddddddddooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkkkkkkkddddddddddddddo............",
+  "...........................................odddddddddddddddddddddddoodddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkkkkkkkdddddddddddddddoo..........",
+  "...........................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkkkkkkkdddddddddddddddddo.........",
+  "............................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkkkkkdddddddddddddddddddo........",
+  "............................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkkkmddddddddddddddddddddoo......",
+  ".............................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmkkkmmmmddddddddddddddddddddo.....",
+  ".............................................odddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddddddddddddddddddo....",
+  "..............................................oddddddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmddddddddddddddddddo...",
+  "..............................................odddddddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddddddddddddddddo..",
+  "...............................................odddddddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddddddddddddddo..",
+  "...............................................odddddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmddddddddddddddo.",
+  "...............................................oddddddddddddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllldddddddddddddo",
+  "..............................................oddddmmmddddddddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllddddddddddo",
+  "..............................................oddddmmmldddddddddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllddddddo",
+  ".............................................oddddddllllllddddddddddddddddddddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllo",
+  ".............................................oddddddllllllllllddddddddllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmdddmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllo.",
+  ".............................................odddddddlllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllo..",
+  "............................................odddddddddlllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllo...",
+  "............................................oddddddddddllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllloo....",
+  "............................................oddddddddddddllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllloo......",
+  "...........................................oddddddddddddddolllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllloo........",
+  "...........................................odddddddddddddddoolllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllooo..........",
+  "..........................................oddddddddddddddddo.oolllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllkklllllllllllllllllllllllllllllooo.............",
+  "..........................................odddddddddddddddddo..ooollllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllwlkkllllllllllllllllllllllllloo................",
+  ".........................................odddddddddddddddddddo....ooolllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllwkkklllllllllllllllllllooo..................",
+  ".........................................oddddddddddddddddddddo......ooolllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllllllllllwkkkkllllllllllllloo.....................",
+  "........................................oddddddddddddddddddddddo........ooollllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllwlkkkkklllllooo.......................",
+  "........................................odddddddddddddddddddddddo..........ooolllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllwllwkkooo..........................",
+  ".......................................oddddddddddddddddddddddddo.............oooollllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllooow............................",
+  ".......................................odddddddddddddddddddddddo..................oooolllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllloooo................................",
+  "......................................odddddddddddddddddddddddo.......................ooolllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllloooo....................................",
+  ".....................................odddddddddddddddddddddddo...........................ooddllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllooo........................................",
+  ".....................................oddddddddddddddddddddddo..............................odddddlllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllloooo...........................................",
+  "....................................oddddddddddddddddddddddo................................odddddddddlllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmmmmmllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllooo...............................................",
+  "....................................odddddddddddddddddddddo..................................oddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllloooo..................................................",
+  "...................................odddddddddddddddddddddo....................................odddddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllooo......................................................",
+  "..................................odddddddddddddddddddddo......................................odddddddddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllldo.........................................................",
+  "..................................oddddddddddddddddddddo........................................oddddddddddddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddoo..........................................................",
+  ".................................oddddddddddddddddddddo..........................................oddddddddddddddddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddo............................................................",
+  "................................odddddddddddddddddddoo............................................odddddddddddddddddddddddddddddolllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllldddddo.............................................................",
+  "...............................odddddddddddddddddddo...............................................oddddddddddddddddddddddddddddoooooollllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddddoo..............................................................",
+  "...............................oddddddddddddddddddo.................................................oddddddddddddddddddddddddddo......ooooollllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddddddo................................................................",
+  "..............................oddddddddddddddddddo..................................................odddddddddddddddddddddddddo.........ooodddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllldddddddddoo.................................................................",
+  ".............................odddddddddddddddddoo....................................................odddddddddddddddddddddddo.........odddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllldddddddddddo...................................................................",
+  "............................odddddddddddddddddo.......................................................odddddddddddddddddddddo...........oddddddddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddddddddddoo....................................................................",
+  "...........................oddddddddddddddddoo........................................................oddddddddddddddddddddo.............oddddddddddddddddddddddddlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddddddddddddo......................................................................",
+  "..........................oddddddddddddddddo...........................................................oddddddddddddddddddo...............oddddddddddddddddddddddddddddddllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddddddddddddddoo.......................................................................",
+  ".........................odddddddddddddddoo............................................................odddddddddddddddddo.................oddddddddddddddddddddddddddddddddddddllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllddddddddddddddddddddo.........................................................................",
+  "........................odddddddddddddddo...............................................................odddddddddddddddo...................odddddddddddddddddddddddddddddddddddoooooooollllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllooddddddddddddddddddddddoo..........................................................................",
+  "........................odddddddddddddoo................................................................oddddddddddddddo.....................odddddddddddddddddddddddddddddddddo........oooooooooollllllllllllllllllllllllllllllllllllllllllllllllllllloooooooooodddddddddddddddddddddoo............................................................................",
+  "......................ooddddddddddddoo...................................................................oddddddddddddo.......................oddddddddddddddddddddddddddddddddo..................ooooooooooooooooooolllllllllllllllooooooooooooooooooo.........oddddddddddddddddddddo..............................................................................",
+  ".....................oddddddddddddoo.....................................................................odddddddddddo.........................oddddddddddddddddddddddddddddddo......................................ooooooooooooooo...........................odddddddddddddddddddoo...............................................................................",
+  "....................odddddddddddoo.......................................................................oddddddddddo...........................oddddddddddddddddddddddddddddo................................................................................oddddddddddddddddddoo.................................................................................",
+  "...................odddddddddooo..........................................................................oddddddddo.............................oddddddddddddddddddddddddddo................................................................................oddddddddddddddddddo...................................................................................",
+  "..................oddddddddoo.............................................................................odddddddo..............................odddddddddddddddddddddddddo.................................................................................oddddddddddddddddoo....................................................................................",
+  ".................oddddddooo...............................................................................odddddoo................................odddddddddddddddddddddddo.................................................................................odddddddddddddddoo......................................................................................",
+  "................oddddooo...................................................................................odddo...................................odddddddddddddddddddddo.................................................................................odddddddddddddddo........................................................................................",
+  "...............oddooo......................................................................................oddo....................................oddddddddddddddddddddo.................................................................................oddddddddddddddoo.........................................................................................",
+  "................oo..........................................................................................oo......................................oddddddddddddddddddo.................................................................................odddddddddddddoo...........................................................................................",
+  "....................................................................................................................................................odddddddddddddddddo.................................................................................oddddddddddddoo.............................................................................................",
+  ".....................................................................................................................................................odddddddddddddddo.................................................................................odddddddddddoo...............................................................................................",
+  ".....................................................................................................................................................oddddddddddddddo.................................................................................oddddddddddoo.................................................................................................",
+  "......................................................................................................................................................oddddddddddddo.................................................................................odddddddddoo...................................................................................................",
+  "......................................................................................................................................................odddddddddddo.................................................................................odddddddddo.....................................................................................................",
+  "......................................................................................................................................................oddddddddddo.................................................................................oddddddddoo......................................................................................................",
+  ".......................................................................................................................................................oddddddddo.................................................................................odddddddoo........................................................................................................",
+  ".......................................................................................................................................................odddddddo................................................................................oodddddooo..........................................................................................................",
+  ".......................................................................................................................................................odddddoo................................................................................odddddoo.............................................................................................................",
+  "........................................................................................................................................................odddo................................................................................ooddddoo...............................................................................................................",
+  "........................................................................................................................................................oddo................................................................................oddddoo.................................................................................................................",
+  ".........................................................................................................................................................oo...............................................................................oodddoo...................................................................................................................",
+  "........................................................................................................................................................................................................................................oodddoo.....................................................................................................................",
+  "......................................................................................................................................................................................................................................ooddooo.......................................................................................................................",
+  "....................................................................................................................................................................................................................................ooddoo..........................................................................................................................",
+  "..................................................................................................................................................................................................................................ooddoo............................................................................................................................",
+  ".................................................................................................................................................................................................................................odooo..............................................................................................................................",
+  "..................................................................................................................................................................................................................................o.................................................................................................................................",
 ]);
 
-/* ---- 그물. 손잡이가 왼쪽 아래, 테가 오른쪽 ----
-   w = 테, l = 그물코, d = 손잡이 */
-spr("net", [
-  "...wwwww...",
-  ".ww.....ww.",
-  "w..l...l..w",
-  "w.........w",
-  "w..l...l..w",
-  "w....l....w",
-  "w..l...l..w",
-  ".ww.....ww.",
-  "...wwwww...",
-  "..dd.......",
-  ".dd........",
+/* ---- 작살. 자루가 왼쪽, 촉이 오른쪽 ----
+   d = 자루, l = 촉, w = 끝 ---- */
+spr("spear", [        /* 작살 - 긴 자루에 미늘 달린 촉. 오른쪽이 촉이다 */
+  "................o.",
+  "o...........oo.oo.",
+  "oddddddddddddolllw",
+  "o...........oo.oo.",
+  "................o.",
 ]);
 
 /* ---- 잠수부. 이 판에서 조종하는 것 ----
    황동 헬멧(h)에 유리창(w), 등에 공기통(r), 발에 오리발(d).
    왼쪽을 보면 그릴 때 뒤집는다. */
-spr("diver", [        /* 잠수부 - 엎드려 헤엄치는 자세. 한 다리를 위로 찬 참 */
-  "................................",
-  "................................",
-  "................................",
-  "................................",
-  "..oo...................oo.......",
-  "oorrooo...........ooooollo......",
-  "rrrrrrmoo........ollllllloooooo.",
-  "oorrrrmmmooo...ooolllllllommmmmo",
-  "..orrmmmmmmmooommmlllllllmmmkwww",
-  "...ooommmmmmmmmmddkddddkdmmmkwww",
-  "......ooommmmmmmmmkmmmmkmmmmkwww",
-  ".........oommmmmmmkmmmmkmmmmkwww",
-  ".......oommmmmmmmmkmmmmkmmmmmmmm",
-  "....ooommmmmmmmmmmmmmmmmmmmddmmo",
-  "..oorrmmmmmmooommmmmmmmmmmmmooo.",
-  ".orrrrrmmmoo...ooooooooommmmmo..",
-  "orrrrrmooo..............oommmmo.",
-  ".orrooo...................ommmmo",
-  "..oo.......................ommo.",
-  "............................oo..",
-  "................................",
-  "................................",
+spr("diver", [        /* 잠수부 - 가로로 누워 헤엄치는 참. 검은 잠수복, 등에 공기통, 오리발을 찬다 */
+  ".oooooo.......................................",
+  "orrrrrrooo..........ooooooooo.................",
+  ".oorrrrrrro........ollllllllloooo.............",
+  "...oorrrrrooo.....ollklllllklkkkkooooooooo....",
+  ".....oorrrhhhooo..olllllllllloookkhhhwwwwwo...",
+  "......omrrmmmhhhooolllllllmmmoooommmmwwwwwo...",
+  ".......oommmmmmmhhhlllmmmmmmmhhhommmmwwwwwo...",
+  ".........oommmmmmmmmmmmmmmmmmmmmhmmmmwwwwwo...",
+  "...........ooommmmmmmmmmmmmmmmmmmmmmmwwwwwo...",
+  "..............ooommmmmmmmmmmmmmmommmmwwwwwo...",
+  "...............ooommmmmmmmmmmmmmommmmwwwwwo...",
+  ".............oommmmmmmmmmmmmmmmmoommmmmmoo....",
+  ".........oooommmmmmmmkkkkkkkkmmmohoooooo......",
+  ".....oooormmmmmmmmmmmmooooooommmmmmmooooooooo.",
+  "...oorrrrrmmmmmmmmoooo......ommmmmmmmhhhhhrrro",
+  "..orrrrrrrmmmmmooo...........oommmmmmmmmmrrrrr",
+  "oorrrrrrrrmoooo................ooommmmmmmrrrrr",
+  "rrooooooooo.......................oooommmmrrro",
+  "oo....................................ooooooo.",
 ]);
-spr("diver2", [       /* 잠수부 - 다른 다리를 위로 찬 참 */
-  "................................",
-  "................................",
-  "................................",
-  "................................",
-  ".......................oo.......",
-  "..................ooooollo......",
-  ".................ollllllloooooo.",
-  ".oooooo........ooolllllllommmmmo",
-  "orrrrrmoooooooommmlllllllmmmkwww",
-  "orrrrrrmmmmmmmomddkddddkdmmmkwww",
-  ".orrrrmmmmmmmmmmmmkmmmmkmmmmkwww",
-  "..oooommmmmmmmmmmmkmmmmkmmmmkwww",
-  ".orrrmmmmmmmmmmmmmkmmmmkmmmmmmmm",
-  "orrrrrmmmmmmmmommmmmmmmmmmmddmmo",
-  "rorrrrmoooooooommmmmmmmmmmmmooo.",
-  "o.ooooo........ooooooooommmmmo..",
-  "........................oommmmo.",
-  "..........................ommmmo",
-  "...........................ommo.",
-  "............................oo..",
-  "................................",
-  "................................",
+spr("diver2", [        /* 잠수부 - 다리를 오므린 참. 앞 참과 같은 상자라 발을 차도 튀지 않는다 */
+  "..............................................",
+  "....................ooooooooo.................",
+  "...................ollllllllloooo.............",
+  "..................ollklllllklkkkkooooooooo....",
+  "...ooooooo........olllllllllloookkhhhwwwwwo...",
+  "ooorrrrrrroooo....olllllllmmmoooommmmwwwwwo...",
+  "rrrrrrrrrrhhhhooooolllmmmmmmmhhhommmmwwwwwo...",
+  "oooooorrrrmmmmhhhhhmmmmmmmmmmmmmhmmmmwwwwwo...",
+  "......omrrmmmmmmmmmmmmmmmmmmmmmmmmmmmwwwwwo...",
+  ".......oooommmmmmmmmmmmmmmmmmmmmommmmwwwwwo...",
+  "...oooorrrooooommmmmmmmmmmmmmmmmommmmwwwwwo...",
+  ".oorrrrrrrmmmmmmmmmmmmmmmmmmmmmmoommmmmmoo....",
+  "orrrrrrrrrmmmmmmmmmmmkkkkkkkkmmmohoooooo......",
+  ".oooooorrrmmmmmmmmmmmmooooooommmmmmmooooooooo.",
+  ".......ooooooooooooooo......ommmmmmmmhhhhhrrro",
+  ".............................oommmmmmmmmmrrrrr",
+  "...............................ooommmmmmmrrrrr",
+  "..................................oooommmmrrro",
+  "......................................ooooooo.",
 ]);
+
+
 
 /* =========================================================================
    화면
@@ -1273,7 +1655,7 @@ const STR = {
     "zone.MIDNIGHT": "암흑층", "zone.ABYSS": "심연",
     "zone.s.SUNLIGHT": "표층", "zone.s.TWILIGHT": "약광",
     "zone.s.MIDNIGHT": "암흑", "zone.s.ABYSS": "심연",
-    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] 이동 · [Shift] 가속 · [Space] 그물 · [G] 도감",
+    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] 이동 · [Shift] 가속 · [Space] 작살 · [G] 도감",
     "hint.boat": "[←][→] / [A][D] 배 · [↓][↑] / [S][W] 줄 · [Space] 액션",
     "hint.short": "[Space] 액션 · [G] 도감",
     "hint.swap": "[Tab] 배↔잠수부",
@@ -1282,7 +1664,7 @@ const STR = {
     "help.close": "[X] / [Esc] 닫기",
     "help.move": "[↑][←][↓][→] / [W][A][S][D]", "help.moveV": "헤엄치기 · 배 몰기",
     "help.dash": "[Shift]", "help.dashV": "빠르게 이동 · 줄 조절",
-    "help.act": "[Space]", "help.actV": "그물·상자 · 낚시 액션 (대사 중에도 작동)",
+    "help.act": "[Space]", "help.actV": "작살·상자 · 낚시 액션 (대사 중에도 작동)",
     "help.swap": "[Tab]", "help.swapV": "잠수부 ↔ 낚싯배 바꾸기",
     "help.line": "[↓][↑] / [S][W]", "help.lineV": "줄 내리기 · 감아올리기",
     "help.ok": "[Z] / [Enter]", "help.okV": "선택 · 대사 표시/넘기기",
@@ -1309,7 +1691,7 @@ const STR = {
     "g.titleTally": "칭호 {0}/{1}",
     "g.trophyTally": "트로피 {0}/{1}",
     "g.depth": "수심", "g.zone": "수역", "g.pace": "속도",
-    "g.net": "채집", "g.first": "첫 포획",
+    "g.net": "작살", "g.first": "첫 포획",
     "g.yes": "가능", "g.no": "불가",
     "g.count": "{0}마리", "g.none": "아직 없음", "g.dash": "-",
     "g.sighted": "목격",
@@ -1324,7 +1706,7 @@ const STR = {
     "t.trophy": "트로피 {1}단계 : {0}",
     "tr.plain": "잡은 물고기", "tr.rare": "희귀 개체",
     "m.start.diver": "물속으로 들어갑니다.",
-    "m.start.diver2": "[Space]로 그물을 휘두릅니다. 해저에 상자가 하나 있습니다.",
+    "m.start.diver2": "[Space]로 작살을 쏩니다. 해저에 상자가 하나 있습니다.",
     "m.start.boat": "배를 몰고 바다로 나왔습니다. [Space]로 줄을 던지세요.",
     "m.start.boat2": "[↓]로 줄을 내리고, 입질이 오면 다시 [Space]를 눌러 챕니다.",
     "m.newsea": "바다를 새로 만들었습니다.",
@@ -1332,8 +1714,8 @@ const STR = {
     "m.got": "수심 {1}M에서 {0} 한 마리.",
     "m.gotnew": "처음 보는 종입니다. {0} · 수심 {1}M · 도감에 올렸습니다.",
     "m.gotrare": "희귀 개체입니다! 흰빛 {0} · 이백 마리에 한 마리꼴로 태어납니다.",
-    "m.toobig": "그물에 담기엔 너무 큽니다. 몸을 틀어 지나갑니다.",
-    "m.subignore": "잠수함은 그물을 본 척도 하지 않습니다.",
+    "m.toobig": "작살이 들지 않습니다. 몸을 틀어 지나갑니다.",
+    "m.subignore": "잠수함은 작살을 본 척도 하지 않습니다.",
     "m.sight": "{0} 발견.",
     "m.chest": "상자를 열었습니다!",
     "m.chest2": "특별한 미끼를 얻었습니다. 깊은 물에서 [M]을 누르세요.",
@@ -1361,6 +1743,70 @@ const STR = {
     "m.time": "하늘 : {0}",
     "help.time": "[T]", "help.timeV": "하늘 바꾸기 (일출·정오·석양·달밤)",
     "lang.name": "한국어",
+
+    /* ---- 상점·수족관·하트·보상. 도트판에서 늘어난 것들 ---- */
+    "ui.coin": "{0}코인",
+    "ui.hold": "{0}마리",
+    "ui.yesno": "[Enter] 예 · [Esc] 아니오",
+    "menu.aqua": "수족관",
+    "a.title": "수족관",
+    "a.empty": "아직 아무것도 올리지 못했습니다",
+    "a.nothingToSell": "팔 것이 없습니다. 수족관의 것들은 그대로 남습니다.",
+    "a.keys": "[↑][↓] 고르기 · [Enter] 팔기 · [S] 상점 · [Esc] 닫기",
+    "a.keysEmpty": "[S] 상점 · [Esc] 닫기",
+    "a.sellall": "모두 팔기",
+    "a.askN": "{0}, 몇 마리를 팔까요?",
+    "ui.each": "마리",
+    "ui.yesnoQty": "[←][→] 마릿수 · [Enter] 팔기 · [Esc] 그만",
+    "a.askAll": "수족관의 {0}마리를 모두 파시겠습니까?",
+    "a.sold": "{0}을 받았습니다.",
+    "s.ask": "{0}을(를) 사시겠습니까?",
+    "menu.shop": "장비 상점",
+    "c.pay": "팔면",
+    "s.title": "장비 상점",
+    "s.keys": "[↑][↓] 고르기 · [Enter] 사기 · [A] 수족관 · [Esc] 닫기",
+    "s.full": "다 올림",
+    "s.maxed": "더 올릴 수 없습니다.",
+    "s.poor": "돈이 모자랍니다.",
+    "s.bought": "{0} {1}단계. 장비가 좋아졌습니다.",
+    "s.tank": "산소통",
+    "s.tankV": "하트 한 칸",
+    "s.fins": "오리발",
+    "s.finsV": "헤엄 속도",
+    "s.lamp": "랜턴",
+    "s.lampV": "심해 시야",
+    "s.line": "작살줄",
+    "s.lineV": "작살 사정거리",
+    "s.bait": "미끼통",
+    "s.baitV": "희귀 개체 확률",
+    "over.title": "숨이 끊겼습니다",
+    "over.1": "상어에게 너무 여러 번 부딪혔습니다.",
+    "over.2": "잡은 기록과 도감은 그대로 남아 있습니다.",
+    "over.again": "[Z] 다시 잠수 · [X] 시작화면",
+    "m.lowhp": "숨이 얼마 남지 않았습니다. 상어를 피하세요.",
+    "m.heal": "상자 안의 산소통. 숨이 하나 돌아왔습니다.",
+    "g.open2": "[Z] 자세히 · [X] 닫기 · [Q][E] 탭",
+    "t.got": "받은 칭호",
+    "t.yet": "아직입니다",
+    "t.how": "얻는 법",
+    "tr.title": "{0} 트로피",
+    "tr.tier": "{0}단계",
+    "tr.none": "아직 한 잔도 없습니다",
+    "tr.grats": "축하합니다! {0}까지 올랐습니다.",
+    "tr.next": "다음 잔까지 {0}",
+    "tr.full": "네 잔을 모두 채웠습니다.",
+    "p.head": "상자를 열었습니다!",
+    "p.close": "[Enter] 닫기",
+    "p.bait": "특별한 미끼",
+    "p.baitV": "깊은 물에서 · [M]",
+    "p.heart": "산소통",
+    "p.heartV": "하트 한 칸이 돌아왔습니다",
+    "p.coin": "한 줌의 코인",
+    "p.rare": "흰빛 {0}",
+    "help.shop": "[U]",
+    "help.shopV": "장비 상점 열기",
+    "help.aqua": "[A]",
+    "help.aquaV": "수족관 열기 (모은 물고기 · 판매)",
   },
   en: {
     "app.title": "AT SEA :: DOT",
@@ -1378,7 +1824,7 @@ const STR = {
     "zone.MIDNIGHT": "MIDNIGHT", "zone.ABYSS": "ABYSS",
     "zone.s.SUNLIGHT": "SUN", "zone.s.TWILIGHT": "TWI",
     "zone.s.MIDNIGHT": "MID", "zone.s.ABYSS": "ABY",
-    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] SWIM   [Shift] DASH   [Space] NET   [G] GUIDE",
+    "hint.diver": "[↑][←][↓][→] / [W][A][S][D] SWIM   [Shift] DASH   [Space] SPEAR   [G] GUIDE",
     "hint.boat": "[←][→] / [A][D] BOAT  [↓][↑] / [S][W] LINE  [Space] ACT",
     "hint.short": "[Space] ACT   [G] GUIDE",
     "ui.paused": "PAUSED",
@@ -1386,7 +1832,7 @@ const STR = {
     "help.close": "[X] / [Esc] CLOSE",
     "help.move": "[↑][←][↓][→] / [W][A][S][D]", "help.moveV": "SWIM OR STEER",
     "help.dash": "[Shift]", "help.dashV": "FASTER MOVEMENT / LINE CONTROL",
-    "help.act": "[Space]", "help.actV": "NET / CHEST / FISHING (EVEN DURING DIALOGUE)",
+    "help.act": "[Space]", "help.actV": "SPEAR / CHEST / FISHING (EVEN DURING DIALOGUE)",
     "help.line": "[↓][↑] / [S][W]", "help.lineV": "PAY OUT / REEL IN",
     "help.ok": "[Z] / [Enter]", "help.okV": "SELECT / REVEAL OR ADVANCE DIALOGUE",
     "help.guide": "[G]", "help.guideV": "OPEN / CLOSE FIELD GUIDE",
@@ -1411,7 +1857,7 @@ const STR = {
     "g.titleTally": "TITLES {0}/{1}",
     "g.trophyTally": "TROPHIES {0}/{1}",
     "g.depth": "DEPTH", "g.zone": "ZONE", "g.pace": "PACE",
-    "g.net": "NET", "g.first": "FIRST",
+    "g.net": "SPEAR", "g.first": "FIRST",
     "g.yes": "YES", "g.no": "NO",
     "g.count": "X{0}", "g.none": "NONE YET", "g.dash": "-",
     "g.sighted": "SEEN",
@@ -1426,7 +1872,7 @@ const STR = {
     "t.trophy": "TROPHY TIER {1} : {0}",
     "tr.plain": "FISH LANDED", "tr.rare": "RARE ONES",
     "m.start.diver": "YOU SLIP UNDER.",
-    "m.start.diver2": "SWING THE NET WITH [Space]. LOOK FOR A CHEST ON THE SEABED.",
+    "m.start.diver2": "FIRE THE SPEAR WITH [Space]. LOOK FOR A CHEST ON THE SEABED.",
     "m.start.boat": "YOU TAKE THE BOAT OUT. PRESS [Space] TO CAST.",
     "m.start.boat2": "PAY OUT LINE WITH THE [↓] ARROW, THEN STRIKE WITH [Space].",
     "m.newsea": "A NEW SEA.",
@@ -1434,7 +1880,7 @@ const STR = {
     "m.got": "GOT A {0} AT {1}M.",
     "m.gotnew": "NEW! {0} - {1}M. ADDED TO THE GUIDE.",
     "m.gotrare": "RARE! A PALE {0} - ONE IN TWO HUNDRED.",
-    "m.toobig": "TOO BIG FOR THE NET. IT TURNS AWAY.",
+    "m.toobig": "THE SPEAR WILL NOT HOLD IT. IT TURNS AWAY.",
     "m.subignore": "THE SUB IGNORES YOUR NET.",
     "m.sight": "SIGHTED: {0}.",
     "m.chest": "OPENED THE CHEST!",
@@ -1466,6 +1912,70 @@ const STR = {
     "m.time": "SKY : {0}",
     "help.time": "[T]", "help.timeV": "CHANGE THE SKY (DAWN/NOON/SUNSET/NIGHT)",
     "lang.name": "ENGLISH",
+
+    /* ---- 상점·수족관·하트·보상. 도트판에서 늘어난 것들 ---- */
+    "ui.coin": "{0} COIN",
+    "ui.hold": "{0} HELD",
+    "ui.yesno": "[Enter] YES · [Esc] NO",
+    "menu.aqua": "AQUARIUM",
+    "a.title": "AQUARIUM",
+    "a.empty": "NOTHING LANDED YET",
+    "a.nothingToSell": "NOTHING TO SELL. THE AQUARIUM KEEPS WHAT IT HAS.",
+    "a.keys": "[↑][↓] PICK · [Enter] SELL · [S] SHOP · [Esc] CLOSE",
+    "a.keysEmpty": "[S] SHOP · [Esc] CLOSE",
+    "a.sellall": "SELL EVERYTHING",
+    "a.askN": "{0} - HOW MANY?",
+    "ui.each": "",
+    "ui.yesnoQty": "[←][→] HOW MANY · [Enter] SELL · [Esc] CANCEL",
+    "a.askAll": "SELL ALL {0} FISH IN THE AQUARIUM?",
+    "a.sold": "YOU GOT {0}.",
+    "s.ask": "BUY THE {0}?",
+    "menu.shop": "DIVE SHOP",
+    "c.pay": "WORTH",
+    "s.title": "DIVE SHOP",
+    "s.keys": "[↑][↓] PICK · [Enter] BUY · [A] AQUARIUM · [Esc] CLOSE",
+    "s.full": "MAXED",
+    "s.maxed": "ALREADY AT THE TOP.",
+    "s.poor": "NOT ENOUGH COIN.",
+    "s.bought": "{0} TIER {1}. YOUR GEAR IS BETTER.",
+    "s.tank": "AIR TANK",
+    "s.tankV": "ONE MORE HEART",
+    "s.fins": "FINS",
+    "s.finsV": "SWIM SPEED",
+    "s.lamp": "LAMP",
+    "s.lampV": "DEEP-WATER SIGHT",
+    "s.line": "SPEAR LINE",
+    "s.lineV": "SPEAR RANGE",
+    "s.bait": "BAIT BOX",
+    "s.baitV": "RARE CHANCE",
+    "over.title": "OUT OF AIR",
+    "over.1": "THE SHARKS CAUGHT YOU ONE TIME TOO MANY.",
+    "over.2": "YOUR CATCHES AND FIELD GUIDE ARE KEPT.",
+    "over.again": "[Z] DIVE AGAIN · [X] TITLE",
+    "m.lowhp": "NOT MUCH AIR LEFT. KEEP AWAY FROM THE SHARKS.",
+    "m.heal": "AN AIR TANK IN THE CHEST. ONE BREATH BACK.",
+    "g.open2": "[Z] OPEN · [X] CLOSE · [Q][E] TABS",
+    "t.got": "EARNED",
+    "t.yet": "NOT YET",
+    "t.how": "HOW",
+    "tr.title": "{0} TROPHY",
+    "tr.tier": "TIER {0}",
+    "tr.none": "NO CUP YET",
+    "tr.grats": "CONGRATULATIONS! YOU REACHED {0}.",
+    "tr.next": "{0} TO THE NEXT CUP",
+    "tr.full": "ALL FOUR CUPS ARE FILLED.",
+    "p.head": "OPENED THE CHEST!",
+    "p.close": "[Enter] CLOSE",
+    "p.bait": "SPECIAL BAIT",
+    "p.baitV": "PRESS · [M] IN DEEP WATER",
+    "p.heart": "AIR TANK",
+    "p.heartV": "ONE HEART BACK",
+    "p.coin": "A HANDFUL OF COIN",
+    "p.rare": "A PALE {0}",
+    "help.shop": "[U]",
+    "help.shopV": "OPEN THE DIVE SHOP",
+    "help.aqua": "[A]",
+    "help.aquaV": "AQUARIUM (YOUR CATCH, AND SELLING)",
   },
 };
 
@@ -1473,7 +1983,7 @@ const STR = {
 Object.assign(STR.ko, {
   "hint.touch": "다이얼로 이동", "controls.pad": "이동 다이얼", "controls.padHint": "밀어서 이동 · 바깥쪽은 가속", "controls.actionHint": "이동하면서 액션", "g.tab.short.trophy": "트로피", "controls.label": "게임 조작",
   "controls.up": "위로", "controls.down": "아래로", "controls.left": "왼쪽으로", "controls.right": "오른쪽으로",
-  "controls.fast": "가속", "controls.primary": "선택", "controls.net": "그물", "controls.cast": "줄 던지기",
+  "controls.fast": "가속", "controls.primary": "선택", "controls.spear": "작살", "controls.cast": "줄 던지기",
   "controls.reel": "줄 감기", "controls.strike": "챔질!", "controls.wait": "올리는 중",
   "controls.next": "계속", "controls.close": "닫기", "controls.resume": "재개",
   "controls.boat": "배 타기", "controls.diver": "잠수하기", "controls.guide": "도감", "controls.help": "조작법",
@@ -1484,7 +1994,7 @@ Object.assign(STR.ko, {
 Object.assign(STR.en, {
   "hint.touch": "MOVE WITH DIAL", "controls.pad": "Movement dial", "controls.padHint": "Slide to move. Push further to dash.", "controls.actionHint": "Move + action", "g.tab.short.trophy": "CUPS", "controls.label": "Game controls",
   "controls.up": "Move up", "controls.down": "Move down", "controls.left": "Move left", "controls.right": "Move right",
-  "controls.fast": "FAST", "controls.primary": "Choose", "controls.net": "Net", "controls.cast": "Cast",
+  "controls.fast": "FAST", "controls.primary": "Choose", "controls.spear": "Spear", "controls.cast": "Cast",
   "controls.reel": "Reel in", "controls.strike": "Strike!", "controls.wait": "Reeling",
   "controls.next": "Continue", "controls.close": "Close", "controls.resume": "Resume",
   "controls.boat": "Board boat", "controls.diver": "Dive", "controls.guide": "Guide", "controls.help": "Help",
@@ -1495,14 +2005,14 @@ Object.assign(STR.en, {
 
 const SP = {
   ko: {
-    fish3: ["네온 고비", "표층에서 제일 자주 부딪히는 친구. 그물이 오면 다 같이 달아나는데, 꼭 한 마리는 딴생각을 하고 있다."],
+    fish3: ["네온 고비", "표층에서 제일 자주 부딪히는 친구. 작살이 날아오면 다 같이 흩어지는데, 꼭 한 마리는 딴생각을 하고 있다."],
     fish5: ["흰동가리", "흰 띠 셋을 두른 멋쟁이. 산호 곁을 좀처럼 안 떠나니, 집 앞에서 기다리면 된다."],
-    puffer: ["복어", "화나면 빵빵하게 부풀어서 가시를 세운다. 찔리지 않게 조심하자. 대신 그만큼 그물에는 잘 걸린다."],
+    puffer: ["복어", "화나면 빵빵하게 부풀어서 가시를 세운다. 찔리지 않게 조심하자. 대신 그만큼 덩치가 커져 맞히기는 쉽다."],
     tang: ["블루탱", "둥근 원반에 노란 꼬리를 달고 다닌다. 색이 하도 밝아서 숨을 생각이 아예 없어 보인다."],
-    tuna: ["참다랑어", "초승달 꼬리로 물을 가른다. 뒤쫓아서는 절대 못 잡으니, 갈 길목에 그물을 놓고 기다리자."],
+    tuna: ["참다랑어", "초승달 꼬리로 물을 가른다. 뒤쫓아서는 절대 못 잡으니, 갈 길목을 겨누고 기다리자."],
     marlin: ["청새치", "긴 부리를 앞세우고 돛 같은 등지느러미를 세웠다. 폼으로는 이 바다에서 제일이다."],
     turtle: ["바다거북", "앞발을 앞뒤로 크게 저으며 느긋하게 간다. 가끔 숨 쉬러 수면까지 올라오는데, 서두르는 법이 없다."],
-    jelly: ["보름달물해파리", "헤엄칠 마음이 없다. 물이 미는 대로 둥둥 떠다니고, 그물에 들어와도 별말이 없다."],
+    jelly: ["보름달물해파리", "헤엄칠 마음이 없다. 물이 미는 대로 둥둥 떠다니고, 작살이 꽂혀도 별말이 없다."],
     seahorse: ["해마", "꼬리를 돌돌 말고 꼿꼿하게 서서 다닌다. 물고기치고는 자세가 아주 바르다."],
     squid: ["산호초오징어", "작은 몸으로 쏜살같이 오르내린다. 뒤쫓으면 약만 오르니, 앞을 막아서자."],
     ray: ["만타가오리", "날개를 접었다 폈다 하며 하늘 날듯 미끄러진다. 이 바다에서 제일 우아한 친구."],
@@ -1515,14 +2025,14 @@ const SP = {
     mega: ["메갈로돈", "상어 여덟 마리를 합쳐 놓은 크기에 몸까지 빛난다. 보고 싶으면 미끼를 뿌리고 기다리되, 너무 가까이는 가지 말자."],
   },
   en: {
-    fish3: ["NEON GOBY", "THE FIRST FRIEND YOU MEET UP HERE. THE WHOLE SCHOOL BOLTS WHEN THE NET COMES, BUT ONE IS ALWAYS DAYDREAMING."],
+    fish3: ["NEON GOBY", "THE FIRST FRIEND YOU MEET UP HERE. THE WHOLE SCHOOL SCATTERS WHEN THE SPEAR FLIES, BUT ONE IS ALWAYS DAYDREAMING."],
     fish5: ["CLOWNFISH", "THREE WHITE STRIPES AND VERY PROUD OF THEM. NEVER LEAVES THE CORAL, SO JUST WAIT BY ITS FRONT DOOR."],
     puffer: ["PUFFERFISH", "PUFFS RIGHT UP AND PUTS ITS SPINES OUT WHEN CROSS. MIND YOUR FINGERS - THOUGH IT DOES MAKE IT EASY TO NET."],
     tang: ["BLUE TANG", "A ROUND DISC WITH ONE YELLOW TAIL. FAR TOO BRIGHT TO BE TRYING TO HIDE FROM ANYONE."],
     tuna: ["BLUEFIN TUNA", "CUTS THE WATER WITH A CRESCENT TAIL. YOU WILL NEVER CATCH IT FROM BEHIND - WAIT WHERE IT IS HEADED."],
     marlin: ["BLUE MARLIN", "A LONG BILL OUT FRONT AND A DORSAL FIN LIKE A SAIL. THE BEST-DRESSED THING IN THIS SEA."],
     turtle: ["SEA TURTLE", "SWEEPS ITS FRONT FLIPPERS BACK AND FORTH, IN NO HURRY AT ALL. GOES UP FOR AIR WHEN IT FEELS LIKE IT."],
-    jelly: ["MOON JELLY", "HAS NO INTEREST IN SWIMMING. IT DRIFTS WHEREVER THE WATER GOES, AND COMES INTO THE NET WITHOUT COMPLAINT."],
+    jelly: ["MOON JELLY", "HAS NO INTEREST IN SWIMMING. IT DRIFTS WHEREVER THE WATER GOES, AND TAKES THE SPEAR WITHOUT COMPLAINT."],
     seahorse: ["SEAHORSE", "TAIL CURLED, BACK STRAIGHT. BY FAR THE BEST POSTURE OF ANY FISH DOWN HERE."],
     squid: ["REEF SQUID", "A SMALL BODY THAT SHOOTS UP AND DOWN. CHASING IT ONLY ANNOYS YOU BOTH - GET IN FRONT OF IT."],
     ray: ["MANTA RAY", "FOLDS AND SPREADS ITS WINGS AND GLIDES AS IF IT WERE FLYING. THE MOST ELEGANT THING IN THIS SEA."],
@@ -1607,6 +2117,9 @@ let worldH = 2000;       /* 하늘 꼭대기부터 바닥까지, 논리 픽셀 *
 let seaTop = SKY_H;      /* 물이 시작하는 자리 */
 let seaBed = 1900;       /* 모래가 시작하는 자리 */
 
+const SPR_PAL = {
+  tuna: ["#6d8b95", "#63848f", "#77949c"],
+};
 const PALETTES = {
   fish:     ["#ff8c22", "#ffc02e", "#ffe94a", "#ff5f5f", "#ff59c0", "#22d9ff",
              "#2aa8ff", "#8cff3a", "#5fffa8", "#c14dff", "#d78a2a", "#ff9bd2"],
@@ -1730,18 +2243,46 @@ const SPR_SIZES = {
   jelly:    [1],         /* 보름달물해파리 30cm - 높이 18칸 (바닥값) */
   tang:     [1],         /* 블루탱 25cm - 22칸 (바닥값) */
   squid:    [1],         /* 산호초오징어 45cm - 높이 30칸 (바닥값) */
-  angler:   [1],         /* 초롱아귀 60cm - 26칸 (바닥값) */
+  angler:   [1],         /* 초롱아귀 60cm - 46칸 (바닥값). 도안을 제 크기로 그렸다 */
   /* --- 1미터 이상. 잠수부 자에 맞춘 것들 --- */
   octopus:  [1],         /* 문어 1m - 26칸 (약 1.4m) */
   turtle:   [1],         /* 바다거북 1.1m - 23칸 (약 1.3m) */
   tuna:     [1],         /* 참다랑어 2m - 30칸 (약 1.6m) */
-  marlin:   [2],         /* 청새치 3.5m - 64칸 (약 3.5m) */
-  ray:      [2],         /* 만타가오리 4.5m - 72칸 (약 3.9m). ray2 와 크기가 같아야 한다 */
-  shark:    [3],         /* 상어 4.5m - 141칸. 이 바다에서 두 번째로 크다 */
-  sub:      [3],         /* 잠수함 7m - 96칸 (약 5.2m) */
-  mega:     [3],         /* 메갈로돈 16m - 264칸 (약 14m) */
+  /* 아래 다섯은 도안을 제 크기로 그려 두었다. 배율을 올리면 한 칸이
+     여러 칸짜리 네모가 되어, 큰 것일수록 거칠게 깨져 보인다. 전부 1 이다. */
+  marlin:   [1],         /* 청새치 3.5m - 62칸 */
+  ray:      [1],         /* 만타가오리 4.5m - 72칸. ray2 와 크기가 같아야 한다 */
+  shark:    [1],         /* 상어 4.5m - 189칸. 도안을 제 크기로 그려 두었다 */
+  sub:      [1],         /* 잠수함 7m - 81칸 */
+  mega:     [1],         /* 메갈로돈 16m - 375칸 */
 };
 
+
+/* 어종별 시세. 깊은 데 사는 것, 좀처럼 안 나오는 것이 비싸다. 흰빛
+   개체는 세 배를 받는다. */
+const PRICE = {
+  fish3: 8, jelly: 12, fish5: 14, crab: 16, tang: 18, puffer: 22,
+  seahorse: 26, lantern: 30, squid: 34, tuna: 40, octopus: 48, turtle: 55,
+  ray: 60, marlin: 70, angler: 90,
+};
+const priceOf = (id, rare) => Math.round((PRICE[id] || 10) * (rare ? 3 : 1));
+
+/* 장비. 두 단계까지 올린다. 값은 뒤로 갈수록 가파르다 - 마지막 한 단이
+   쉬우면 바다에 나갈 까닭이 없어진다. */
+const UPGRADES = [
+  { id: "tank", cost: [260, 620] },
+  { id: "fins", cost: [180, 430] },
+  { id: "lamp", cost: [210, 500] },
+  { id: "line", cost: [160, 380] },
+  { id: "bait", cost: [320, 760] },
+];
+const UP_MAX = 2;
+const upLv = k => (save.up && save.up[k]) || 0;
+const heartMax = () => 10 + upLv("tank") * 2;   /* 반 칸이 1 이므로 다섯 개 */
+const swimMul = () => 1 + upLv("fins") * .15;
+const lampAdd = () => upLv("lamp") * 16;
+const rangeAdd = () => upLv("line") * 26;
+const rareMul = () => Math.pow(1.9, upLv("bait"));
 
 const RARE_CHANCE = .006;   /* 변이. 색을 잃고 흰빛으로 태어난다 - 이백에 하나 */
 
@@ -1756,8 +2297,14 @@ class Being {
     this.dir = Math.random() < .5 ? 1 : -1;
     /* 크기. 같은 종도 새끼와 다 자란 것이 있다. 정수배라야 도트가 산다. */
     this.sc = pick(SPR_SIZES[this.def.name] || K.sizes || [1]);
-    this.rare = !!K.pal && Math.random() < RARE_CHANCE;
-    this.baseColor = K.pal ? (this.rare ? C.rare : pick(PALETTES[K.pal])) : null;
+    this.rare = !!K.pal && Math.random() < RARE_CHANCE * rareMul();
+    /* 도안에 제 색이 있으면 그것을 먼저 쓴다. 참다랑어는 등이 검푸르고
+       배가 은빛인 것이 그 물고기의 생김새라, 다른 작은 물고기처럼 아무
+       색이나 입히면 참다랑어로 보이지 않는다. 희귀 개체는 그대로 흰빛. */
+    const own = SPR_PAL[this.def.name];
+    this.baseColor = this.rare ? C.rare
+                   : own ? pick(own)
+                   : K.pal ? pick(PALETTES[K.pal]) : null;
     this.colors = stamp(this.makeColors());
     this.w = this.def.w * this.sc; this.h = this.def.h * this.sc;
     this.speed = rnd(K.speed[0], K.speed[1]);
@@ -1949,7 +2496,7 @@ function makeDecor() {
   /* 상자는 바다에 딱 하나. 열면 특별한 미끼가 나온다. */
   chest = {
     x: Math.round(rnd(60, worldW() - 80)),
-    y: seaBed + 8,
+    y: seaBed + 10 - SPR.chest.h,   /* 굽이 모래에 닿게 */
     open: save.chest ? 1 : 0,
   };
 }
@@ -2000,7 +2547,9 @@ const SAVE_KEY = "atseadot.v4";
 
 function emptySave() {
   return { seen: {}, caught: {}, rare: {}, at: {}, titles: {},
-           stat: { snap: 0, seabed: 0 }, chest: 0, deepest: 0 };
+           stat: { snap: 0, seabed: 0 }, chest: 0, deepest: 0,
+           /* 팔기 전까지 수족관에 머무는 것들과, 그것으로 산 것 */
+           coin: 0, up: {}, hold: {}, holdR: {}, stocked: 0 };
 }
 function normalizeSave(value) {
   const out = emptySave();
@@ -2015,7 +2564,22 @@ function normalizeSave(value) {
     if (out.caught[id] || out.rare[id]) out.seen[id] = 1;
     if (record(value.at) && count(value.at[id]) && value.at[id] <= MAX_METRES)
       out.at[id] = value.at[id];
+    /* 수족관에 든 것은 잡은 수를 넘을 수 없다. 손으로 고친 저장값이
+       들어와도 없는 물고기를 팔지는 못하게 한다. */
+    for (const field of ["hold", "holdR"]) {
+      const cap = field === "hold" ? (out.caught[id] || 0) - (out.rare[id] || 0)
+                                   : (out.rare[id] || 0);
+      if (record(value[field]) && count(value[field][id]) && cap > 0)
+        out[field][id] = Math.min(value[field][id], cap);
+    }
   }
+  if (count(value.coin)) out.coin = value.coin;
+  if (record(value.up)) {
+    for (const u of UPGRADES)
+      if (count(value.up[u.id]) && value.up[u.id] > 0)
+        out.up[u.id] = Math.min(UP_MAX, value.up[u.id]);
+  }
+  out.stocked = flag(value.stocked) ? 1 : 0;
   if (record(value.titles)) {
     const ids = Object.keys(TITLE_TEXT.en);
     for (const track of ["plain", "rare"])
@@ -2033,6 +2597,20 @@ function normalizeSave(value) {
 let save = emptySave();
 try { save = normalizeSave(JSON.parse(localStorage.getItem(SAVE_KEY))); }
 catch (e) { /* Unreadable storage or JSON starts with a valid in-memory record. */ }
+stockAquarium();
+/* 수족관이 생기기 전에 잡아 둔 것을 한 번만 옮겨 싣는다. 이것이 없으면
+   여태 잡은 것이 수족관에 하나도 없어, 전부 사라진 것처럼 보인다. */
+function stockAquarium() {
+  if (save.stocked) return;
+  save.stocked = 1;
+  for (const id of Object.keys(save.caught)) {
+    const rare = save.rare[id] || 0;
+    const plain = (save.caught[id] || 0) - rare;
+    if (plain > 0) save.hold[id] = plain;
+    if (rare > 0) save.holdR[id] = rare;
+  }
+}
+
 let saveTimer = 0;
 function flushSave() {
   clearTimeout(saveTimer);
@@ -2193,7 +2771,7 @@ function advanceMsg() {
 
 /* =========================================================================
    조종하는 것 - 잠수부와 낚싯배
-   타이틀에서 둘 중 하나를 고른다. 잠수부는 물속을 헤엄쳐 다니며 그물을
+   타이틀에서 둘 중 하나를 고른다. 잠수부는 물속을 헤엄쳐 다니며 작살을
    휘두르고, 배는 수면 위를 오가며 줄을 내린다. 바다도 도감도 같은 것을 쓴다.
    ========================================================================= */
 const diverColors = stamp({
@@ -2207,17 +2785,24 @@ const diverColors = stamp({
   k: "#8a4a1c",   /* 창테와 허리띠 */
   y: C.lure,
 });
-/* 그물을 한 번 휘두르는 데 드는 시간(프레임). 세 걸음으로 나눠 밟는다. */
-const NET_TIME = 18;
-const netColors = stamp({
-  o: "#0b111c", d: "#8a5a2a", m: "#c7d8ea", l: "#8fb8d8",
-  h: "#ffffff", r: "#c7d8ea", w: "#eaf4ff", k: "#0b1018", y: C.lure,
+/* 작살. 한 번 쏘면 앞으로 날아갔다가 줄에 감겨 돌아온다. 그물처럼
+   곁의 것이 절로 잡히지 않으니, 무엇을 노렸는지가 손에 남는다. */
+const SPEAR_SPEED = 4.4;      /* 한 걸음에 나아가는 칸 */
+const SPEAR_BACK  = 6.0;      /* 돌아올 때는 줄이 감기니 더 빠르다 */
+const SPEAR_RANGE = 92;       /* 이만큼 나아가면 스스로 돌아온다 */
+const spear = { on: 0, x: 0, y: 0, dir: 1, gone: 0, back: 0 };
+const spearColors = stamp({
+  o: "#0b111c", d: "#7b6242", m: "#a8865a", l: "#c9d8e8",
+  h: "#eef6ff", r: "#8fb8d8", w: "#ffffff", k: "#0b1018", y: C.lure,
 });
 
-/* 잠수부의 몸피. 그물이 닿는 거리, 등불 자리, 부딪히는 판정이 모두 여기서 나온다. */
+/* 잠수부의 몸피. 작살이 나가는 자리, 등불 자리, 부딪히는 판정이 모두
+   여기서 나온다. */
 /* 잠수부는 엎드려 나아가는 자세다. 서 있는 사람이 아니라 누운 사람이라
    키가 세로가 아니라 가로다. */
-const DV_W = 32, DV_H = 22;
+/* 잠수부는 가로로 누워 나아간다. 머리에서 오리발까지가 길고 납작해
+   가로가 세로의 두 배가 넘는다. 도안과 어긋나면 판정이 전부 어긋난다. */
+const DV_W = 46, DV_H = 20;
 const DV_CX = DV_W / 2, DV_CY = DV_H / 2;
 
 const player = {
@@ -2225,7 +2810,6 @@ const player = {
   x: 0, y: 0, dir: 1,
   vx: 0, vy: 0,
   phase: 0,
-  net: 0,          /* 그물을 휘두르는 동안 남은 시간 */
   bump: 0,         /* 상어에 밀린 뒤 잠깐 */
 };
 
@@ -2256,7 +2840,7 @@ function resetPlayer() {
   player.x = Math.round(worldW() / 2);
   player.vx = player.vy = 0;
   player.dir = 1;
-  player.net = 0; player.bump = 0;
+  spear.on = 0; player.bump = 0;
   resetRod();
   if (player.role === "boat") {
     /* 뱃전(도안 15번째 줄)이 수면에 걸치도록 앉힌다. */
@@ -2534,8 +3118,9 @@ function drawChest() {
   const sx = chest.x - camX, sy = chest.y - cam;
   if (sy > SH + 20 || sy < -20) return;
   const colors = stamp({
-    o: "#2a1a0c", d: "#6b4a1e", m: "#a9762c", l: "#d3a04a",
-    h: "#f0d089", r: "#a9762c", w: "#fff", k: "#000", y: "#ffe25f",
+    o: "#241607", d: "#5f3f18", m: "#9a6a26", l: "#c4913f",
+    h: "#e6c078", r: "#3f3830",   /* 쇠테 - 나무와 같은 색이면 테가 없는 셈이다 */
+    w: "#ffd45e", k: "#120c05", y: "#ffe25f",
   });
   const cv = bake(chest.open ? SPR.chestOpen : SPR.chest, colors, false);
   if (!chest.open) {
@@ -2544,7 +3129,8 @@ function drawChest() {
     else blit(cv, sx, sy);
     /* 반짝임 하나가 상자 위를 돈다. */
     const a = clock * 2.2;
-    px(Math.round(sx + 5 + Math.cos(a) * 7), Math.round(sy - 3 + Math.sin(a) * 3), "#fff6c0");
+    px(Math.round(sx + SPR.chest.w / 2 + Math.cos(a) * 11),
+       Math.round(sy - 3 + Math.sin(a) * 4), "#fff6c0");
   } else {
     blit(cv, sx, sy);
   }
@@ -2626,26 +3212,19 @@ function drawPlayer() {
   const bob = Math.round(Math.sin(player.phase * .7) * 1.2);
   const sx = Math.round(player.x - camX), sy = Math.round(player.y - cam + bob);
   blit(cv, sx, sy);
-  /* 그물. 아래 뒤에서 위 앞으로 세 걸음에 걸쳐 훑고, 물자국을 남긴다. */
-  if (player.net > 0) {
-    const t = 1 - clamp(player.net / NET_TIME, 0, 1);
-    const step = t < .34 ? 0 : t < .68 ? 1 : 2;
-    const path = [[2, 9], [10, 4], [16, -1]][step];
-    const nx = sx + (player.dir === 1 ? DV_CX + path[0] : DV_CX - path[0] - SPR.net.w * 2);
-    const ny = sy + 2 + path[1];
-    blit(bake(SPR.net, netColors, player.dir === -1, 2), nx, ny);
-    if (step > 0) {
-      g.save();
-      g.globalAlpha = .5;
-      const prev = [[2, 9], [10, 4]][step - 1];
-      for (let i = 0; i < 5; i++) {
-        const f = i / 5;
-        const wx = sx + DV_CX + (player.dir === 1 ? 1 : -1) * (prev[0] + (path[0] - prev[0]) * f) + 6;
-        const wy = sy + 5 + prev[1] + (path[1] - prev[1]) * f;
-        px(Math.round(wx), Math.round(wy), "#cfe8ff");
-      }
-      g.restore();
+  /* 작살. 잠수부의 손에서 줄이 뻗어 나가고 그 끝에 작살이 있다. */
+  if (spear.on) {
+    const hx = sx + (player.dir === 1 ? DV_W - 4 : 4);
+    const hy = sy + 16;
+    const tx = Math.round(spear.x - camX), ty = Math.round(spear.y - cam);
+    /* 줄은 한 칸씩 띄어 찍는다 - 이어 그으면 자로 그은 선이 된다 */
+    const n = Math.max(1, Math.round(Math.abs(tx - hx) / 3));
+    for (let i = 1; i < n; i++) {
+      const f = i / n;
+      px(Math.round(hx + (tx - hx) * f), Math.round(hy + (ty - hy) * f), "#9fc4e4");
     }
+    const cv2 = bake(SPR.spear, spearColors, spear.dir === -1);
+    blit(cv2, tx - (spear.dir === 1 ? cv2.width - 3 : 3), ty - 2);
   }
 }
 
@@ -2756,7 +3335,7 @@ function drawDarkness() {
   const maxA = night * .80;
   const px0 = lampX(), py0 = lampY();
   /* 등불이 닿는 자리. 좁으면 바닥이 보이지 않아 헤엄칠 데를 못 고른다. */
-  const R = (player.role === "boat" ? 78 : 88) + Math.sin(clock * 2) * 2.4;
+  const R = (player.role === "boat" ? 78 : 88) + lampAdd() + Math.sin(clock * 2) * 2.4;
   g.save();
   for (let y = 0; y < SH; y += DARK_BLOCK) {
     for (let x = 0; x < SW; x += DARK_BLOCK) {
@@ -2998,9 +3577,16 @@ function guideColors(e, known, pale) {
     const q = pal(C.mega); q.w = "#f4fdff"; q.d = "#3d6f88"; q.m = "#6fa7c4";
     return stamp(q);
   }
-  const q = pal(PALETTES[K.pal][0]);
+  /* 도감과 포획 카드도 바다에서와 같은 색으로 보여야 한다. 제 색을 가진
+     도안은 그것을 먼저 쓴다 - 바다에서는 은빛인 참다랑어가 도감에서만
+     주황이면 같은 물고기로 보이지 않는다. */
+  const own = SPR_PAL[e.spr];
+  const q = pal(own ? own[0] : PALETTES[K.pal][0]);
   if (e.kind === "angler") { q.y = C.lure; q.w = "#f6f2e2"; }
-  if (e.kind === "fish") q.r = rgb2hex(mix(hex2rgb(PALETTES.fish[0]), [255, 236, 140], .72));
+  if (e.kind === "fish" && !own)
+    q.r = rgb2hex(mix(hex2rgb(PALETTES.fish[0]), [255, 236, 140], .72));
+  if (e.spr === "tang") q.r = "#ffd23a";
+  if (e.kind === "turtle") q.r = "#e8c34a";
   return stamp(q);
 }
 
@@ -3754,7 +4340,7 @@ function syncControls() {
   let label = "primary";
   if (mode === "dive") {
     label = paused ? "resume" : rod.state === "bite" && player.role === "boat" ? "strike"
-      : player.role === "diver" ? "net" : rod.state === "idle" ? "cast" : rod.state === "out" ? "reel" : "wait";
+      : player.role === "diver" ? "spear" : rod.state === "idle" ? "cast" : rod.state === "out" ? "reel" : "wait";
   } else if (mode === "help" || mode === "catch" || guideDetail) label = "close";
   primary.querySelector(".action-label").textContent = T("controls." + label);
   primary.dataset.kind = label;
@@ -3807,13 +4393,13 @@ function scatterAt(wx, wy) {
 }
 
 /* =========================================================================
-   그물과 상자
+   작살과 상자
    ========================================================================= */
 function action() {
   if (paused) return;
-  /* 스페이스 하나로 두 판을 다 조종한다. 잠수부면 그물, 배면 줄이다. */
+  /* 스페이스 하나로 두 판을 다 조종한다. 잠수부면 작살, 배면 줄이다. */
   if (player.role === "boat") return rodAction();
-  return swingNet();
+  return fireSpear();
 }
 
 function rodAction() {
@@ -3848,32 +4434,55 @@ function rodAction() {
   say(T("m.reel"), C.textDim);
 }
 
-function swingNet() {
-  if (player.net > 0) return;
-  player.net = NET_TIME;
-  /* 상자가 손 닿는 데 있으면 그것부터. */
+function fireSpear() {
+  if (spear.on) return;                       /* 돌아오는 중에는 못 쏜다 */
+  spear.on = 1; spear.back = 0; spear.gone = 0;
+  spear.dir = player.dir;
+  spear.x = player.x + DV_CX + player.dir * 16;
+  spear.y = player.y + 16;
+}
+
+/* 작살이 무엇엔가 닿았는가. 닿았으면 거기서 멈추고 돌아온다. */
+function spearHit() {
   if (chest && !chest.open) {
-    const dx = (chest.x + 5) - (player.x + DV_CX), dy = (chest.y + 4) - (player.y + DV_CY);
-    if (dx * dx + dy * dy < 30 * 30) { openChest(); return; }
+    /* 상자 한가운데. 눈대중으로 5, 4 를 적어 두면 도안을 키우는 순간
+       작살이 허공을 찌른다. 도안에서 읽는다. */
+    const cw = SPR.chest.w, ch = SPR.chest.h;
+    const dx = (chest.x + cw / 2) - spear.x, dy = (chest.y + ch / 2) - spear.y;
+    if (Math.abs(dx) < cw / 2 + 4 && Math.abs(dy) < ch / 2 + 4) { openChest(); return 1; }
   }
-  /* 그다음 가장 가까운 한 마리. */
-  let best = null, bestD = 1e9;
-  const px0 = player.x + DV_CX + player.dir * 14, py0 = player.y + DV_CY;
   for (const b of beings) {
-    const dx = b.cx() - px0, dy = (b.cy() - py0) * 1.4;
-    const d = dx * dx + dy * dy;
-    const reach = Math.max(20, Math.min(40, b.w * .5 + 20));
-    if (d < reach * reach && d < bestD) { best = b; bestD = d; }
+    const dx = Math.abs(b.cx() - spear.x), dy = Math.abs(b.cy() - spear.y);
+    if (dx > b.w * .5 + 3 || dy > b.h * .5 + 3) continue;
+    if (!b.K.catchable) {
+      /* 상어와 메갈로돈, 잠수함에는 작살이 들지 않는다. */
+      b.scare(spear.x);
+      say(b.kind === "sub" ? T("m.subignore") : T("m.toobig"), C.textWarn);
+      if (markSeen(b.gid)) sighted(b);
+      return 1;
+    }
+    caught(b);
+    return 1;
   }
-  if (!best) return;
-  if (!best.K.catchable) {
-    /* 상어와 메갈로돈, 잠수함은 그물에 들지 않는다. */
-    best.scare(px0);
-    say(best.kind === "sub" ? T("m.subignore") : T("m.toobig"), C.textWarn);
-    if (markSeen(best.gid)) sighted(best);
+  return 0;
+}
+
+function stepSpear(u) {
+  if (!spear.on) return;
+  if (spear.back) {
+    /* 줄이 감긴다. 잠수부의 손으로 돌아오면 끝난다. */
+    const hx = player.x + DV_CX + spear.dir * 10, hy = player.y + 16;
+    const dx = hx - spear.x, dy = hy - spear.y;
+    const d = Math.hypot(dx, dy);
+    if (d < SPEAR_BACK * u + 1) { spear.on = 0; return; }
+    spear.x += dx / d * SPEAR_BACK * u;
+    spear.y += dy / d * SPEAR_BACK * u;
     return;
   }
-  caught(best);
+  spear.x += spear.dir * SPEAR_SPEED * u;
+  spear.gone += SPEAR_SPEED * u;
+  if (spearHit() || spear.gone >= SPEAR_RANGE + rangeAdd() ||
+      spear.x < 2 || spear.x > worldW() - 2) spear.back = 1;
 }
 
 function openChest() {
@@ -3881,7 +4490,8 @@ function openChest() {
   flash = 1;
   say(T("m.chest"), C.textWarn);
   say(T("m.chest2"), C.lure);
-  for (let i = 0; i < 22; i++) bubble(chest.x + rnd(0, 11), chest.y + rnd(-4, 4), true);
+  for (let i = 0; i < 22; i++)
+    bubble(chest.x + rnd(0, SPR.chest.w), chest.y + rnd(-4, SPR.chest.h * .5), true);
 }
 
 function caught(b, depth = metres()) {
@@ -4012,7 +4622,7 @@ function stepDiver(u, fast) {
   if (player.y <= seaTop + 2 && player.vy < 0) player.vy = 0;
   if (Math.random() < (.05 + Math.hypot(player.vx, player.vy) * .12) * u)
     bubble(player.x + (player.dir === 1 ? DV_W - 6 : 5), player.y + 5);
-  if (player.net > 0) player.net -= u;
+  stepSpear(u);
 }
 
 /* ---- 낚싯배 ---- */

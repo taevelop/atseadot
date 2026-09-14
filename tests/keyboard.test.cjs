@@ -52,16 +52,16 @@ test('G toggles the guide from the title and play, while D never opens or closes
   assert.deepEqual(app.data('({mode,guideDetail})'), {mode:'dive',guideDetail:false});
 });
 
-test('Space acts through dialogue for nets, casting, reeling, and strikes', () => {
+test('Space acts through dialogue for the spear, casting, reeling, and strikes', () => {
   const diver = game();
   diver.run('startRun("diver"); beings=[]; chest=null');
   const dialogue = diver.data('({text:msg.text,shown:msg.shown,queue:msg.queue})');
   assert.equal(tap(diver, ' ').defaultPrevented, true);
-  assert.ok(diver.run('player.net') > 0);
+  assert.ok(diver.run('spear.on') > 0);
   assert.deepEqual(diver.data('({text:msg.text,shown:msg.shown,queue:msg.queue})'), dialogue);
-  diver.run('paused=true; player.net=0');
+  diver.run('paused=true; spear.on=0');
   tap(diver, ' ');
-  assert.equal(diver.run('player.net'), 0);
+  assert.equal(diver.run('spear.on'), 0);
 
   const boat = game();
   boat.run('startRun("boat")');
@@ -80,7 +80,7 @@ test('Q and E only turn guide and help pages and never act or dismiss a catch', 
   app.run('startRun("diver")');
   const dialogue = app.data('({text:msg.text,shown:msg.shown,queue:msg.queue})');
   tap(app, 'q'); tap(app, 'e');
-  assert.equal(app.run('player.net'), 0);
+  assert.equal(app.run('spear.on'), 0);
   assert.deepEqual(app.data('({text:msg.text,shown:msg.shown,queue:msg.queue})'), dialogue);
   app.run('mode="catch"; catchCard={id:GUIDE[0].id}');
   tap(app, 'q'); tap(app, 'e');
@@ -112,7 +112,7 @@ test('Z and Enter reveal and advance one dialogue at a time without skipping the
     assert.notEqual(app.run('msg.text'), first);
     assert.equal(app.run('msg.queue.length'), queued - 1);
     assert.equal(app.run('mode'), 'dive');
-    assert.equal(app.run('player.net'), 0);
+    assert.equal(app.run('spear.on'), 0);
   }
 });
 
@@ -156,12 +156,12 @@ test('confirmation and old aliases do not close panels; the touch close button s
 test('Ctrl, Alt, Meta, and composing events preserve browser shortcuts and game state', () => {
   const app = game();
   app.run('startRun("diver"); closeMsg(); globalThis.originalPopulation=beings');
-  const before = app.data('({mode,paused,bare,lang,role:player.role,rod:rod.state,net:player.net,save,count:beings.length})');
+  const before = app.data('({mode,paused,bare,lang,role:player.role,rod:rod.state,spear:spear.on,save,count:beings.length})');
   for (const modifier of ['ctrlKey','altKey','metaKey','isComposing']) {
     for (const key of ['n','p','f','g','l','d','w','ArrowUp',' ','Tab','t','b','m']) {
       const event = tap(app, key, {[modifier]:true});
       assert.equal(event.defaultPrevented, false, modifier + ' ' + key);
-      assert.deepEqual(app.data('({mode,paused,bare,lang,role:player.role,rod:rod.state,net:player.net,save,count:beings.length})'), before);
+      assert.deepEqual(app.data('({mode,paused,bare,lang,role:player.role,rod:rod.state,spear:spear.on,save,count:beings.length})'), before);
       assert.equal(app.run('beings===originalPopulation'), true);
     }
   }

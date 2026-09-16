@@ -176,3 +176,35 @@ test('touch purchase confirmation charges once and survives rotation without inp
   assert.equal(app.run('save.coin'),740);
   assert.equal(app.run('upLv("tank")'),1);
 });
+
+test('touch suit purchase charges once, survives rotation and switches owned suits for free', () => {
+  const app = game(), button = controlElement(74,74), pad = controlElement();
+  app.context.testButton = button; app.context.testPad = pad;
+  app.run('save.coin=1000; initDial(testPad); bindPrimaryAction(testButton); controlAction("shop")');
+  for (let i = 0; i < 6; i++) {
+    pad.emit('pointerdown', { pointerId: 2, clientY: 112 });
+    pad.emit('pointerup', { pointerId: 2 });
+  }
+  assert.equal(app.run('SHOP_ITEMS[tradeSel].id'), 'black');
+  button.emit('pointerdown'); button.emit('pointerdown', { pointerId: 3 });
+  button.emit('pointerup'); button.emit('click');
+  assert.equal(app.run('trade.type'), 'buySuit');
+  assert.equal(app.run('save.coin'), 1000);
+  pad.emit('pointerdown', { pointerId: 2, clientY: 20 });
+  app.resize(844,260);
+  assert.equal(pad.captured.size, 0);
+  button.emit('pointerdown'); button.emit('pointerdown', { pointerId: 3 });
+  button.emit('pointerup'); button.emit('click');
+  assert.equal(app.run('save.coin'), 700);
+  assert.equal(app.run('save.suit'), 'black');
+  pad.emit('pointerdown', { pointerId: 2, clientY: 20 });
+  pad.emit('pointerup', { pointerId: 2 });
+  button.emit('pointerdown'); button.emit('pointerup'); button.emit('click');
+  assert.equal(app.run('save.suit'), 'yellow');
+  assert.equal(app.run('trade'), null);
+  pad.emit('pointerdown', { pointerId: 2, clientY: 112 });
+  pad.emit('pointerup', { pointerId: 2 });
+  button.emit('pointerdown'); button.emit('pointerup'); button.emit('click');
+  assert.equal(app.run('save.suit'), 'black');
+  assert.equal(app.run('save.coin'), 700);
+});

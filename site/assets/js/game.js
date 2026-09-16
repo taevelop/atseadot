@@ -1220,7 +1220,7 @@ spr("spear", [        /* 작살 - 긴 자루에 미늘 달린 촉. 오른쪽이 
 /* ---- 잠수부. 이 판에서 조종하는 것 ----
    황동 헬멧(h)에 유리창(w), 등에 공기통(r), 발에 오리발(d).
    왼쪽을 보면 그릴 때 뒤집는다. */
-spr("diver", [        /* 잠수부 - 가로로 누워 헤엄치는 참. 검은 잠수복, 등에 공기통, 오리발을 찬다 */
+spr("diver", [        /* 잠수부 - 가로로 누워 헤엄치는 참. 기본 노란 잠수복, 등에 공기통, 오리발. 구매한 복장은 색표로 바꾼다 */
   ".oooooo.......................................",
   "orrrrrrooo..........ooooooooo.................",
   ".oorrrrrrro........ollllllllloooo.............",
@@ -1633,6 +1633,7 @@ try {
 } catch (e) { /* 못 읽어도 그만 */ }
 document.documentElement.lang = lang;
 function setLang(v) {
+  if (lang !== v) tradeNotice = "";
   lang = v;
   document.documentElement.lang = lang;
   try { localStorage.setItem(LANG_KEY, v); } catch (e) {}
@@ -1779,6 +1780,12 @@ const STR = {
     "s.lineV": "작살 사정거리",
     "s.bait": "미끼통",
     "s.baitV": "희귀 개체 확률",
+    "s.suit.yellow": "노란 잠수복",
+    "s.suit.black": "검은 잠수복",
+    "s.cosmetic": "외형만 변경",
+    "s.owned": "보유 중",
+    "s.suitBought": "{0} 구매·착용 완료.",
+    "s.suitEquipped": "{0} 착용 완료.",
     "over.title": "숨이 끊겼습니다",
     "over.1": "상어에게 너무 여러 번 부딪혔습니다.",
     "over.2": "잡은 기록과 도감은 그대로 남아 있습니다.",
@@ -1948,6 +1955,12 @@ const STR = {
     "s.lineV": "SPEAR RANGE",
     "s.bait": "BAIT BOX",
     "s.baitV": "RARE CHANCE",
+    "s.suit.yellow": "YELLOW SUIT",
+    "s.suit.black": "BLACK SUIT",
+    "s.cosmetic": "COSMETIC ONLY",
+    "s.owned": "OWNED",
+    "s.suitBought": "{0} BOUGHT AND EQUIPPED.",
+    "s.suitEquipped": "{0} EQUIPPED.",
     "over.title": "OUT OF AIR",
     "over.1": "THE SHARKS CAUGHT YOU ONE TIME TOO MANY.",
     "over.2": "YOUR CATCHES AND FIELD GUIDE ARE KEPT.",
@@ -1992,6 +2005,7 @@ Object.assign(STR.ko, {
   "controls.new": "새 바다", "controls.bare": "화면 UI",
   "controls.aqua": "수족관", "controls.shop": "장비 상점",
   "controls.buy": "구매", "controls.sell": "판매", "controls.cancel": "취소",
+  "controls.equip": "착용", "controls.equipped": "착용 중",
   "controls.retry": "다시 잠수", "controls.title": "시작 화면",
   "ui.confirmHint": "선택 후 확인", "ui.unitPrice": "한 마리 {0}코인",
   "ui.tradeFailed": "거래할 수 없습니다. 재고와 코인을 확인하세요."
@@ -2008,6 +2022,7 @@ Object.assign(STR.en, {
   "controls.new": "New sea", "controls.bare": "Toggle HUD",
   "controls.aqua": "Aquarium", "controls.shop": "Dive shop",
   "controls.buy": "Buy", "controls.sell": "Sell", "controls.cancel": "Cancel",
+  "controls.equip": "Equip", "controls.equipped": "Equipped",
   "controls.retry": "Dive again", "controls.title": "Title",
   "ui.confirmHint": "SELECT TO CONFIRM", "ui.unitPrice": "{0} COINS EACH",
   "ui.tradeFailed": "CANNOT TRADE. CHECK STOCK AND COINS."
@@ -2287,6 +2302,12 @@ const UPGRADES = [
   { id: "bait", cost: [320, 760] },
 ];
 const UP_MAX = 2;
+/* 복장은 한 번 구매해 계속 입는다. 성능 장비의 단계와는 별개다. */
+const SUITS = [{ id: "yellow", cost: 0 }, { id: "black", cost: 300 }];
+const SHOP_ITEMS = [
+  ...UPGRADES.map(item => ({ ...item, kind: "upgrade" })),
+  ...SUITS.map(item => ({ ...item, kind: "suit" })),
+];
 const upLv = k => (save.up && save.up[k]) || 0;
 const heartMax = () => 10 + upLv("tank") * 2;   /* 반 칸이 1 이므로 다섯 개 */
 const swimMul = () => 1 + upLv("fins") * .15;
@@ -2559,7 +2580,8 @@ function emptySave() {
   return { seen: {}, caught: {}, rare: {}, at: {}, titles: {},
            stat: { snap: 0, seabed: 0 }, chest: 0, deepest: 0,
            /* 팔기 전까지 수족관에 머무는 것들과, 그것으로 산 것 */
-           coin: 0, up: {}, hold: {}, holdR: {}, stocked: 0, economyVersion: 1 };
+           coin: 0, up: {}, hold: {}, holdR: {}, stocked: 0, economyVersion: 1,
+           suits: { black: false }, suit: "yellow" };
 }
 function normalizeSave(value) {
   const out = emptySave();
@@ -2592,6 +2614,8 @@ function normalizeSave(value) {
   }
   out.stocked = flag(value.stocked) ? 1 : 0;
   out.economyVersion = value.economyVersion === 1 ? 1 : 0;
+  out.suits.black = record(value.suits) && value.suits.black === true;
+  out.suit = value.suit === "black" && out.suits.black ? "black" : "yellow";
   if (record(value.titles)) {
     const ids = Object.keys(TITLE_TEXT.en);
     for (const track of ["plain", "rare"])
@@ -2694,6 +2718,25 @@ function buyUpgrade(id) {
   save.coin -= item.cost[upLv(id)]; save.up[id] = upLv(id) + 1;
   if (id === "tank") player.hp = Math.min(heartMax(), player.hp + 2);
   persist(); return true;
+}
+function ownsSuit(id) {
+  return id === "yellow" || (id === "black" && save.suits.black);
+}
+function suitPurchaseStatus(id) {
+  const item = SUITS.find(item => item.id === id);
+  if (!item) return "ui.tradeFailed";
+  if (ownsSuit(id)) return "s.owned";
+  return save.coin < item.cost ? "s.poor" : "";
+}
+function buySuit(id) {
+  if (suitPurchaseStatus(id)) return false;
+  const item = SUITS.find(item => item.id === id);
+  save.coin -= item.cost; save.suits[id] = true; save.suit = id;
+  persist(); return true;
+}
+function equipSuit(id) {
+  if (!ownsSuit(id) || save.suit === id) return false;
+  save.suit = id; persist(); return true;
 }
 
 /* =========================================================================
@@ -2838,6 +2881,10 @@ const diverColors = stamp({
   k: "#8a4a1c",   /* 창테와 허리띠 */
   y: C.lure,
 });
+const diverPalettes = {
+  yellow: diverColors,
+  black: stamp({ ...diverColors, m: "#2b3038", d: "#181d24" }),
+};
 /* 작살. 한 번 쏘면 앞으로 날아갔다가 줄에 감겨 돌아온다. 그물처럼
    곁의 것이 절로 잡히지 않으니, 무엇을 노렸는지가 손에 남는다. */
 const SPEAR_SPEED = 4.4;      /* 한 걸음에 나아가는 칸 */
@@ -3262,7 +3309,7 @@ function drawPlayer() {
   const frame = Math.sin(player.phase * rate) > 0 ? SPR.diver : SPR.diver2;
   /* 가는 쪽을 보고 헤엄친다 - 도안은 오른쪽을 보는 한 장뿐이라 왼쪽으로
      갈 때는 뒤집어 쓴다. 팔이 가는 쪽으로 뻗고 다리가 뒤에 남는다. */
-  const cv = bake(frame, diverColors, player.dir === -1);
+  const cv = bake(frame, diverPalettes[save.suit] || diverColors, player.dir === -1);
   const bob = Math.round(Math.sin(player.phase * .7) * 1.2);
   const sx = Math.round(player.x - camX), sy = Math.round(player.y - cam + bob);
   blit(cv, sx, sy);
@@ -3927,12 +3974,34 @@ function drawCatchCard() { drawInfoCard(); }
 /* ---------- 수족관·상점: 공통 목록과 거래 확인 ---------- */
 let tradeSel = 0, trade = null, tradeNotice = "";
 function commerceItems() {
-  if (mode === "shop") return UPGRADES;
+  if (mode === "shop") return SHOP_ITEMS;
   const stock = aquariumStock();
   return stock.length ? [...stock, { all: true }] : [];
 }
 function fishLabel(item) {
   return (item.rare ? T("g.tab.rare") + " " : "") + spName(item.id);
+}
+function shopItemName(item) {
+  return T(item.kind === "suit" ? "s.suit." + item.id : "s." + item.id);
+}
+function shopItemView(item) {
+  if (item.kind === "suit") {
+    const owned = ownsSuit(item.id), equipped = save.suit === item.id;
+    return {
+      title: shopItemName(item), detail: T("s.cosmetic"),
+      price: equipped ? T("controls.equipped") : owned ? T("s.owned") : T("ui.coin", item.cost),
+      action: equipped ? "equipped" : owned ? "equip" : "buy", disabled: equipped,
+    };
+  }
+  return {
+    title: shopItemName(item) + " " + upLv(item.id) + "/" + UP_MAX,
+    detail: T("s." + item.id + "V"),
+    price: upLv(item.id) >= UP_MAX ? T("s.full") : T("ui.coin", item.cost[upLv(item.id)]),
+    action: "buy", disabled: false,
+  };
+}
+function isPurchaseTrade(pending) {
+  return pending.type === "buy" || pending.type === "buySuit";
 }
 function commerceLayout() {
   const w = Math.min(UW - 12, 300), rowH = 32, head = 42, footer = 68;
@@ -3962,15 +4031,21 @@ function beginTrade() {
   if (!item) return;
   tradeNotice = "";
   if (mode === "shop") {
-    const problem = upgradeStatus(item.id);
+    if (item.kind === "suit" && ownsSuit(item.id)) {
+      if (equipSuit(item.id)) tradeNotice = T("s.suitEquipped", shopItemName(item));
+      releaseTouchKeys(false); pointer.down = false;
+      return;
+    }
+    const problem = item.kind === "suit" ? suitPurchaseStatus(item.id) : upgradeStatus(item.id);
     if (problem) { tradeNotice = T(problem); return; }
-    trade = { type: "buy", id: item.id };
+    trade = { type: item.kind === "suit" ? "buySuit" : "buy", id: item.id };
   } else trade = item.all ? { type: "all" } : { type: "sell", id: item.id, rare: item.rare, quantity: 1 };
   releaseTouchKeys(false); pointer.down = false;
 }
 function tradeQuote() {
   if (!trade) return 0;
   if (trade.type === "buy") return UPGRADES.find(item => item.id === trade.id).cost[upLv(trade.id)] || 0;
+  if (trade.type === "buySuit") return SUITS.find(item => item.id === trade.id).cost;
   if (trade.type === "all") return aquariumStock().reduce((sum, item) => sum + item.count * item.price, 0);
   return priceOf(trade.id, trade.rare) * trade.quantity;
 }
@@ -3985,16 +4060,20 @@ function finishTrade() {
   if (!pending) return;
   const quote = tradeQuote();
   trade = null; // Consume confirmation before mutating; one input is one trade.
-  const ok = pending.type === "buy" ? buyUpgrade(pending.id)
-    : pending.type === "all" ? sellAllFish() : sellFish(pending.id, pending.rare, pending.quantity);
-  tradeNotice = ok ? pending.type === "buy" ? T("s.bought", T("s." + pending.id), upLv(pending.id))
-    : T("a.sold", T("ui.coin", quote)) : T(pending.type === "buy" ? upgradeStatus(pending.id) : "ui.tradeFailed");
+  if (pending.type === "buySuit") {
+    tradeNotice = buySuit(pending.id) ? T("s.suitBought", T("s.suit." + pending.id)) : T(suitPurchaseStatus(pending.id));
+  } else if (pending.type === "buy") {
+    tradeNotice = buyUpgrade(pending.id) ? T("s.bought", T("s." + pending.id), upLv(pending.id)) : T(upgradeStatus(pending.id));
+  } else {
+    const ok = pending.type === "all" ? sellAllFish() : sellFish(pending.id, pending.rare, pending.quantity);
+    tradeNotice = ok ? T("a.sold", T("ui.coin", quote)) : T("ui.tradeFailed");
+  }
   tradeSel = clamp(tradeSel, 0, Math.max(0, commerceItems().length - 1));
   releaseTouchKeys(false); pointer.down = false;
 }
 function confirmLayout() {
   const w = Math.min(UW - 12, 270);
-  const prompt = trade.type === "buy" ? T("s.ask", T("s." + trade.id))
+  const prompt = isPurchaseTrade(trade) ? T("s.ask", T((trade.type === "buySuit" ? "s.suit." : "s.") + trade.id))
     : trade.type === "all" ? T("a.askAll", aquariumStock().reduce((sum, item) => sum + item.count, 0))
     : T("a.askN", fishLabel(trade));
   const lines = wrapLines(prompt, w - 16);
@@ -4011,13 +4090,12 @@ function drawCommerce() {
   drawText(L.x+8,L.y+5,T(mode === "shop" ? "s.title" : "a.title"),C.textWarn);
   drawText(L.x+8,L.y+23,fit(T("ui.coin",save.coin),L.w-16),C.coin);
   for (const row of L.rows) {
-    const item = row.item, shop = mode === "shop";
+    const item = row.item, view = mode === "shop" ? shopItemView(item) : null;
     if (row.index === tradeSel) rect(row.x,row.y,row.w,row.h,"#234570");
-    const title = shop ? T("s."+item.id)+" "+upLv(item.id)+"/"+UP_MAX : item.all ? T("a.sellall") : fishLabel(item);
+    const title = view ? view.title : item.all ? T("a.sellall") : fishLabel(item);
     drawText(row.x+4,row.y+2,fit(title,row.w-8),C.text);
-    const detail = shop ? T("s."+item.id+"V") : item.all ? T("ui.confirmHint") : T("ui.hold",item.count);
-    const price = shop ? upLv(item.id) >= UP_MAX ? T("s.full") : T("ui.coin",item.cost[upLv(item.id)])
-      : item.all ? "" : T("ui.unitPrice",item.price);
+    const detail = view ? view.detail : item.all ? T("ui.confirmHint") : T("ui.hold",item.count);
+    const price = view ? view.price : item.all ? "" : T("ui.unitPrice",item.price);
     const priceW = Math.min(textWidth(price),row.w*.55);
     drawText(row.x+4,row.y+17,fit(detail,row.w-priceW-14),C.textDim);
     drawText(row.x+row.w-priceW-4,row.y+17,fit(price,priceW),C.coin);
@@ -4038,7 +4116,7 @@ function drawCommerce() {
       drawTextCenter(F.x+F.w/2,F.qtyY+5,fit(T("ui.hold",trade.quantity),F.w-80),C.textWarn);
     }
     drawTextCenter(F.x+F.w/2,F.qtyY+29,fit(T("ui.coin",tradeQuote()),F.w-16),C.coin);
-    smallButton(F.yes,T(trade.type === "buy" ? "controls.buy" : "controls.sell"));
+    smallButton(F.yes,T(isPurchaseTrade(trade) ? "controls.buy" : "controls.sell"));
     smallButton(F.no,T("controls.cancel"));
   }
 }
@@ -4590,24 +4668,27 @@ function syncControls() {
   const scope = [mode, player.role, paused, guideDetail, trade ? trade.type : ""].join("|");
   if (controlsMotionScope && controlsMotionScope !== scope) releaseTouchKeys(false);
   controlsMotionScope = scope;
-  const state = [scope, lang, rod.state, tradeSel, save.coin, aquariumStock().length, mode === "shop" ? upLv(UPGRADES[tradeSel]?.id) : ""].join("|");
+  const state = [scope, lang, rod.state, tradeSel, save.coin, aquariumStock().length,
+    mode === "shop" ? upLv(SHOP_ITEMS[tradeSel]?.id) : "", save.suit, save.suits.black].join("|");
   if (state === controlsState) return;
   controlsState = state;
   controls.setAttribute("aria-label", T("controls.label"));
   controls.querySelectorAll("[data-text]").forEach(el => { el.textContent = T("controls." + el.dataset.text); });
   controls.querySelectorAll("[data-label]").forEach(el => { el.setAttribute("aria-label", T("controls." + el.dataset.label)); });
   const primary = controls.querySelector('[data-action="primary"]');
+  const shopView = mode === "shop" && SHOP_ITEMS[tradeSel] ? shopItemView(SHOP_ITEMS[tradeSel]) : null;
   let label = "primary";
   if (mode === "dive") {
     label = paused ? "resume" : rod.state === "bite" && player.role === "boat" ? "strike"
       : player.role === "diver" ? "spear" : rod.state === "idle" ? "cast" : rod.state === "out" ? "reel" : "wait";
   } else if (mode === "over") label = "retry";
-  else if (trade) label = trade.type === "buy" ? "buy" : "sell";
-  else if (mode === "aqua" || mode === "shop") label = "primary";
+  else if (trade) label = isPurchaseTrade(trade) ? "buy" : "sell";
+  else if (shopView) label = shopView.action;
+  else if (mode === "aqua") label = "primary";
   else if (mode === "help" || mode === "catch" || guideDetail) label = "close";
   primary.querySelector(".action-label").textContent = T("controls." + label);
   primary.dataset.kind = label;
-  primary.disabled = label === "wait" || (mode === "aqua" && !commerceItems().length);
+  primary.disabled = label === "wait" || (mode === "aqua" && !commerceItems().length) || (!trade && !!shopView?.disabled);
   controls.querySelectorAll("[data-action]").forEach(el => {
     if (el === primary) return;
     el.disabled = (mode === "over" && !["back","lang"].includes(el.dataset.action)) || (!!trade && el.dataset.action !== "back");

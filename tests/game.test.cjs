@@ -29,7 +29,8 @@ test('save recovery retains valid fields, zero first-depth, titles, and progress
     caught: { [id]: 3 }, rare: { [id]: 1 }, seen: { [id]: 1 }, at: { [id]: 0 },
     titles: { [title]: 1, 'trophy.plain.1': 1 }, stat: { snap: 2, seabed: 1 }, chest: 1, deepest: 750,
     coin: 120, up: { fins: 2, lamp: 1 },
-    hold: { [id]: 2 }, holdR: { [id]: 1 }, stocked: 1, economyVersion: 1
+    hold: { [id]: 2 }, holdR: { [id]: 1 }, stocked: 1, economyVersion: 1,
+    suits: { black: false }, suit: "yellow"
   });
   app.run('save=normalizeSave(inputSave); markCaught({gid:GUIDE[0].id},800)');
   assert.equal(app.run('save.at[GUIDE[0].id]'), 0);

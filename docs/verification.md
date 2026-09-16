@@ -1,5 +1,7 @@
 # 게임 오류 수정 및 검증
 
+최신 결과는 [PR #1 잔여 기능 완성](#pr-1-잔여-기능-완성-2026-09-16)에 있다. 아래 9월 10일 기록의 WASD·그물·Pages 설명은 당시 검증 이력이다.
+
 검증일: 2026-09-10. Cloudflare Pages 로컬 런타임(`wrangler pages dev`)과 Chrome에서 확인했습니다.
 
 | 문제 | 수정된 동작 | 검증 |
@@ -154,3 +156,39 @@ npm run build
 - 모바일 메뉴·키캡: [한국어](screenshots/compact-ui-mobile-title.png) · [영어](screenshots/compact-ui-mobile-title-en.png)
 - 모바일 조작법: [한국어](screenshots/compact-ui-mobile-help.png) · [영어](screenshots/compact-ui-mobile-help-en.png)
 - 데스크톱 메뉴: [한국어](screenshots/compact-ui-desktop-title.png) · [영어](screenshots/compact-ui-desktop-title-en.png)
+
+## PR #1 잔여 기능 완성 (2026-09-16)
+
+검증 대상: `main eb35ce5`를 기반으로 한 `feat/pr1-gameplay-completion` 작업 트리. Node.js 24.16.0, npm 11.13.0, 로컬 Workers Static Assets(`npm run dev`, Wrangler 4.130.0)와 agent-browser의 Chrome에서 실행했다.
+
+### 구현과 자동 검증
+
+- `npm run build`: JavaScript 구문 검사 및 **59/59개 테스트 통과**. 기존 39개에서 입력 기대값을 갱신하고 20개를 추가했다.
+- `tests/economy-health.test.cjs`: 일반/희귀 재고, 구형 및 `stocked=1` 저장의 1회 복구, 판매 후 재로딩, 부분/전체 판매, 안전한 코인 합산, 관찰 기록 제외, 구매 제한, 5종 장비 효과, 충돌 보호·회복·게임오버·재시작 보존을 검증했다.
+- `tests/commerce.test.cjs`: A/S 진입과 원래 화면 복귀, 확인/취소·키 반복·거래 중 다른 단축키 차단, 게임오버에서 플레이/화면 전환 차단, 한국어/영어 패널 크기와 Canvas 클릭을 검증했다. Enter를 누른 채 사망해도 자동 반복으로 재시작되지 않는다.
+- 기존 키보드 테스트는 방향키 이동, A/S 조합키 보호와 W/D 무동작으로 변경했다. 모바일 테스트에는 다이얼 수량 조절, 거래 1회 처리, 확인 중 화면 회전과 입력 해제를 추가했다.
+- `git diff --check` 통과. 저장 키는 `atseadot.v4`를 유지하며 `economyVersion: 1` 표식으로 기존 main의 누락된 재고 복구와 향후 판매 재고를 구분한다. 복구 후 표식과 재고를 함께 저장한다.
+
+### 실제 브라우저 확인
+
+| 흐름 | 확인 결과 |
+| --- | --- |
+| 키보드 Space 작살 포획 → A 수족관 → Enter 확인·판매 | 포획 기록과 일반 재고가 함께 증가. 1마리 판매로 재고 0, 코인 8 |
+| S 상점 → 산소통 구매 | 준비한 1,000코인에서 260 차감, 산소통 1단계, 체력 10→12 |
+| 모바일 더 보기 → 수족관 → 큰 버튼 → 다이얼 오른쪽 → 판매 | 수량 1→2, 16코인 지급과 일반 재고 4→2가 한 번만 발생. 확인 중 보조 버튼 비활성화와 큰 버튼의 판매 문구 일치 |
+| 모바일 상점 → 다이얼 아래 → 오리발 구매 → 재접속 | 180코인 차감과 1단계 반영. 재접속 후 코인 576·일반 재고 2·오리발 1단계 유지 |
+| 체력 1에서 실제 상어 충돌 → 게임오버 → 큰 재시작 버튼 | 체력 0, 배경화면 모드 해제, 게임오버 표시. 다시 잠수하면 산소통 기준 체력 12, 코인·재고 보존 |
+| 포인터로 다이얼을 누른 채 세로→가로 전환 | 이동 키와 포인터 캡처가 해제되고 다이얼이 중앙으로 복귀 |
+
+한국어/영어 각각에서 제목·수족관·상점·판매 확인·게임오버의 화면 범위를 검사했다. 320×640(DPR 1), 390×844(DPR 3), 568×320(DPR 2), 844×390(DPR 2), 1280×800(DPR 1)에서 가로 넘침이 없고 표시된 DOM 버튼·메뉴의 터치 영역은 44px 이상이었다. 별도로 320×640(DPR 2)에서 게임오버를 확인했다. 새 화면에 브라우저 JavaScript 예외가 없었다.
+
+포획·거래·충돌 검증은 물고기 위치·체력·코인 등 시작 상태를 준비한 뒤 실제 키보드/포인터 입력과 게임 루프를 사용했다. 브라우저 에뮬레이션 검증이며 실제 iOS/Android 기기, 장시간 자연 발생 입질·난이도 균형, 운영 배포 검증은 포함하지 않았다. VM의 Canvas/DOM 대체 환경과 실제 브라우저 검증을 구분했다.
+
+### 화면 증거
+
+- [시작 메뉴](screenshots/pr1-desktop-initial.png)
+- [데스크톱 수족관](screenshots/pr1-desktop-aquarium.png)
+- [데스크톱 상점·산소통 구매](screenshots/pr1-desktop-shop.png)
+- [모바일 판매 수량 확인](screenshots/pr1-mobile-sale.png)
+- [영문 가로 화면 상점](screenshots/pr1-landscape-shop-en.png)
+- [320px 모바일 게임오버](screenshots/pr1-mobile-gameover.png)

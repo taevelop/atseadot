@@ -24,13 +24,15 @@ function move(key, role, fast = false) {
   return app.data('({mode,x:player.x,y:player.y,vx:player.vx,vy:player.vy,line:rod.y})');
 }
 
-test('WASD matches all arrow movements for the diver, boat, and fishing line', () => {
-  for (const role of ['diver', 'boat']) {
-    for (const [letter, arrow] of [['w','ArrowUp'],['a','ArrowLeft'],['s','ArrowDown'],['d','ArrowRight']])
-      assert.deepEqual(move(letter, role), move(arrow, role), role + ' ' + letter);
+test('arrows move the diver, boat and line while W/D no longer move', () => {
+  for (const role of ['diver','boat']) {
+    assert.ok(move('ArrowLeft',role).vx<0);
+    assert.ok(move('ArrowRight',role).vx>0);
+    for (const letter of ['w','d']) assert.deepEqual(move(letter,role),move('unused',role));
   }
-  assert.ok(move('d', 'diver').vx > 0);
-  assert.ok(move('d', 'boat').vx > 0);
+  assert.ok(move('ArrowUp','diver').vy<0);
+  assert.ok(move('ArrowDown','diver').vy>0);
+  assert.ok(move('ArrowUp','boat').line<move('ArrowDown','boat').line);
 });
 
 test('G toggles the guide from the title and play, while D never opens or closes it', () => {
@@ -158,7 +160,7 @@ test('Ctrl, Alt, Meta, and composing events preserve browser shortcuts and game 
   app.run('startRun("diver"); closeMsg(); globalThis.originalPopulation=beings');
   const before = app.data('({mode,paused,bare,lang,role:player.role,rod:rod.state,spear:spear.on,save,count:beings.length})');
   for (const modifier of ['ctrlKey','altKey','metaKey','isComposing']) {
-    for (const key of ['n','p','f','g','l','d','w','ArrowUp',' ','Tab','t','b','m']) {
+    for (const key of ['n','p','f','g','l','a','s','d','w','ArrowUp',' ','Tab','t','b','m']) {
       const event = tap(app, key, {[modifier]:true});
       assert.equal(event.defaultPrevented, false, modifier + ' ' + key);
       assert.deepEqual(app.data('({mode,paused,bare,lang,role:player.role,rod:rod.state,spear:spear.on,save,count:beings.length})'), before);
@@ -174,8 +176,8 @@ test('Ctrl, Alt, Meta, and composing events preserve browser shortcuts and game 
 
 test('Shift acceleration and key release still work, and a held G toggles only once', () => {
   for (const role of ['diver','boat'])
-    assert.ok(move('d',role,true).vx > move('d',role).vx);
-  assert.ok(move('s','boat',true).line > move('s','boat').line);
+    assert.ok(move('ArrowRight',role,true).vx > move('ArrowRight',role).vx);
+  assert.ok(move('ArrowDown','boat',true).line > move('ArrowDown','boat').line);
   const app = game();
   app.run('startRun("diver"); closeMsg()');
   keyDown(app, 'g');
@@ -184,8 +186,8 @@ test('Shift acceleration and key release still work, and a held G toggles only o
   app.emit('keyup', {key:'g'});
   tap(app, 'g');
   assert.equal(app.run('mode'), 'dive');
-  keyDown(app, 'd');
-  app.emit('keyup', {key:'d',ctrlKey:true});
+  keyDown(app, 'ArrowRight');
+  app.emit('keyup', {key:'ArrowRight',ctrlKey:true});
   app.run('update(1,16.67)');
   assert.equal(app.run('player.vx'), 0);
 });

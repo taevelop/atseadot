@@ -137,3 +137,42 @@ test('focus loss releases a held action button so the next press can act again',
   button.emit('pointerdown', { pointerId: 2 });
   assert.ok(app.run('spear.on') > 0);
 });
+
+test('dial and primary button finish one sale per press and release when closing a confirmation', () => {
+  const app=game();
+  const pad=controlElement(), button=controlElement(74,74);
+  app.context.testPad=pad; app.context.testButton=button;
+  app.run('startRun("diver"); closeMsg(); for(let i=0;i<3;i++)markCaught({gid:"fish3"},10); initDial(testPad); bindPrimaryAction(testButton); controlAction("aqua")');
+  const press=()=>{button.emit('pointerdown',{pointerId:2});button.emit('pointerup',{pointerId:2});button.emit('click');};
+  press();
+  assert.equal(app.run('trade.type'),'sell');
+  pad.emit('pointerdown',{pointerId:1,clientX:112});
+  assert.equal(app.run('trade.quantity'),2);
+  press();
+  assert.equal(app.run('save.coin'),16);
+  assert.equal(app.run('trade'),null);
+  assert.equal(app.run('dial.pointerId'),null);
+  assert.equal(pad.captured.size,0);
+  press();
+  app.run('controlAction("back")');
+  assert.equal(app.run('trade'),null);
+  assert.equal(app.run('mode'),'aqua');
+  assert.equal(app.run('save.coin'),16);
+});
+
+test('touch purchase confirmation charges once and survives rotation without input sticking', () => {
+  const app=game();
+  const button=controlElement(74,74), pad=controlElement();
+  app.context.testButton=button; app.context.testPad=pad;
+  app.run('save.coin=1000; initDial(testPad); bindPrimaryAction(testButton); controlAction("shop")');
+  button.emit('pointerdown'); button.emit('pointerup'); button.emit('click');
+  assert.equal(app.run('trade.type'),'buy');
+  pad.emit('pointerdown',{pointerId:2,clientY:20});
+  app.resize(844,260);
+  assert.equal(app.run('dial.pointerId'),null);
+  assert.equal(app.run('trade.type'),'buy');
+  button.emit('pointerdown'); button.emit('pointerdown',{pointerId:3});
+  button.emit('pointerup'); button.emit('click');
+  assert.equal(app.run('save.coin'),740);
+  assert.equal(app.run('upLv("tank")'),1);
+});

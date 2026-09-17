@@ -54,13 +54,16 @@ test('G toggles the guide from the title and play, while D never opens or closes
   assert.deepEqual(app.data('({mode,guideDetail})'), {mode:'dive',guideDetail:false});
 });
 
-test('Space acts through dialogue for the spear, casting, reeling, and strikes', () => {
+test('Space both dismisses dialogue and acts for the spear, casting, reeling, and strikes', () => {
   const diver = game();
   diver.run('startRun("diver"); beings=[]; chest=null');
-  const dialogue = diver.data('({text:msg.text,shown:msg.shown,queue:msg.queue})');
+  assert.ok(diver.run('msg.shown < msgTotal()'), 'the opening line starts part-way drawn');
   assert.equal(tap(diver, ' ').defaultPrevented, true);
-  assert.ok(diver.run('spear.on') > 0);
-  assert.deepEqual(diver.data('({text:msg.text,shown:msg.shown,queue:msg.queue})'), dialogue);
+  assert.ok(diver.run('spear.on') > 0, 'the spear still flies while a line is on screen');
+  assert.ok(diver.run('msg.shown >= msgTotal()'), 'the same press reveals the rest of the line');
+  /* 두 줄이 줄지어 있다 - 눌러 가다 보면 창이 비워진다. */
+  for (let i = 0; i < 6 && diver.run('msg.lines.length'); i++) tap(diver, ' ');
+  assert.equal(diver.run('msg.lines.length'), 0, 'repeated presses close the box');
   diver.run('paused=true; spear.on=0');
   tap(diver, ' ');
   assert.equal(diver.run('spear.on'), 0);
@@ -69,7 +72,7 @@ test('Space acts through dialogue for the spear, casting, reeling, and strikes',
   boat.run('startRun("boat")');
   tap(boat, ' ');
   assert.equal(boat.run('rod.state'), 'out');
-  assert.equal(boat.run('msg.shown'), 0);
+  assert.ok(boat.run('msg.shown >= msgTotal()'));
   tap(boat, ' ');
   assert.equal(boat.run('rod.state'), 'idle');
   boat.run('rod.state="bite"; rod.target=beings.find(b=>b.K.catchable); rod.timer=BITE_TIME');

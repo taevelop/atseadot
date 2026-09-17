@@ -1665,10 +1665,11 @@ const STR = {
     "help.close": "[X] / [Esc] 닫기",
     "help.move": "[↑][←][↓][→]", "help.moveV": "헤엄치기 · 배 몰기",
     "help.dash": "[Shift]", "help.dashV": "빠르게 이동 · 줄 조절",
-    "help.act": "[Space]", "help.actV": "작살·상자 · 낚시 액션 (대사 중에도 작동)",
+    "help.act": "[Space]", "help.actV": "작살·상자 · 낚시 액션",
     "help.swap": "[Tab]", "help.swapV": "잠수부 ↔ 낚싯배 바꾸기",
     "help.line": "[↓][↑]", "help.lineV": "줄 내리기 · 감아올리기",
     "help.ok": "[Z] / [Enter]", "help.okV": "선택 · 대사 표시/넘기기",
+    "help.msg": "[X] / [Enter] / [Space]", "help.msgV": "대사창 닫기",
     "help.guide": "[G]", "help.guideV": "도감 열기/닫기",
     "help.page": "[Q] / [E] · 마우스 휠", "help.pageV": "도감·조작법 쪽 넘기기 (또는 < > 누르기)",
     "help.sub": "[B]", "help.subV": "잠수함 부르기",
@@ -1839,9 +1840,10 @@ const STR = {
     "help.close": "[X] / [Esc] CLOSE",
     "help.move": "[↑][←][↓][→]", "help.moveV": "SWIM OR STEER",
     "help.dash": "[Shift]", "help.dashV": "FASTER MOVEMENT / LINE CONTROL",
-    "help.act": "[Space]", "help.actV": "SPEAR / CHEST / FISHING (EVEN DURING DIALOGUE)",
+    "help.act": "[Space]", "help.actV": "SPEAR / CHEST / FISHING",
     "help.line": "[↓][↑]", "help.lineV": "PAY OUT / REEL IN",
     "help.ok": "[Z] / [Enter]", "help.okV": "SELECT / REVEAL OR ADVANCE DIALOGUE",
+    "help.msg": "[X] / [Enter] / [Space]", "help.msgV": "CLOSE THE DIALOGUE BOX",
     "help.guide": "[G]", "help.guideV": "OPEN / CLOSE FIELD GUIDE",
     "help.page": "[Q] / [E] · WHEEL", "help.pageV": "TURN GUIDE / HELP PAGES (OR CLICK < >)",
     "help.sub": "[B]", "help.subV": "CALL THE SUBMARINE",
@@ -4655,6 +4657,7 @@ const HELP_ROWS = [
   ["help.swap", "help.swapV"],
   ["help.line", "help.lineV"],
   ["help.ok", "help.okV"],
+  ["help.msg", "help.msgV"],
   ["help.guide", "help.guideV"],
   ["help.aqua", "help.aquaV"],
   ["help.shop", "help.shopV"],
@@ -4873,9 +4876,11 @@ function onPress(k) {
   }
 
   /* 바닷속 */
-  /* 확인은 대사를 넘기고, 액션은 대사 중에도 바로 실행한다. */
+  /* 창을 닫는 열쇠가 [X] 하나뿐이면 손이 가는 자리를 눌러도 닫히지 않아
+     답답하다. 액션도 대사를 함께 넘긴다 - 다만 넘기느라 손을 멈추면
+     입질을 놓치므로, 넘기는 것과 채는 것을 한 번에 한다. */
   if (ok) { advanceMsg(); return; }
-  if (k === "space") { action(); return; }
+  if (k === "space") { advanceMsg(); action(); return; }
   if (k === "tab") { swapRole(); return; }
   if (k === "t") { setTime(timeIx + 1); say(T("m.time", T("time." + timeNow().id))); return; }
   if (k === "h" || k === "?" || k === "/") { returnMode = "dive"; helpPage = 0; mode = "help"; return; }

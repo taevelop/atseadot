@@ -3320,6 +3320,9 @@ const MENU_ACTIONS = {
   "menu.shop":  () => openOverlay("shop"),
   "menu.lang":  () => setLang(lang === "ko" ? "en" : "ko"),
 };
+/* 타이틀에서도 듣는 한 글자 열쇠들. 눌러 보기 전에는 알 수 없으니 줄 끝에 세워 둔다. */
+const MENU_SHORTCUTS = { "menu.guide": "G", "menu.aqua": "A", "menu.shop": "S", "menu.lang": "L" };
+const MENU_SHORTCUT_W = Math.max(...Object.values(MENU_SHORTCUTS).map(keyWidth)) + 4;
 
 /* =========================================================================
    바다 그리기
@@ -4730,7 +4733,7 @@ function menuLabel(i) { return T(MENU_KEYS[i]); }
 function titleLayout() {
   const labelWidths = UI_LANGUAGES.flatMap(language => MENU_KEYS.map(key => textWidth(translate(language, key))));
   const columns = UH < 240 && UW >= 300 ? 2 : 1;
-  const w = Math.min(UW - 20, (Math.max(...labelWidths) + 40) * columns);
+  const w = Math.min(UW - 20, (Math.max(...labelWidths) + 40 + MENU_SHORTCUT_W) * columns);
   const rowH = 16, h = Math.ceil(MENU_KEYS.length / columns) * rowH + 12;
   const room = Math.min(UW - 28, w - 16), pickLH = lineH("[Z]");
   const contents = UI_LANGUAGES.map(language => {
@@ -4765,6 +4768,8 @@ function drawTitle() {
        그림이 먼저 말한다. */
     drawText(item.x + 16, item.y + 3, menuLabel(i), on ? C.textWarn : C.textDim);
     if (on && Math.floor(clock * 4) % 2 === 0) drawText(item.x + 5, item.y + 3, ">", C.textWarn);
+    const key = MENU_SHORTCUTS[MENU_KEYS[i]];
+    if (key) drawKeycap(item.x + item.w - keyWidth(key) - 2, item.y, key);
   }
   // A dark panel keeps unshadowed text legible over both daylight and deep water.
   drawWindow(L.footer.x, L.footer.y, L.footer.w, L.footer.h, { alpha: .96 });

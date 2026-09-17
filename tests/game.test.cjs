@@ -119,9 +119,9 @@ test('each title item activates the clicked option; background clicks do nothing
     const app = game();
     app.click(app.data(`titleLayout().items[${index}]`));
     assert.equal(app.run('menuIndex'), index);
-    assert.equal(app.run('mode'), ['dive', 'dive', 'guide', 'help', 'title', 'aqua', 'shop'][index]);
+    assert.equal(app.run('mode'), ['dive', 'dive', 'guide', 'help', 'aqua', 'shop', 'title'][index]);
     if (index < 2) assert.equal(app.run('player.role'), index === 0 ? 'diver' : 'boat');
-    if (index === 4) assert.equal(app.run('lang'), 'en');
+    if (index === 6) assert.equal(app.run('lang'), 'en');
   }
   const app = game();
   app.click({ x: 1, y: 1, w: 1, h: 1 });

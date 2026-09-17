@@ -3306,7 +3306,18 @@ let clock = 0;
 let flash = 0;            /* 무언가를 잡은 순간의 흰 번쩍임 */
 let shake = 0;
 
-const MENU_KEYS = ["menu.diver", "menu.boat", "menu.guide", "menu.help", "menu.lang", "menu.aqua", "menu.shop"];
+/* 언어는 한 번 고르면 다시 건드릴 일이 없다 - 놀거리를 위로 올리고 맨 아래에 둔다. */
+const MENU_KEYS = ["menu.diver", "menu.boat", "menu.guide", "menu.help", "menu.aqua", "menu.shop", "menu.lang"];
+/* 자리가 아니라 이름으로 고른다. 차례를 바꿔도 하는 일은 따라오지 않는다. */
+const MENU_ACTIONS = {
+  "menu.diver": () => startRun("diver"),
+  "menu.boat":  () => startRun("boat"),
+  "menu.guide": () => { returnMode = "title"; mode = "guide"; guideDetail = false; },
+  "menu.help":  () => { returnMode = "title"; helpPage = 0; mode = "help"; },
+  "menu.aqua":  () => openOverlay("aqua"),
+  "menu.shop":  () => openOverlay("shop"),
+  "menu.lang":  () => setLang(lang === "ko" ? "en" : "ko"),
+};
 
 /* =========================================================================
    바다 그리기
@@ -4814,14 +4825,8 @@ function onPress(k) {
   if (mode === "title") {
     if (k === "arrowup") menuIndex = (menuIndex + MENU_KEYS.length - 1) % MENU_KEYS.length;
     else if (k === "arrowdown") menuIndex = (menuIndex + 1) % MENU_KEYS.length;
-    else if (ok) {
-      if (menuIndex === 0) startRun("diver");
-      else if (menuIndex === 1) startRun("boat");
-      else if (menuIndex === 2) { returnMode = "title"; mode = "guide"; guideDetail = false; }
-      else if (menuIndex === 3) { returnMode = "title"; helpPage = 0; mode = "help"; }
-      else if (menuIndex === 4) setLang(lang === "ko" ? "en" : "ko");
-      else openOverlay(menuIndex === 5 ? "aqua" : "shop");
-    } else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
+    else if (ok) MENU_ACTIONS[MENU_KEYS[menuIndex]]();
+    else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
     return;
   }
   if (mode === "catch") {

@@ -1714,7 +1714,7 @@ const STR = {
     "m.hold": "바다가 멈췄습니다.", "m.move": "바다가 다시 흐릅니다.",
     "m.got": "수심 {1}M에서 {0} 한 마리.",
     "m.gotnew": "처음 보는 종입니다. {0} · 수심 {1}M · 도감에 올렸습니다.",
-    "m.gotrare": "희귀 개체입니다! 흰빛 {0} · 이백 마리에 한 마리꼴로 태어납니다.",
+    "m.gotrare": "희귀 개체입니다! 흰빛 {0}을 만났습니다.",
     "m.toobig": "작살이 들지 않습니다. 몸을 틀어 지나갑니다.",
     "m.subignore": "잠수함은 작살을 본 척도 하지 않습니다.",
     "m.sight": "{0} 발견.",
@@ -1886,7 +1886,7 @@ const STR = {
     "m.hold": "THE SEA HOLDS STILL.", "m.move": "THE SEA MOVES AGAIN.",
     "m.got": "GOT A {0} AT {1}M.",
     "m.gotnew": "NEW! {0} - {1}M. ADDED TO THE GUIDE.",
-    "m.gotrare": "RARE! A PALE {0} - ONE IN TWO HUNDRED.",
+    "m.gotrare": "RARE! YOU FOUND A PALE {0}.",
     "m.toobig": "THE SPEAR WILL NOT HOLD IT. IT TURNS AWAY.",
     "m.subignore": "THE SUB IGNORES YOUR NET.",
     "m.sight": "SIGHTED: {0}.",
@@ -2026,6 +2026,161 @@ Object.assign(STR.en, {
   "controls.retry": "Dive again", "controls.title": "Title",
   "ui.confirmHint": "SELECT TO CONFIRM", "ui.unitPrice": "{0} COINS EACH",
   "ui.tradeFailed": "CANNOT TRADE. CHECK STOCK AND COINS."
+});
+
+Object.assign(STR.ko, {
+  "s.tab.gear": "장비",
+  "s.tab.supply": "소모품",
+  "s.tab.look": "외형",
+  "s.empty": "판매 중인 상품이 없습니다.",
+  "s.reel": "고속 낚시 릴",
+  "s.hook": "정밀 낚싯바늘",
+  "s.role.diver": "잠수용",
+  "s.role.boat": "낚시용",
+  "s.role.both": "잠수·낚시 공용",
+  "s.effect.tank": "최대 하트 {0}",
+  "s.effect.fins": "헤엄 {0}%",
+  "s.effect.lamp": "시야 +{0}",
+  "s.effect.line": "사거리 {0}",
+  "s.effect.bait": "희귀 {0}%",
+  "s.baitLevels": "희귀 확률 {0}% → {1}% → {2}%",
+  "s.effect.reel": "줄 속도 {0}%",
+  "s.effect.hook": "챔질 {0}%",
+  "s.now": "구매 후 바로 적용",
+  "s.spawn": "새로 생성되는 생물부터 적용",
+  "s.noLock": "구매 조건 없음",
+  "s.tankInfo": "최대 체력과 현재 체력에 하트 한 칸을 더합니다.",
+  "s.reelInfo": "줄의 상하 이동과 자동 회수가 빨라집니다. 가속과 드래그에도 적용됩니다.",
+  "s.hookInfo": "입질 시간 안에 챔질했을 때의 성공률입니다. 제한 시간은 같습니다.",
+  "s.lampInfo": "잠수부의 등불과 낚싯줄 끝의 조명이 함께 넓어집니다.",
+  "s.scroll": "[↑][↓] 설명 · [Enter] 구매"
+});
+Object.assign(STR.en, {
+  "s.tab.gear": "GEAR",
+  "s.tab.supply": "SUPPLIES",
+  "s.tab.look": "LOOKS",
+  "s.empty": "NO ITEMS HERE YET.",
+  "s.reel": "FAST REEL",
+  "s.hook": "PRECISION HOOK",
+  "s.role.diver": "DIVING",
+  "s.role.boat": "FISHING",
+  "s.role.both": "DIVING + FISHING",
+  "s.effect.tank": "HEARTS {0}",
+  "s.effect.fins": "SWIM {0}%",
+  "s.effect.lamp": "LIGHT +{0}",
+  "s.effect.line": "RANGE {0}",
+  "s.effect.bait": "RARE {0}%",
+  "s.baitLevels": "RARE CHANCE {0}% → {1}% → {2}%",
+  "s.effect.reel": "LINE {0}%",
+  "s.effect.hook": "HOOK {0}%",
+  "s.now": "TAKES EFFECT IMMEDIATELY",
+  "s.spawn": "APPLIES TO NEWLY SPAWNED CREATURES",
+  "s.noLock": "NO UNLOCK REQUIRED",
+  "s.tankInfo": "ADDS ONE HEART TO MAXIMUM AND CURRENT HEALTH.",
+  "s.reelInfo": "FASTER LINE MOVEMENT AND RETRIEVAL, INCLUDING BOOST AND DRAG.",
+  "s.hookInfo": "SUCCESS CHANCE WHEN YOU STRIKE IN TIME. THE BITE WINDOW STAYS THE SAME.",
+  "s.lampInfo": "WIDENS BOTH THE DIVER LIGHT AND THE LIGHT AT THE HOOK.",
+  "s.scroll": "[↑][↓] READ · [Enter] BUY"
+});
+
+Object.assign(STR.ko, {
+  "s.sonar": "생물 탐지기",
+  "s.effect.sonar": "탐지 범위 {0}",
+  "s.sonarInfo": "0.5초마다 주변 생물 한 마리를 표시합니다. 2단계는 미포획 어종을 먼저 찾습니다.",
+  "s.suit.blue": "파란 잠수복",
+  "s.suit.pearl": "진주 잠수복",
+  "s.boat.default": "기본 낚싯배",
+  "s.boat.mint": "민트 낚싯배",
+  "s.boat.gold": "황금 낚싯배",
+  "s.unlock.rare": "희귀 생물 1마리 포획 후 구매",
+  "s.unlock.ten": "포획 가능한 어종 10종 수집 후 구매",
+  "controls.locked": "조건 보기"
+});
+Object.assign(STR.en, {
+  "s.sonar": "CREATURE SONAR",
+  "s.effect.sonar": "SONAR RANGE {0}",
+  "s.sonarInfo": "MARKS ONE NEARBY CREATURE EVERY 0.5 SECONDS. TIER 2 PRIORITIZES UNCAUGHT SPECIES.",
+  "s.suit.blue": "BLUE SUIT",
+  "s.suit.pearl": "PEARL SUIT",
+  "s.boat.default": "CLASSIC BOAT",
+  "s.boat.mint": "MINT BOAT",
+  "s.boat.gold": "GOLD BOAT",
+  "s.unlock.rare": "CATCH ONE RARE CREATURE TO UNLOCK",
+  "s.unlock.ten": "CATCH 10 DIFFERENT SPECIES TO UNLOCK",
+  "controls.locked": "View goal"
+});
+
+Object.assign(STR.ko, {
+  "controls.bag": "가방",
+  "controls.use": "사용",
+  "bag.title": "가방",
+  "bag.pick": "유인할 어종",
+  "bag.hint": "아이템을 골라 사용하세요",
+  "s.targetBait": "표적 미끼",
+  "s.oxygenCapsule": "비상 산소 캡슐",
+  "bag.stock": "보유 {0}/{1}",
+  "bag.full": "더 담을 수 없습니다.",
+  "bag.emptyStock": "가방에 없습니다.",
+  "bag.playOnly": "플레이 중에 사용할 수 있습니다.",
+  "bag.diverOnly": "잠수 중에만 사용할 수 있습니다.",
+  "bag.limit": "이번 플레이의 3회를 모두 사용했습니다.",
+  "bag.healthy": "이미 최대 체력입니다.",
+  "bag.active": "표적 미끼가 이미 작동 중입니다.",
+  "bag.lowerLine": "먼저 낚싯줄을 내려놓으세요.",
+  "bag.noSpecies": "먼저 어종을 포획하세요.",
+  "bag.noTarget": "가까이에 대상 어종이 없습니다.",
+  "bag.healed": "비상 캡슐로 하트가 회복되었습니다.",
+  "bag.baitSet": "{0}을 유인합니다. 60초 동안 작동합니다.",
+  "bag.baitInfo": "잡아본 어종이 주변 160 범위에 있어야 설치할 수 있습니다. 60초간 이동 속도 1.25배로 유인합니다. 동시에 하나만 사용하며 희귀 확률은 변하지 않습니다.",
+  "bag.capsuleInfo": "하트 한 칸을 회복합니다. 한 플레이에서 3회까지 사용할 수 있습니다.",
+  "bag.effect.bait": "60초 유인",
+  "bag.effect.capsule": "하트 +1",
+  "bag.ask": "{0}을(를) 사용합니까?",
+  "bag.afterStock": "보유 {0} → {1}",
+  "bag.health": "하트 {0} → {1}",
+  "bag.uses": "이번 플레이 {0}/3회 사용",
+  "bag.remaining": "미끼 {0}초 남음",
+  "bag.target": "대상: {0}",
+  "bag.ready": "사용 가능",
+  "bag.immediate": "가방에서 사용하면 바로 적용됩니다.",
+  "help.bag": "[I]",
+  "help.bagV": "가방 · 표적 미끼와 비상 캡슐"
+});
+Object.assign(STR.en, {
+  "controls.bag": "Bag",
+  "controls.use": "Use",
+  "bag.title": "BAG",
+  "bag.pick": "CHOOSE A SPECIES",
+  "bag.hint": "SELECT AN ITEM TO USE",
+  "s.targetBait": "TARGET BAIT",
+  "s.oxygenCapsule": "OXYGEN CAPSULE",
+  "bag.stock": "STOCK {0}/{1}",
+  "bag.full": "CANNOT CARRY ANY MORE.",
+  "bag.emptyStock": "NONE IN YOUR BAG.",
+  "bag.playOnly": "START PLAYING TO USE THIS.",
+  "bag.diverOnly": "ONLY USABLE WHILE DIVING.",
+  "bag.limit": "ALL 3 USES FOR THIS RUN ARE SPENT.",
+  "bag.healthy": "HEALTH IS ALREADY FULL.",
+  "bag.active": "TARGET BAIT IS ALREADY ACTIVE.",
+  "bag.lowerLine": "LOWER THE FISHING LINE FIRST.",
+  "bag.noSpecies": "CATCH A SPECIES FIRST.",
+  "bag.noTarget": "NO TARGET SPECIES NEARBY.",
+  "bag.healed": "THE CAPSULE RESTORED YOUR HEALTH.",
+  "bag.baitSet": "LURING {0} FOR 60 SECONDS.",
+  "bag.baitInfo": "REQUIRES A PREVIOUSLY CAUGHT SPECIES WITHIN 160. LURES IT AT 1.25 SPEED FOR 60 SECONDS. ONE ACTIVE BAIT AT A TIME. RARITY IS UNCHANGED.",
+  "bag.capsuleInfo": "RESTORES ONE HEART. UP TO 3 USES PER RUN.",
+  "bag.effect.bait": "60s LURE",
+  "bag.effect.capsule": "+1 HEART",
+  "bag.ask": "USE {0}?",
+  "bag.afterStock": "STOCK {0} → {1}",
+  "bag.health": "HEARTS {0} → {1}",
+  "bag.uses": "USED {0}/3 THIS RUN",
+  "bag.remaining": "BAIT: {0}s LEFT",
+  "bag.target": "TARGET: {0}",
+  "bag.ready": "READY",
+  "bag.immediate": "TAKES EFFECT WHEN USED FROM YOUR BAG.",
+  "help.bag": "[I]",
+  "help.bagV": "BAG: TARGET BAIT AND OXYGEN CAPSULES"
 });
 
 const SP = {
@@ -2295,18 +2450,34 @@ const priceOf = (id, rare) => Math.round((PRICE[id] || 10) * (rare ? 3 : 1));
 /* 장비. 두 단계까지 올린다. 값은 뒤로 갈수록 가파르다 - 마지막 한 단이
    쉬우면 바다에 나갈 까닭이 없어진다. */
 const UPGRADES = [
-  { id: "tank", cost: [260, 620] },
-  { id: "fins", cost: [180, 430] },
-  { id: "lamp", cost: [210, 500] },
-  { id: "line", cost: [160, 380] },
-  { id: "bait", cost: [320, 760] },
+  { id: "tank", cost: [260, 620], role: "diver" },
+  { id: "fins", cost: [180, 430], role: "diver" },
+  { id: "lamp", cost: [210, 500], role: "both" },
+  { id: "line", cost: [160, 380], role: "diver" },
+  { id: "bait", cost: [320, 760], role: "both" },
+  { id: "reel", cost: [180, 430], role: "boat" },
+  { id: "hook", cost: [220, 520], role: "boat" },
+  { id: "sonar", cost: [400, 900], role: "both" },
 ];
 const UP_MAX = 2;
 /* 복장은 한 번 구매해 계속 입는다. 성능 장비의 단계와는 별개다. */
-const SUITS = [{ id: "yellow", cost: 0 }, { id: "black", cost: 300 }];
+const CONSUMABLES = [
+  { id: "targetBait", cost: 60, cap: 5, role: "both", kind: "consumable" },
+  { id: "oxygenCapsule", cost: 60, cap: 3, role: "diver", kind: "consumable" }
+];
+const SUITS = [
+  { id: "yellow", cost: 0 }, { id: "black", cost: 300 },
+  { id: "blue", cost: 450 }, { id: "pearl", cost: 900, unlock: "rare" }
+];
+const BOATS = [
+  { id: "default", cost: 0 }, { id: "mint", cost: 600 },
+  { id: "gold", cost: 1200, unlock: "ten" }
+];
 const SHOP_ITEMS = [
   ...UPGRADES.map(item => ({ ...item, kind: "upgrade" })),
+  ...CONSUMABLES,
   ...SUITS.map(item => ({ ...item, kind: "suit" })),
+  ...BOATS.map(item => ({ ...item, kind: "boat" })),
 ];
 const upLv = k => (save.up && save.up[k]) || 0;
 const heartMax = () => 10 + upLv("tank") * 2;   /* 반 칸이 1 이므로 다섯 개 */
@@ -2314,8 +2485,11 @@ const swimMul = () => 1 + upLv("fins") * .15;
 const lampAdd = () => upLv("lamp") * 16;
 const rangeAdd = () => upLv("line") * 26;
 const rareMul = () => Math.pow(1.9, upLv("bait"));
+const reelMul = () => 1 + upLv("reel") * .2;
+const hookRate = () => HOOK_RATE + upLv("hook") * .05;
+const sonarRange = () => [0, 180, 300][upLv("sonar")];
 
-const RARE_CHANCE = .006;   /* 변이. 색을 잃고 흰빛으로 태어난다 - 이백에 하나 */
+const RARE_CHANCE = .006;   /* 기본 희귀 확률 0.6%. 미끼통은 새로 생성되는 생물에 적용한다. */
 
 class Being {
   constructor(kind, opts) {
@@ -2415,6 +2589,7 @@ class Being {
   step(u) {
     this.phase += u * (this.kind === "jelly" ? .06 : .18);
     if (this.pause > 0) { this.pause -= u; return; }
+    if (this.flee <= 0 && attractToBait(this,u)) return;
     const sp = this.flee > 0 ? Math.max(this.speed, .5) * 2.6 : this.speed;
     this.x += this.dir * sp * u;
     if (this.flee > 0) this.flee -= .02 * u;
@@ -2459,6 +2634,7 @@ function layoutWorld() {
 }
 
 function rescaleWorld(old) {
+  resetSonar();
   const scaleX = x => x / old.width * worldW();
   const scaleY = y => seaTop + (y - old.top) / (old.height - old.top) * (worldH - seaTop);
   player.x = clamp(scaleX(player.x), 4, worldW() - (player.role === "boat" ? SPR.boat.w : DV_W) - 4);
@@ -2482,6 +2658,7 @@ function rescaleWorld(old) {
   for (const p of [...bubbles, ...motes]) { p.x = scaleX(p.x); p.y = scaleY(p.y); }
   if (moored !== null) moored = scaleX(moored);
   if (baitPuff) { baitPuff.x = scaleX(baitPuff.x); baitPuff.y = scaleY(baitPuff.y); }
+  if (activeBait) { activeBait.x = scaleX(activeBait.x); activeBait.y = scaleY(activeBait.y); }
   cam = clamp(focusY() - SH * .5, 0, worldH - SH);
   camX = clamp(player.x + (player.role === "boat" ? SPR.boat.w / 2 : DV_CX) - SW * .5, 0, worldW() - SW);
 }
@@ -2537,6 +2714,7 @@ function makeDecor() {
 const LANTERN_SHARE = .01;
 
 function respawnAll() {
+  resetSonar(); activeBait = null;
   beings = [];
   for (const k in KIND) {
     const K = KIND[k];
@@ -2581,7 +2759,9 @@ function emptySave() {
            stat: { snap: 0, seabed: 0 }, chest: 0, deepest: 0,
            /* 팔기 전까지 수족관에 머무는 것들과, 그것으로 산 것 */
            coin: 0, up: {}, hold: {}, holdR: {}, stocked: 0, economyVersion: 1,
-           suits: { black: false }, suit: "yellow" };
+           suits: Object.fromEntries(SUITS.filter(item => item.cost).map(item => [item.id, false])), suit: "yellow",
+           consumables: Object.fromEntries(CONSUMABLES.map(item => [item.id, 0])),
+           boats: Object.fromEntries(BOATS.filter(item => item.cost).map(item => [item.id, false])), boat: "default" };
 }
 function normalizeSave(value) {
   const out = emptySave();
@@ -2607,6 +2787,9 @@ function normalizeSave(value) {
     }
   }
   if (count(value.coin)) out.coin = value.coin;
+  for (const item of CONSUMABLES)
+    if (record(value.consumables) && count(value.consumables[item.id]))
+      out.consumables[item.id] = Math.min(item.cap, value.consumables[item.id]);
   if (record(value.up)) {
     for (const u of UPGRADES)
       if (count(value.up[u.id]) && value.up[u.id] > 0)
@@ -2614,8 +2797,10 @@ function normalizeSave(value) {
   }
   out.stocked = flag(value.stocked) ? 1 : 0;
   out.economyVersion = value.economyVersion === 1 ? 1 : 0;
-  out.suits.black = record(value.suits) && value.suits.black === true;
-  out.suit = value.suit === "black" && out.suits.black ? "black" : "yellow";
+  for (const [catalog, owned, equipped, fallback] of [[SUITS,"suits","suit","yellow"],[BOATS,"boats","boat","default"]]) {
+    for (const item of catalog) if (item.cost) out[owned][item.id] = record(value[owned]) && value[owned][item.id] === true;
+    out[equipped] = catalog.some(item => item.id === value[equipped] && (!item.cost || out[owned][item.id])) ? value[equipped] : fallback;
+  }
   if (record(value.titles)) {
     const ids = Object.keys(TITLE_TEXT.en);
     for (const track of ["plain", "rare"])
@@ -2665,6 +2850,7 @@ if (economyMigrated) flushSave();
 addEventListener("pagehide", flushSave);
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") { flushSave(); releaseTouchKeys(); pointer.down = false; }
+  else last = performance.now();
 });
 function markSeen(id) {
   if (save.seen[id]) return false;
@@ -2717,27 +2903,110 @@ function buyUpgrade(id) {
   const item = UPGRADES.find(item => item.id === id);
   save.coin -= item.cost[upLv(id)]; save.up[id] = upLv(id) + 1;
   if (id === "tank") player.hp = Math.min(heartMax(), player.hp + 2);
+  if (id === "sonar") resetSonar();
   persist(); return true;
 }
-function ownsSuit(id) {
-  return id === "yellow" || (id === "black" && save.suits.black);
-}
-function suitPurchaseStatus(id) {
-  const item = SUITS.find(item => item.id === id);
+function consumablePurchaseStatus(id) {
+  const item = CONSUMABLES.find(item => item.id === id);
   if (!item) return "ui.tradeFailed";
-  if (ownsSuit(id)) return "s.owned";
+  if (save.consumables[id] >= item.cap) return "bag.full";
   return save.coin < item.cost ? "s.poor" : "";
 }
-function buySuit(id) {
-  if (suitPurchaseStatus(id)) return false;
-  const item = SUITS.find(item => item.id === id);
-  save.coin -= item.cost; save.suits[id] = true; save.suit = id;
+function buyConsumable(id) {
+  if (consumablePurchaseStatus(id)) return false;
+  const item = CONSUMABLES.find(item => item.id === id);
+  save.coin -= item.cost; save.consumables[id]++;
   persist(); return true;
 }
-function equipSuit(id) {
-  if (!ownsSuit(id) || save.suit === id) return false;
-  save.suit = id; persist(); return true;
+function baitSpecies() { return CATCH_IDS.filter(id => save.caught[id] > 0); }
+function consumableUseStatus(id, species) {
+  if (!CONSUMABLES.some(item => item.id === id)) return "ui.tradeFailed";
+  if (!(mode === "dive" || (mode === "bag" && returnMode === "dive")) || player.hp <= 0) return "bag.playOnly";
+  if (!save.consumables[id]) return "bag.emptyStock";
+  if (id === "oxygenCapsule") {
+    if (player.role !== "diver") return "bag.diverOnly";
+    if (capsulesUsed >= 3) return "bag.limit";
+    if (player.hp >= heartMax()) return "bag.healthy";
+  } else {
+    if (activeBait) return "bag.active";
+    if (player.role === "boat" && rod.state !== "out") return "bag.lowerLine";
+    const known = baitSpecies();
+    if (!known.length) return "bag.noSpecies";
+    if (species !== undefined) {
+      if (!known.includes(species)) return "bag.noSpecies";
+      const p = focusPoint();
+      if (!beings.some(b => b.gid === species && b.K.catchable &&
+          Math.hypot(b.cx()-p.x,b.cy()-p.y) <= 160)) return "bag.noTarget";
+    }
+  }
+  return "";
 }
+function useConsumable(id, species) {
+  if (consumableUseStatus(id,species) || (id === "targetBait" && species === undefined)) return false;
+  save.consumables[id]--;
+  if (id === "oxygenCapsule") {
+    capsulesUsed++; healPlayer(2,"bag.healed");
+  } else {
+    activeBait = { ...focusPoint(), id: species, remaining: 3600 };
+    say(T("bag.baitSet",spName(species)),C.lure);
+  }
+  persist(); return true;
+}
+function attractToBait(b,u) {
+  if (!activeBait || activeBait.remaining <= 0 || b.gid !== activeBait.id || !b.K.catchable ||
+      b === rod.target || b.pause > 0 || b.flee > 0 ||
+      Math.hypot(b.cx()-activeBait.x,b.cy()-activeBait.y) > 160) return false;
+  const tx=activeBait.x, ty=clamp(activeBait.y-b.h/2,b.top,b.bottom)+b.h/2;
+  const dx=tx-b.cx(), dy=ty-b.cy(), distance=Math.hypot(dx,dy);
+  if (distance > .001) {
+    const step=Math.min(distance,b.speed*1.25*u);
+    b.x += dx/distance*step; b.y=clamp(b.y+dy/distance*step,b.top,b.bottom);
+    if (dx) b.dir=Math.sign(dx);
+  }
+  return true;
+}
+function drawTargetBait() {
+  if (!activeBait || mode === "title" || returnMode === "title") return;
+  const x=Math.round(activeBait.x-camX), y=Math.round(activeBait.y-cam);
+  if (x < -20 || x > SW+20 || y < -20 || y > SH+20) return;
+  for (let i=0;i<6;i++) {
+    const a=i*Math.PI/3+clock, radius=8+(i%2)*3;
+    px(x+Math.round(Math.cos(a)*radius),y+Math.round(Math.sin(a)*radius),C.lure);
+  }
+  if (!bare) drawTextCenter(x,y-24,Math.ceil(activeBait.remaining/60)+"s",C.lure);
+}
+function cosmeticCatalog(kind) { return kind === "suit" ? SUITS : kind === "boat" ? BOATS : []; }
+function ownsCosmetic(kind, id) {
+  const item = cosmeticCatalog(kind).find(item => item.id === id);
+  return !!item && (!item.cost || save[kind === "suit" ? "suits" : "boats"][id] === true);
+}
+function cosmeticLock(item) {
+  if (item.unlock === "rare" && !CATCH_IDS.some(id => save.rare[id] > 0)) return "s.unlock.rare";
+  if (item.unlock === "ten" && CATCH_IDS.filter(id => save.caught[id] > 0).length < 10) return "s.unlock.ten";
+  return "";
+}
+function cosmeticPurchaseStatus(kind, id) {
+  const item = cosmeticCatalog(kind).find(item => item.id === id);
+  if (!item) return "ui.tradeFailed";
+  if (ownsCosmetic(kind,id)) return "s.owned";
+  return cosmeticLock(item) || (save.coin < item.cost ? "s.poor" : "");
+}
+function buyCosmetic(kind, id) {
+  if (cosmeticPurchaseStatus(kind,id)) return false;
+  const item = cosmeticCatalog(kind).find(item => item.id === id);
+  save.coin -= item.cost;
+  save[kind === "suit" ? "suits" : "boats"][id] = true;
+  save[kind] = id;
+  persist(); return true;
+}
+function equipCosmetic(kind, id) {
+  if (!ownsCosmetic(kind,id) || save[kind] === id) return false;
+  save[kind] = id; persist(); return true;
+}
+function ownsSuit(id) { return ownsCosmetic("suit",id); }
+function suitPurchaseStatus(id) { return cosmeticPurchaseStatus("suit",id); }
+function buySuit(id) { return buyCosmetic("suit",id); }
+function equipSuit(id) { return equipCosmetic("suit",id); }
 
 /* =========================================================================
    칭호와 트로피
@@ -2884,6 +3153,8 @@ const diverColors = stamp({
 const diverPalettes = {
   yellow: diverColors,
   black: stamp({ ...diverColors, m: "#2b3038", d: "#181d24" }),
+  blue: stamp({ ...diverColors, m: "#428bd1", d: "#214b7a" }),
+  pearl: stamp({ ...diverColors, m: "#eee7dc", d: "#9d9ab6" }),
 };
 /* 작살. 한 번 쏘면 앞으로 날아갔다가 줄에 감겨 돌아온다. 그물처럼
    곁의 것이 절로 잡히지 않으니, 무엇을 노렸는지가 손에 남는다. */
@@ -2923,10 +3194,63 @@ const rod = {
   timer: 0,
   catchDepth: null,
 };
+const sonar = { target: null, timer: 0 };
+let activeBait = null, capsulesUsed = 0;
 const BITE_TIME = 115;    /* 입질이 이어지는 프레임(약 1.9초). 이 안에 채야 한다 */
 const HOOK_RATE = .85;    /* 챔질 성공률. 늘 걸리면 채는 맛이 없다 */
 const ROD_SPEED = .9, ROD_FAST = 2.4;
 
+function focusPoint() {
+  if (player.role === "boat") return rod.state === "idle"
+    ? {x: player.x + SPR.boat.w / 2, y: seaTop + 4} : {x: rod.x, y: rod.y};
+  return {x: player.x + DV_CX, y: player.y + DV_CY};
+}
+function resetSonar() { sonar.target = null; sonar.timer = 0; }
+function sonarEligible(b, point = focusPoint()) {
+  return b && b.K.catchable && CATCH_IDS.includes(b.gid) && b !== rod.target &&
+    beings.includes(b) && Math.hypot(b.cx()-point.x,b.cy()-point.y) <= sonarRange();
+}
+function stepSonar(u) {
+  if (!upLv("sonar")) { resetSonar(); return; }
+  const point = focusPoint();
+  if (sonar.target && !sonarEligible(sonar.target,point)) resetSonar();
+  sonar.timer -= u;
+  if (sonar.timer > 0) return;
+  sonar.timer = 30;
+  const candidates = beings.filter(b => sonarEligible(b,point));
+  candidates.sort((a,b) => {
+    if (upLv("sonar") === 2) {
+      const priority = Number(!!save.caught[a.gid]) - Number(!!save.caught[b.gid]);
+      if (priority) return priority;
+    }
+    return Math.hypot(a.cx()-point.x,a.cy()-point.y) - Math.hypot(b.cx()-point.x,b.cy()-point.y);
+  });
+  sonar.target = candidates[0] || null;
+}
+function sonarMarker() {
+  if (mode !== "dive" || bare || !upLv("sonar") || !sonarEligible(sonar.target)) return null;
+  const b = sonar.target, x = b.cx()-camX, y = b.cy()-cam;
+  const right = Math.max(24, SW-GAUGE_W*UI_PIXEL_SCALE/PIXEL_SCALE-16);
+  const bottom = Math.max(82,SH-46);
+  const inside = x>=0 && x<=SW && y>=0 && y<=SH;
+  const markerX=inside?x:clamp(x,16,right), markerY=inside?y:clamp(y,76,bottom);
+  return {x:markerX,y:markerY,dx:x-markerX,dy:y-markerY,
+    inside, unknown:!save.caught[b.gid]};
+}
+function drawSonar() {
+  const marker = sonarMarker();
+  if (!marker) return;
+  const x=Math.round(marker.x), y=Math.round(marker.y), color=marker.unknown?C.textWarn:C.lure;
+  if (marker.inside) {
+    rect(x-7,y-7,15,1,color); rect(x-7,y+7,15,1,color);
+    rect(x-7,y-7,1,15,color); rect(x+7,y-7,1,15,color);
+  } else {
+    const horizontal=Math.abs(marker.dx)>Math.abs(marker.dy), sign=Math.sign(horizontal?marker.dx:marker.dy);
+    for(let i=0;i<6;i++) for(let j=-i;j<=i;j++)
+      px(x+(horizontal?-sign*i:j),y+(horizontal?j:-sign*i),color);
+  }
+  if(marker.unknown) drawTextCenter(x,y-22,"?",color);
+}
 function resetRod() {
   if (rod.target) {
     rod.target.pause = 0;
@@ -3103,17 +3427,6 @@ function drawSky() {
     }
     g.restore();
   }
-  /* 배에서 내려 물속으로 들어갔다면, 그 배는 내린 자리에 그대로 떠 있다.
-     예전에는 아무 관계도 없는 장식용 배를 시차를 두고 띄웠는데, 배에서
-     잠수부로 바꾸는 순간 유령선처럼 나타나 보였다. */
-  if (player.role !== "boat" && moored !== null) {
-    const boatX = Math.round(moored - camX);
-    if (boatX > -60 && boatX < SW + 60) {
-      const bw = Math.sin(clock * 1.1) * 1.2;
-      /* 뱃전(도안 15번째 줄)이 수면에 닿는 자리. */
-      blit(bake(SPR.boat, boatColors, false), boatX, Math.round(surf - 14 + bw));
-    }
-  }
   /* 물결. 사인 두 개를 겹쳐 한 칸씩 찍는다. */
   for (let x = 0; x < SW; x++) {
     const wx = x + camX;
@@ -3138,6 +3451,37 @@ const boatColors = stamp({
   k: "#1a1208",   /* 눈 */
   y: C.lure,
 });
+const boatPalettes = {
+  default: boatColors,
+  mint: stamp({ ...boatColors, m: "#49bfa8", d: "#246c68", l: "#9be5ca" }),
+  gold: stamp({ ...boatColors, m: "#d7a128", d: "#835815", l: "#ffe08a" })
+};
+const equippedBoatColors = () => boatPalettes[save.boat] || boatColors;
+const boatImageCache = new Map();
+const BOAT_HULL_Y = SPR.boat.rows.findIndex(row => row.includes("llllllllllll"));
+function equippedBoatImage() {
+  if (save.boat === "default" || !boatPalettes[save.boat]) return bake(SPR.boat,boatColors,false);
+  if (!boatImageCache.has(save.boat)) {
+    const cv=document.createElement("canvas");
+    cv.width=SPR.boat.w; cv.height=SPR.boat.h;
+    const ctx=cv.getContext("2d");
+    ctx.drawImage(bake(SPR.boat,boatColors,false),0,0);
+    // Reuse the sprite; paint only its hull. Sails and rod share palette keys.
+    const height=SPR.boat.h-BOAT_HULL_Y;
+    ctx.drawImage(bake(SPR.boat,equippedBoatColors(),false),
+      0,BOAT_HULL_Y,SPR.boat.w,height,0,BOAT_HULL_Y,SPR.boat.w,height);
+    boatImageCache.set(save.boat,cv);
+  }
+  return boatImageCache.get(save.boat);
+}
+function drawMooredBoat() {
+  if (player.role === "boat" || moored === null) return;
+  const boatX=Math.round(moored-camX), surf=seaTop-cam;
+  if (boatX < -SPR.boat.w || boatX > SW || surf < -SPR.boat.h || surf > SH+SPR.boat.h) return;
+  const bob=Math.sin(clock*1.1)*1.2;
+  blit(equippedBoatImage(),boatX,Math.round(surf-14+bob));
+}
+
 
 /* 수면 아래로 내려오는 빛줄기. 얕은 물에서만 보인다. */
 function drawGodRays() {
@@ -3334,7 +3678,7 @@ function drawPlayer() {
 function drawBoatAndLine() {
   const bx = Math.round(player.x - camX), by = Math.round(player.y - cam);
   const bob = Math.round(Math.sin(clock * 1.4) * 1.2);
-  blit(bake(SPR.boat, boatColors, false), bx, by + bob);
+  blit(equippedBoatImage(), bx, by + bob);
   if (rod.state === "idle") return;
   /* 줄은 뱃전이 아니라 낚싯대 끝에서 떨어진다. 배가 움직이면 줄이
      비스듬히 끌리므로 두 점을 이어 그린다. */
@@ -3972,46 +4316,106 @@ function drawGuideDetail() { drawInfoCard(); }
 function drawCatchCard() { drawInfoCard(); }
 
 /* ---------- 수족관·상점: 공통 목록과 거래 확인 ---------- */
+const SHOP_TABS = ["gear", "supply", "look"];
+let shopTab = 0, tradeScroll = 0, bagPicking = false;
 let tradeSel = 0, trade = null, tradeNotice = "";
 function commerceItems() {
-  if (mode === "shop") return SHOP_ITEMS;
+  if (mode === "bag") return bagPicking ? baitSpecies().map(id => ({id, kind:"baitSpecies"})) : CONSUMABLES;
+  if (mode === "shop") return SHOP_ITEMS.filter(item => shopCategory(item) === SHOP_TABS[shopTab]);
   const stock = aquariumStock();
   return stock.length ? [...stock, { all: true }] : [];
+}
+function shopCategory(item) {
+  return item.kind === "upgrade" ? "gear" : item.kind === "consumable" ? "supply" : "look";
+}
+function turnShopTab(delta) {
+  shopTab = (shopTab + delta + SHOP_TABS.length) % SHOP_TABS.length;
+  tradeSel = 0; tradeNotice = "";
+}
+function upgradeValue(id, level) {
+  const values = {
+    tank: 5 + level, fins: 100 + level * 15, lamp: level * 16,
+    line: SPEAR_RANGE + level * 26, bait: +(RARE_CHANCE * Math.pow(1.9, level) * 100).toFixed(3),
+    reel: 100 + level * 20, hook: Math.round((HOOK_RATE + level * .05) * 100), sonar: [0,180,300][level]
+  };
+  return values[id];
+}
+function upgradeEffect(item) {
+  const level = upLv(item.id), current = upgradeValue(item.id, level);
+  const value = level >= UP_MAX ? current : current + " → " + upgradeValue(item.id, level + 1);
+  return T("s.effect." + item.id, value);
+}
+function shopDescription(item) {
+  if (item.kind === "consumable") return [
+    T("s.role."+item.role), T(item.id === "targetBait" ? "bag.baitInfo" : "bag.capsuleInfo"),
+    T("bag.stock",save.consumables[item.id],item.cap), T("bag.immediate"), T("s.noLock")
+  ];
+  if (["suit","boat"].includes(item.kind)) return [
+    T("s.role." + (item.kind === "suit" ? "diver" : "boat")), T("s.cosmetic"),
+    T(item.unlock ? "s.unlock." + item.unlock : "s.noLock"), T("s.now")
+  ];
+  const text = [T("s.role." + item.role), upgradeEffect(item)];
+  if (item.id === "bait") text.push(T("s.baitLevels", ...[0,1,2].map(level => upgradeValue("bait",level))));
+  if (["tank", "lamp", "reel", "hook", "sonar"].includes(item.id)) text.push(T("s." + item.id + "Info"));
+  text.push(T(item.id === "bait" ? "s.spawn" : "s.now"), T("s.noLock"));
+  return text;
 }
 function fishLabel(item) {
   return (item.rare ? T("g.tab.rare") + " " : "") + spName(item.id);
 }
 function shopItemName(item) {
-  return T(item.kind === "suit" ? "s.suit." + item.id : "s." + item.id);
+  return T(["suit","boat"].includes(item.kind) ? "s." + item.kind + "." + item.id : "s." + item.id);
 }
 function shopItemView(item) {
-  if (item.kind === "suit") {
-    const owned = ownsSuit(item.id), equipped = save.suit === item.id;
+  if (item.kind === "consumable") return {
+    title:shopItemName(item), detail:T(item.id === "targetBait" ? "bag.effect.bait" : "bag.effect.capsule") + " · " + save.consumables[item.id] + "/" + item.cap,
+    price:T("ui.coin",item.cost), action:"buy", disabled:save.consumables[item.id]>=item.cap
+  };
+  if (["suit","boat"].includes(item.kind)) {
+    const owned = ownsCosmetic(item.kind,item.id), equipped = save[item.kind] === item.id;
+    const locked = !owned && cosmeticLock(item);
     return {
-      title: shopItemName(item), detail: T("s.cosmetic"),
+      title: shopItemName(item), detail: T(locked || "s.cosmetic"),
       price: equipped ? T("controls.equipped") : owned ? T("s.owned") : T("ui.coin", item.cost),
-      action: equipped ? "equipped" : owned ? "equip" : "buy", disabled: equipped,
+      action: equipped ? "equipped" : owned ? "equip" : locked ? "locked" : "buy", disabled: equipped,
     };
   }
   return {
     title: shopItemName(item) + " " + upLv(item.id) + "/" + UP_MAX,
-    detail: T("s." + item.id + "V"),
+    detail: upgradeEffect(item),
     price: upLv(item.id) >= UP_MAX ? T("s.full") : T("ui.coin", item.cost[upLv(item.id)]),
     action: "buy", disabled: false,
   };
 }
+function bagItemView(item) {
+  const species = item.kind === "baitSpecies";
+  const problem = consumableUseStatus(species ? "targetBait" : item.id, species ? item.id : undefined);
+  return {
+    title:species?spName(item.id):shopItemName(item),
+    detail:T(problem || (species?"bag.ready":item.id==="targetBait"?"bag.effect.bait":"bag.effect.capsule")),
+    price:species?"":T("bag.stock",save.consumables[item.id],item.cap),
+    action:!species&&item.id==="targetBait"?"primary":"use", disabled:!!problem
+  };
+}
+function commerceDestination() {
+  return mode === "shop" ? SHOP_TABS[shopTab] === "supply" ? "bag" : "aqua" : "shop";
+}
 function isPurchaseTrade(pending) {
-  return pending.type === "buy" || pending.type === "buySuit";
+  return ["buy","buySuit","buyBoat","buyConsumable"].includes(pending.type);
 }
 function commerceLayout() {
-  const w = Math.min(UW - 12, 300), rowH = 32, head = 42, footer = 68;
+  const compact = UH < 180;
+  const w = Math.min(UW - 12, 300), rowH = 32, head = mode === "shop" ? compact ? 48 : 66 : 42, footer = 68;
   const per = Math.max(1, Math.floor((Math.min(UH - 8, 302) - head - footer) / rowH));
   const h = head + per * rowH + footer, x = Math.round((UW - w) / 2), y = Math.max(4, Math.round((UH - h) / 2));
   const items = commerceItems();
   tradeSel = clamp(tradeSel, 0, Math.max(0, items.length - 1));
   const page = Math.floor(tradeSel / per), count = Math.max(1, Math.ceil(items.length / per));
   const foot = y + head + per * rowH;
-  return { x, y, w, h, per, page, count, items,
+  return { x, y, w, h, per, page, count, items, compact,
+    tabs: mode === "shop" ? SHOP_TABS.map((id, i) => ({
+      id, index: i, x: x + 6 + i * ((w - 12) / 3), y: y + (compact ? 23 : 41), w: (w - 12) / 3 - 2, h: 22
+    })) : [],
     rows: items.slice(page * per, (page + 1) * per).map((item, i) => ({
       item, index: page * per + i, x: x + 6, y: y + head + i * rowH, w: w - 12, h: rowH - 2
     })),
@@ -4029,23 +4433,34 @@ function moveCommerce(delta) {
 function beginTrade() {
   const item = commerceItems()[tradeSel];
   if (!item) return;
-  tradeNotice = "";
-  if (mode === "shop") {
-    if (item.kind === "suit" && ownsSuit(item.id)) {
-      if (equipSuit(item.id)) tradeNotice = T("s.suitEquipped", shopItemName(item));
+  tradeNotice = ""; tradeScroll = 0;
+  if (mode === "bag") {
+    const species = item.kind === "baitSpecies" ? item.id : undefined;
+    const id = bagPicking ? "targetBait" : item.id;
+    const problem = consumableUseStatus(id,species);
+    if (problem) { tradeNotice=T(problem); return; }
+    if (id === "targetBait" && !bagPicking) {
+      bagPicking=true; tradeSel=0; releaseTouchKeys(false); pointer.down=false; return;
+    }
+    trade={type:"use",id,species};
+  } else if (mode === "shop") {
+    if (["suit","boat"].includes(item.kind) && ownsCosmetic(item.kind,item.id)) {
+      if (equipCosmetic(item.kind,item.id)) tradeNotice = T("s.suitEquipped", shopItemName(item));
       releaseTouchKeys(false); pointer.down = false;
       return;
     }
-    const problem = item.kind === "suit" ? suitPurchaseStatus(item.id) : upgradeStatus(item.id);
-    if (problem) { tradeNotice = T(problem); return; }
-    trade = { type: item.kind === "suit" ? "buySuit" : "buy", id: item.id };
+    const problem = item.kind === "consumable" ? consumablePurchaseStatus(item.id) : ["suit","boat"].includes(item.kind) ? cosmeticPurchaseStatus(item.kind,item.id) : upgradeStatus(item.id);
+    if (problem && !problem.startsWith("s.unlock.")) { tradeNotice = T(problem); return; }
+    trade = { type: item.kind === "suit" ? "buySuit" : item.kind === "boat" ? "buyBoat" : item.kind === "consumable" ? "buyConsumable" : "buy", id: item.id };
   } else trade = item.all ? { type: "all" } : { type: "sell", id: item.id, rare: item.rare, quantity: 1 };
   releaseTouchKeys(false); pointer.down = false;
 }
 function tradeQuote() {
-  if (!trade) return 0;
+  if (!trade || trade.type === "use") return 0;
+  if (trade.type === "buyConsumable") return CONSUMABLES.find(item=>item.id===trade.id).cost;
   if (trade.type === "buy") return UPGRADES.find(item => item.id === trade.id).cost[upLv(trade.id)] || 0;
   if (trade.type === "buySuit") return SUITS.find(item => item.id === trade.id).cost;
+  if (trade.type === "buyBoat") return BOATS.find(item => item.id === trade.id).cost;
   if (trade.type === "all") return aquariumStock().reduce((sum, item) => sum + item.count * item.price, 0);
   return priceOf(trade.id, trade.rare) * trade.quantity;
 }
@@ -4060,8 +4475,16 @@ function finishTrade() {
   if (!pending) return;
   const quote = tradeQuote();
   trade = null; // Consume confirmation before mutating; one input is one trade.
-  if (pending.type === "buySuit") {
-    tradeNotice = buySuit(pending.id) ? T("s.suitBought", T("s.suit." + pending.id)) : T(suitPurchaseStatus(pending.id));
+  if (pending.type === "use") {
+    const problem=consumableUseStatus(pending.id,pending.species);
+    if (!problem && useConsumable(pending.id,pending.species)) {
+      bagPicking=false; mode=returnMode;
+    } else tradeNotice=T(problem || "ui.tradeFailed");
+  } else if (pending.type === "buyConsumable") {
+    tradeNotice=buyConsumable(pending.id)?T("bag.stock",save.consumables[pending.id],CONSUMABLES.find(item=>item.id===pending.id).cap):T(consumablePurchaseStatus(pending.id));
+  } else if (pending.type === "buySuit" || pending.type === "buyBoat") {
+    const kind = pending.type === "buySuit" ? "suit" : "boat";
+    tradeNotice = buyCosmetic(kind,pending.id) ? T("s.suitBought", T("s." + kind + "." + pending.id)) : T(cosmeticPurchaseStatus(kind,pending.id));
   } else if (pending.type === "buy") {
     tradeNotice = buyUpgrade(pending.id) ? T("s.bought", T("s." + pending.id), upLv(pending.id)) : T(upgradeStatus(pending.id));
   } else {
@@ -4071,26 +4494,55 @@ function finishTrade() {
   tradeSel = clamp(tradeSel, 0, Math.max(0, commerceItems().length - 1));
   releaseTouchKeys(false); pointer.down = false;
 }
+function tradeProblem() {
+  if (!trade) return "";
+  if (trade.type === "use") return consumableUseStatus(trade.id,trade.species);
+  if (trade.type === "buyConsumable") return consumablePurchaseStatus(trade.id);
+  if (trade.type === "buy") return upgradeStatus(trade.id);
+  if (trade.type === "buySuit" || trade.type === "buyBoat") return cosmeticPurchaseStatus(trade.type === "buySuit" ? "suit" : "boat",trade.id);
+  return "";
+}
 function confirmLayout() {
   const w = Math.min(UW - 12, 270);
-  const prompt = isPurchaseTrade(trade) ? T("s.ask", T((trade.type === "buySuit" ? "s.suit." : "s.") + trade.id))
+  const prompt = trade.type === "use" ? T("bag.ask",T("s."+trade.id)) : isPurchaseTrade(trade) ? T("s.ask", T((trade.type === "buySuit" ? "s.suit." : trade.type === "buyBoat" ? "s.boat." : "s.") + trade.id))
     : trade.type === "all" ? T("a.askAll", aquariumStock().reduce((sum, item) => sum + item.count, 0))
     : T("a.askN", fishLabel(trade));
-  const lines = wrapLines(prompt, w - 16);
-  const h = 84 + lines.length * lineH(), x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
-  const qtyY = y + 12 + lines.length * lineH(), by = y + h - 28;
-  return {x, y, w, h, lines, qtyY,
+  const item = isPurchaseTrade(trade) ? SHOP_ITEMS.find(item => item.id === trade.id) : null;
+  const details = item ? shopDescription(item) : trade.type === "use" ?
+    trade.id === "targetBait" ? [T("bag.target",spName(trade.species)),T("bag.baitInfo")] :
+      [T("bag.health",player.hp/2,Math.min(heartMax(),player.hp+2)/2),T("bag.uses",capsulesUsed),T("bag.capsuleInfo")] : [];
+  const lines = [prompt, ...details].flatMap(text => wrapLines(text, w - 50));
+  const h = Math.min(UH - 8, Math.max(148, 92 + lines.length * lineH()));
+  const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
+  const per = Math.max(1, Math.floor((h - 92) / lineH()));
+  const maxScroll = Math.max(0, lines.length - per);
+  tradeScroll = clamp(tradeScroll, 0, maxScroll);
+  const qtyY = y + h - 80, by = y + h - 28;
+  return {x, y, w, h, lines, qtyY, per, maxScroll,
+    body: {x:x+8,y:y+8,w:w-50,h:per*lineH()},
+    up: {x:x+w-34,y:y+8,w:26,h:22},
+    down: {x:x+w-34,y:y+Math.max(32,per*lineH()-14),w:26,h:22},
     minus: {x:x+8,y:qtyY,w:28,h:22}, plus:{x:x+w-36,y:qtyY,w:28,h:22},
     yes:{x:x+6,y:by,w:Math.floor((w-18)/2),h:22},
     no:{x:x+Math.floor(w/2)+3,y:by,w:Math.floor((w-18)/2),h:22}};
 }
+function scrollTrade(delta) {
+  if (trade) tradeScroll = clamp(tradeScroll + delta, 0, confirmLayout().maxScroll);
+}
 function drawCommerce() {
   const L = commerceLayout();
   drawWindow(L.x,L.y,L.w,L.h,{alpha:.98});
-  drawText(L.x+8,L.y+5,T(mode === "shop" ? "s.title" : "a.title"),C.textWarn);
-  drawText(L.x+8,L.y+23,fit(T("ui.coin",save.coin),L.w-16),C.coin);
+  drawText(L.x+8,L.y+5,T(mode === "shop" ? "s.title" : mode === "bag" ? bagPicking ? "bag.pick" : "bag.title" : "a.title"),C.textWarn);
+  if (!L.compact || mode !== "shop") drawText(L.x+8,L.y+23,fit(mode === "bag" ?
+    activeBait ? T("bag.remaining",Math.ceil(activeBait.remaining/60)) : T("bag.uses",capsulesUsed)
+    : T("ui.coin",save.coin),L.w-16),C.coin);
+  for (const tab of L.tabs) {
+    if (tab.index === shopTab) rect(tab.x,tab.y,tab.w,tab.h,"#234570");
+    smallButton(tab,T("s.tab." + tab.id));
+    if (tab.index === shopTab) rect(tab.x+3,tab.y+tab.h-3,tab.w-6,2,C.textWarn);
+  }
   for (const row of L.rows) {
-    const item = row.item, view = mode === "shop" ? shopItemView(item) : null;
+    const item = row.item, view = mode === "shop" ? shopItemView(item) : mode === "bag" ? bagItemView(item) : null;
     if (row.index === tradeSel) rect(row.x,row.y,row.w,row.h,"#234570");
     const title = view ? view.title : item.all ? T("a.sellall") : fishLabel(item);
     drawText(row.x+4,row.y+2,fit(title,row.w-8),C.text);
@@ -4100,23 +4552,27 @@ function drawCommerce() {
     drawText(row.x+4,row.y+17,fit(detail,row.w-priceW-14),C.textDim);
     drawText(row.x+row.w-priceW-4,row.y+17,fit(price,priceW),C.coin);
   }
-  if (!L.items.length) drawText(L.x+8,L.y+L.h/2-15,fit(T("a.empty"),L.w-16),C.textDim);
-  drawText(L.x+8,L.noteY,fit(tradeNotice || T("ui.confirmHint"),L.w-16),C.textWarn);
+  if (!L.items.length) drawText(L.x+8,L.y+L.h/2-15,fit(T(mode === "shop" ? "s.empty" : mode === "bag" ? "bag.noSpecies" : "a.empty"),L.w-16),C.textDim);
+  drawText(L.x+8,L.noteY,fit(tradeNotice || T(mode === "bag" ? "bag.hint" : "ui.confirmHint"),L.w-16),C.textWarn);
   smallButton(L.prev,"<",L.page>0); smallButton(L.next,">",L.page<L.count-1);
   drawTextCenter(L.x+L.w/2,L.prev.y+5,(L.page+1)+"/"+L.count,C.textDim);
-  smallButton(L.switch,T(mode === "shop" ? "menu.aqua" : "menu.shop"));
+  smallButton(L.switch,T("controls."+commerceDestination()));
   smallButton(L.close,T("controls.close"));
   if (trade) {
     rect(0,0,UW,UH,"rgba(0,0,0,.65)");
     const F = confirmLayout();
     drawWindow(F.x,F.y,F.w,F.h,{alpha:1});
-    F.lines.forEach((line,i)=>drawText(F.x+8,F.y+7+i*lineH(),line,C.text));
+    F.lines.slice(tradeScroll,tradeScroll+F.per).forEach((line,i)=>drawText(F.body.x,F.body.y+i*lineH(),line,C.text));
+    if (F.maxScroll) {
+      smallButton(F.up,"↑",tradeScroll>0);
+      smallButton(F.down,"↓",tradeScroll<F.maxScroll);
+    }
     if (trade.type === "sell") {
       smallButton(F.minus,"-",trade.quantity>1); smallButton(F.plus,"+");
       drawTextCenter(F.x+F.w/2,F.qtyY+5,fit(T("ui.hold",trade.quantity),F.w-80),C.textWarn);
     }
-    drawTextCenter(F.x+F.w/2,F.qtyY+29,fit(T("ui.coin",tradeQuote()),F.w-16),C.coin);
-    smallButton(F.yes,T(isPurchaseTrade(trade) ? "controls.buy" : "controls.sell"));
+    drawTextCenter(F.x+F.w/2,F.qtyY+29,fit(trade.type === "use" ? T("bag.afterStock",save.consumables[trade.id],Math.max(0,save.consumables[trade.id]-1)) : T("ui.coin",tradeQuote()),F.w-16),C.coin);
+    smallButton(F.yes,T(trade.type === "use" ? "controls.use" : isPurchaseTrade(trade) ? "controls.buy" : "controls.sell"),!tradeProblem());
     smallButton(F.no,T("controls.cancel"));
   }
 }
@@ -4125,10 +4581,17 @@ function commercePress(k,ok,back) {
     if (back) { trade=null; releaseTouchKeys(false); }
     else if (k === "arrowleft") changeQuantity(-1);
     else if (k === "arrowright") changeQuantity(1);
+    else if (["arrowup","pageup","q"].includes(k)) scrollTrade(-1);
+    else if (["arrowdown","pagedown","e"].includes(k)) scrollTrade(1);
     else if (ok) finishTrade();
     return;
   }
-  if (back) { mode=returnMode; releaseTouchKeys(false); return; }
+  if (back) {
+    if (mode === "bag" && bagPicking) { bagPicking=false; tradeSel=0; tradeNotice=""; }
+    else mode=returnMode;
+    releaseTouchKeys(false); return;
+  }
+  if (mode === "shop" && (k === "arrowleft" || k === "arrowright")) { turnShopTab(k === "arrowleft" ? -1 : 1); return; }
   if (k === "arrowup") moveCommerce(-1);
   else if (k === "arrowdown") moveCommerce(1);
   else if (["arrowleft","pageup","q"].includes(k)) moveCommerce(-commerceLayout().per);
@@ -4143,13 +4606,18 @@ function commerceClick(p) {
     else if (inBox(p,F.yes)) finishTrade();
     else if (inBox(p,F.minus)) changeQuantity(-1);
     else if (inBox(p,F.plus)) changeQuantity(1);
+    else if (F.maxScroll && inBox(p,F.up)) scrollTrade(-1);
+    else if (F.maxScroll && inBox(p,F.down)) scrollTrade(1);
+    else if (inBox(p,F.body)) pointer.down=true;
     return;
   }
   const L=commerceLayout(), row=L.rows.find(row=>inBox(p,row));
-  if (row) { tradeSel=row.index; beginTrade(); }
+  const tab=L.tabs.find(tab=>inBox(p,tab));
+  if (tab) { shopTab=tab.index; tradeSel=0; tradeNotice=""; }
+  else if (row) { tradeSel=row.index; beginTrade(); }
   else if (inBox(p,L.prev)) moveCommerce(-L.per);
   else if (inBox(p,L.next)) moveCommerce(L.per);
-  else if (inBox(p,L.switch)) openOverlay(mode === "shop" ? "aqua" : "shop");
+  else if (inBox(p,L.switch)) openOverlay(commerceDestination());
   else if (inBox(p,L.close) || !inBox(p,L)) onPress("escape");
 }
 function overLayout() {
@@ -4179,6 +4647,7 @@ const HELP_ROWS = [
   ["help.guide", "help.guideV"],
   ["help.aqua", "help.aquaV"],
   ["help.shop", "help.shopV"],
+  ["help.bag", "help.bagV"],
   ["help.page", "help.pageV"],
   ["help.sub", "help.subV"],
   ["help.bait", "help.baitV"],
@@ -4332,11 +4801,11 @@ function onPress(k) {
     else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
     return;
   }
-  if (trade && (mode === "aqua" || mode === "shop")) { commercePress(k,ok,back); return; }
-  if (k === "g" || k === "a" || k === "s") {
-    openOverlay({g:"guide",a:"aqua",s:"shop"}[k]); return;
+  if (trade && (mode === "aqua" || mode === "shop" || mode === "bag")) { commercePress(k,ok,back); return; }
+  if (k === "g" || k === "a" || k === "s" || k === "i") {
+    openOverlay({g:"guide",a:"aqua",s:"shop",i:"bag"}[k]); return;
   }
-  if (mode === "aqua" || mode === "shop") {
+  if (mode === "aqua" || mode === "shop" || mode === "bag") {
     if (k === "l") setLang(lang === "ko" ? "en" : "ko");
     else commercePress(k,ok,back);
     return;
@@ -4422,7 +4891,7 @@ let returnMode = "dive";
 /* ---------- 손가락과 마우스 ----------
    물을 누르면 그 자리의 것들이 흩어진다. 원본과 같다.
    길게 끌면 잠수부가 그쪽으로 헤엄친다 - 손가락으로도 다닐 수 있어야 한다. */
-let pointer = { down: false, id: null, x: 0, y: 0, moved: 0 };
+let pointer = { down: false, id: null, x: 0, y: 0, moved: 0, scrollY: 0 };
 const inBox = (p, r) => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
 function toLogical(e, ui = false) {
   const r = screenCv.getBoundingClientRect();
@@ -4438,14 +4907,14 @@ screenCv.addEventListener("pointerdown", e => {
   screenCv.setPointerCapture(e.pointerId);
   pointer.id = e.pointerId;
   const p = toLogical(e, mode !== "dive");
-  pointer.down = true; pointer.x = p.x; pointer.y = p.y; pointer.moved = 0;
+  pointer.down = true; pointer.x = p.x; pointer.y = p.y; pointer.moved = 0; pointer.scrollY = 0;
   if (mode === "over") {
     const L=overLayout(); pointer.down=false;
     if (inBox(p,L.again)) onPress("enter");
     else if (inBox(p,L.back)) onPress("escape");
     return;
   }
-  if (mode === "aqua" || mode === "shop") { commerceClick(p); return; }
+  if (mode === "aqua" || mode === "shop" || mode === "bag") { commerceClick(p); return; }
   if (mode === "title") {
     const index = titleLayout().items.findIndex(r => inBox(p, r));
     pointer.down = false;
@@ -4501,9 +4970,15 @@ screenCv.addEventListener("pointerdown", e => {
   scatterAt(p.x + camX, p.y + cam);
 });
 screenCv.addEventListener("pointermove", e => {
+  if (pointer.down && pointer.id !== e.pointerId) return;
   const p = toLogical(e, mode !== "dive");
   if (pointer.down && pointer.id === e.pointerId && (mode === "catch" || (mode === "guide" && guideDetail)))
     scrollInfo(pointer.y - p.y);
+  if (pointer.down && trade) {
+    pointer.scrollY += pointer.y - p.y;
+    const lines = Math.trunc(pointer.scrollY / lineH());
+    if (lines) { scrollTrade(lines); pointer.scrollY -= lines * lineH(); }
+  }
   if (pointer.down) pointer.moved += Math.abs(p.x - pointer.x) + Math.abs(p.y - pointer.y);
   pointer.x = p.x; pointer.y = p.y;
 });
@@ -4513,7 +4988,7 @@ for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) screen
 /* 바퀴로도 오르내린다. */
 screenCv.addEventListener("wheel", e => {
   if (!e.deltaY) return;
-  if (mode === "aqua" || mode === "shop") { if (!trade) moveCommerce(Math.sign(e.deltaY)); e.preventDefault(); return; }
+  if (mode === "aqua" || mode === "shop" || mode === "bag") { if (trade) scrollTrade(Math.sign(e.deltaY)); else moveCommerce(Math.sign(e.deltaY)); e.preventDefault(); return; }
   if (mode === "help") { turnHelpPage(Math.sign(e.deltaY)); e.preventDefault(); return; }
   if (mode === "catch" || (mode === "guide" && guideDetail)) {
     scrollInfo(Math.sign(e.deltaY) * lineH() * 3); e.preventDefault(); return;
@@ -4638,7 +5113,7 @@ function releaseTouchKeys(resetActions = true) {
 function openOverlay(next) {
   if (mode === "over" || trade) return;
   releaseTouchKeys(false); pointer.down = false;
-  tradeSel=0; tradeNotice="";
+  tradeSel=0; tradeNotice=""; tradeScroll=0; bagPicking=false;
   if (mode === next) { mode = returnMode; guideDetail = false; return; }
   if (mode === "title" || mode === "dive") returnMode = mode;
   else if (mode === "catch") { catchCard = null; returnMode = "dive"; }
@@ -4651,7 +5126,7 @@ function controlAction(name) {
     if (mode === "dive" && paused) onPress("p");
     else if (mode === "help" || mode === "catch" || (mode === "guide" && guideDetail)) onPress("escape");
     else onPress(mode === "dive" ? "space" : "enter");
-  } else if (["guide","help","aqua","shop"].includes(name)) openOverlay(name);
+  } else if (["guide","help","aqua","shop","bag"].includes(name)) openOverlay(name);
   else if (name === "lang") setLang(lang === "ko" ? "en" : "ko");
   else if (name === "back") onPress("escape");
   else if (mode === "dive") {
@@ -4669,26 +5144,28 @@ function syncControls() {
   if (controlsMotionScope && controlsMotionScope !== scope) releaseTouchKeys(false);
   controlsMotionScope = scope;
   const state = [scope, lang, rod.state, tradeSel, save.coin, aquariumStock().length,
-    mode === "shop" ? upLv(SHOP_ITEMS[tradeSel]?.id) : "", save.suit, save.suits.black].join("|");
+    mode === "shop" ? shopTab + ":" + upLv(commerceItems()[tradeSel]?.id) : "", save.suit, save.suits.black, save.boat, bagPicking, player.hp, capsulesUsed,
+    save.consumables.targetBait,save.consumables.oxygenCapsule,!!activeBait].join("|");
   if (state === controlsState) return;
   controlsState = state;
   controls.setAttribute("aria-label", T("controls.label"));
   controls.querySelectorAll("[data-text]").forEach(el => { el.textContent = T("controls." + el.dataset.text); });
   controls.querySelectorAll("[data-label]").forEach(el => { el.setAttribute("aria-label", T("controls." + el.dataset.label)); });
   const primary = controls.querySelector('[data-action="primary"]');
-  const shopView = mode === "shop" && SHOP_ITEMS[tradeSel] ? shopItemView(SHOP_ITEMS[tradeSel]) : null;
+  const selectedItem = commerceItems()[tradeSel];
+  const shopView = selectedItem ? mode === "shop" ? shopItemView(selectedItem) : mode === "bag" ? bagItemView(selectedItem) : null : null;
   let label = "primary";
   if (mode === "dive") {
     label = paused ? "resume" : rod.state === "bite" && player.role === "boat" ? "strike"
       : player.role === "diver" ? "spear" : rod.state === "idle" ? "cast" : rod.state === "out" ? "reel" : "wait";
   } else if (mode === "over") label = "retry";
-  else if (trade) label = isPurchaseTrade(trade) ? "buy" : "sell";
+  else if (trade) label = trade.type === "use" ? "use" : isPurchaseTrade(trade) ? "buy" : "sell";
   else if (shopView) label = shopView.action;
   else if (mode === "aqua") label = "primary";
   else if (mode === "help" || mode === "catch" || guideDetail) label = "close";
   primary.querySelector(".action-label").textContent = T("controls." + label);
   primary.dataset.kind = label;
-  primary.disabled = label === "wait" || (mode === "aqua" && !commerceItems().length) || (!trade && !!shopView?.disabled);
+  primary.disabled = !!tradeProblem() || label === "wait" || (mode === "aqua" && !commerceItems().length) || (!trade && !!shopView?.disabled);
   controls.querySelectorAll("[data-action]").forEach(el => {
     if (el === primary) return;
     el.disabled = (mode === "over" && !["back","lang"].includes(el.dataset.action)) || (!!trade && el.dataset.action !== "back");
@@ -4765,7 +5242,7 @@ function rodAction() {
     const b = rod.target;
     rod.target = null;
     if (b) b.pause = 0;
-    if (b && Math.random() < HOOK_RATE) {
+    if (b && Math.random() < hookRate()) {
       rod.catchDepth = metres();
       rod.state = "up"; rod.target = b; b.pause = 1e9;
       flash = .6;
@@ -4855,6 +5332,7 @@ function caught(b, depth = metres()) {
      한 마리씩 야위지 않게. */
   const i = beings.indexOf(b);
   if (i >= 0) beings.splice(i, 1);
+  if (sonar.target === b) resetSonar();
   beings.push(new Being(b.kind, { offscreen: true, spr: b.def.name }));
   const name = spName(b.gid);
   if (b.rare) say(T("m.gotrare", name), C.rare);
@@ -4919,8 +5397,12 @@ function update(u, dt) {
   stepMsg(u, dt);
   if (flash > 0) flash = Math.max(0, flash - .08 * u);
   if (shake > 0) shake = Math.max(0, shake - .5 * u);
-  if (mode !== "dive" || paused) return;
+  if (mode !== "dive" || paused || document.visibilityState === "hidden") return;
 
+  if (activeBait) {
+    activeBait.remaining = Math.max(0, activeBait.remaining-u);
+    if (!activeBait.remaining) activeBait = null;
+  }
   const fast = pressed("shift");        /* 시프트가 가속이다 */
   if (player.role === "boat") stepBoat(u, fast);
   else stepDiver(u, fast);
@@ -4937,6 +5419,7 @@ function update(u, dt) {
 
   stepBeings(u);
   if (mode !== "dive") return;
+  stepSonar(u);
   stepParticles(u);
   stepCamera(u);
 }
@@ -4945,11 +5428,11 @@ function clearGameInput() {
   for (const key in keys) keys[key] = false;
   releaseTouchKeys(); pointer.down = false;
 }
-function healPlayer(amount) {
+function healPlayer(amount, message = "m.heal") {
   if (player.hp <= 0) return;
   const before = player.hp;
   player.hp = Math.min(heartMax(), player.hp + amount);
-  if (player.hp > before) say(T("m.heal"), C.lure);
+  if (player.hp > before) say(T(message), C.lure);
 }
 function hurtPlayer(amount) {
   if (mode !== "dive" || paused || player.role !== "diver" || player.invulnerable > 0 || player.hp <= 0) return false;
@@ -4957,7 +5440,7 @@ function hurtPlayer(amount) {
   player.hp = Math.max(0, player.hp - amount);
   player.invulnerable = 60;
   if (player.hp === 0) {
-    mode = "over"; returnMode = "dive"; bare = false;
+    mode = "over"; returnMode = "dive"; bare = false; activeBait = null; resetSonar();
     spear.on = 0; resetRod(); clearGameInput(); closeMsg(); flushSave();
   } else if (before > 2 && player.hp <= 2) say(T("m.lowhp"), C.danger);
   return true;
@@ -5021,7 +5504,7 @@ function stepBoat(u, fast) {
 
   if (rod.state === "up" || rod.state === "reel") {
     /* 끌어올리는 중. 걸린 것이 있으면 줄을 따라 올라온다. */
-    rod.y -= ROD_FAST * 1.4 * u;
+    rod.y -= ROD_FAST * 1.4 * reelMul() * u;
     if (rod.target) { rod.target.x = rod.x - rod.target.w / 2; rod.target.y = rod.y + 2; }
     if (rod.y <= seaTop + 6) {
       const got = rod.state === "up" ? rod.target : null;
@@ -5054,11 +5537,11 @@ function stepBoat(u, fast) {
     return;
   }
 
-  const sp = (fast ? ROD_FAST : ROD_SPEED) * u;
+  const sp = (fast ? ROD_FAST : ROD_SPEED) * reelMul() * u;
   if (pressed("arrowdown")) rod.y += sp;
   if (pressed("arrowup")) rod.y -= sp;
   /* 손가락으로 끌면 그 깊이로 */
-  if (pointer.down && pointer.moved > 6 && !msg.lines.length) rod.y += (pointer.y + cam - rod.y) * .08 * u;
+  if (pointer.down && pointer.moved > 6 && !msg.lines.length) rod.y += (pointer.y + cam - rod.y) * Math.min(1, .08 * reelMul() * u);
   rod.y = clamp(rod.y, seaTop + 4, seaBed + SAND_H - 8);
   if (Math.random() < .05 * u) bubble(rod.x, rod.y);
 
@@ -5217,6 +5700,7 @@ function render() {
   rect(-2, -2, SW + 4, SH + 4, C.abyss);
   drawSky();
   drawWater();
+  drawMooredBoat();
   drawGodRays();
   drawSeabed();
   drawDecor();
@@ -5225,7 +5709,7 @@ function render() {
   /* 타이틀 앞에서는 한 마리도 그리지 않는다 - 글자 위로 지나가면 제목도
      차림표도 읽히지 않는다. 물과 빛만 남긴다. */
   const titleBack = (mode === "title" ||
-                     (["guide","help","aqua","shop"].includes(mode) && returnMode === "title"));
+                     (["guide","help","aqua","shop","bag"].includes(mode) && returnMode === "title"));
   /* 큰 것부터 뒤에, 작은 것이 앞에 오도록 한 번 훑는다. */
   if (!titleBack) {
     for (const b of beings) if (b.kind === "mega" || b.kind === "sub") drawBeing(b);
@@ -5241,6 +5725,7 @@ function render() {
     }
   }
 
+  drawTargetBait();
   drawParticles();
   if (mode === "dive" || (mode !== "title" && returnMode === "dive")) drawPlayer();
   drawDarkness();
@@ -5250,6 +5735,7 @@ function render() {
   drawGlowPass();
   /* 메갈로돈이 어디 있는지 - 어둠 위에 얹어야 보인다. */
   if (mode === "dive" || returnMode === "dive") drawMegaPing();
+  drawSonar();
 
   g.restore();
 
@@ -5266,7 +5752,7 @@ function render() {
   try {
     /* 창들 */
     /* 뒷장 - 타이틀이거나, 바닷속 계기판이거나. */
-    const overlay = ["guide","help","catch","aqua","shop"].includes(mode);
+    const overlay = ["guide","help","catch","aqua","shop","bag"].includes(mode);
     if (mode === "title" || (overlay && returnMode === "title")) {
       drawTitle();
     } else if (!bare) {
@@ -5282,7 +5768,7 @@ function render() {
     if (mode === "guide") drawGuide();
     else if (mode === "help") drawHelp();
     else if (mode === "catch") drawCatchCard();
-    else if (mode === "aqua" || mode === "shop") drawCommerce();
+    else if (mode === "aqua" || mode === "shop" || mode === "bag") drawCommerce();
     else if (mode === "over") drawGameOver();
 
   } finally {
@@ -5299,6 +5785,7 @@ function render() {
    시작과 되풀이
    ========================================================================= */
 function swapRole() {
+  resetSonar();
   const role = player.role === "boat" ? "diver" : "boat";
   const keepX = clamp(player.x, 8, worldW() - 60);
   /* 배에서 내리면 그 자리에 배를 세워 두고, 다시 타면 거두어 간다. */
@@ -5315,7 +5802,7 @@ function swapRole() {
 
 function startRun(role) {
   clearGameInput(); trade=null; tradeNotice="";
-  player.hp = heartMax(); player.invulnerable = 0;
+  player.hp = heartMax(); player.invulnerable = 0; capsulesUsed = 0; activeBait = null;
   player.role = role;
   paused = false; bare = false;
   moored = null;

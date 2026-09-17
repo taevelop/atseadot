@@ -194,3 +194,26 @@ test('touch actions cover capture, role switching, overlays, language, and input
   app.emit('blur');
   assert.equal(app.run('pressed("arrowdown") || pressed("arrowright") || pointer.down'), false);
 });
+
+test('the chest lays out what it gave and any dismissal key closes the card', () => {
+  for (const key of ['x', 'enter', 'space']) {
+    const app = game();
+    app.run('startRun("diver"); closeMsg(); player.hp = 2; openChest()');
+    assert.equal(app.run('mode'), 'reward');
+    assert.equal(app.run('save.chest'), 1, 'the bait is unlocked');
+    assert.equal(app.run('player.hp'), 4, 'the air tank gives a heart back');
+    /* 준 것만 적는다 - 미끼 한 줄, 숨 한 줄. */
+    assert.deepEqual(app.data('rewardRows().map(r=>r[0])'), [app.run('T("r.bait")'), app.run('T("r.heal")')]);
+    assert.ok(app.run('rewardLayout().rows.every(r=>r.values.length>0)'), 'no reward row is left blank');
+    app.run(`onPress(${JSON.stringify(key)})`);
+    assert.equal(app.run('mode'), 'dive', `${key} closes the card`);
+    assert.equal(app.run('rewardCard'), null);
+  }
+  /* 숨이 가득하면 산소통 줄은 적지 않는다. */
+  const full = game();
+  full.run('startRun("diver"); closeMsg(); openChest()');
+  assert.deepEqual(full.data('rewardRows().map(r=>r[0])'), [full.run('T("r.bait")')]);
+  /* 말을 바꾸면 창 안의 글도 따라 바뀐다. */
+  full.run('setLang("en")');
+  assert.deepEqual(full.data('rewardRows().map(r=>r[0])'), ['SPECIAL BAIT']);
+});

@@ -1721,6 +1721,10 @@ const STR = {
     "m.sight": "{0} 발견.",
     "m.chest": "상자를 열었습니다!",
     "m.chest2": "특별한 미끼를 얻었습니다. 깊은 물에서 [M]을 누르세요.",
+    "r.title": "보물상자를 열었습니다", "r.sub": "얻은 것",
+    "r.bait": "특별한 미끼", "r.baitV": "메갈로돈을 부른다",
+    "r.heal": "산소통", "r.healV": "하트 {0}칸 회복",
+    "r.note": "깊은 물에서 [M]을 누르면 미끼를 뿌립니다.",
     "m.nobait": "미끼가 없습니다. 해저에 있는 상자를 찾아보세요.",
     "m.baitdeep": "여기는 너무 얕습니다. 더 깊이 내려가세요.",
     "m.baitalready": "이미 커다란 것이 와 있습니다.",
@@ -1894,6 +1898,10 @@ const STR = {
     "m.sight": "SIGHTED: {0}.",
     "m.chest": "OPENED THE CHEST!",
     "m.chest2": "GOT THE SPECIAL BAIT. PRESS [M] IN DEEP WATER.",
+    "r.title": "OPENED THE TREASURE CHEST", "r.sub": "WHAT YOU GOT",
+    "r.bait": "SPECIAL BAIT", "r.baitV": "CALLS THE MEGALODON",
+    "r.heal": "AIR TANK", "r.healV": "{0} HEART BACK",
+    "r.note": "PRESS [M] IN DEEP WATER TO CAST THE BAIT.",
     "m.nobait": "YOU HAVE NO BAIT. LOOK FOR A CHEST ON THE SEABED.",
     "m.baitdeep": "TOO SHALLOW. TAKE IT DEEPER.",
     "m.baitalready": "SOMETHING HUGE IS ALREADY HERE.",
@@ -3574,16 +3582,16 @@ function drawDecor() {
 }
 
 /* 상자. 열기 전에는 이따금 반짝인다 - 다가오라는 신호다. */
+const CHEST_COLORS = stamp({
+  o: "#241607", d: "#5f3f18", m: "#9a6a26", l: "#c4913f",
+  h: "#e6c078", r: "#3f3830",   /* 쇠테 - 나무와 같은 색이면 테가 없는 셈이다 */
+  w: "#ffd45e", k: "#120c05", y: "#ffe25f",
+});
 function drawChest() {
   if (!chest) return;
   const sx = chest.x - camX, sy = chest.y - cam;
   if (sy > SH + 20 || sy < -20) return;
-  const colors = stamp({
-    o: "#241607", d: "#5f3f18", m: "#9a6a26", l: "#c4913f",
-    h: "#e6c078", r: "#3f3830",   /* 쇠테 - 나무와 같은 색이면 테가 없는 셈이다 */
-    w: "#ffd45e", k: "#120c05", y: "#ffe25f",
-  });
-  const cv = bake(chest.open ? SPR.chestOpen : SPR.chest, colors, false);
+  const cv = bake(chest.open ? SPR.chestOpen : SPR.chest, CHEST_COLORS, false);
   if (!chest.open) {
     const tw = (clock * 1.4) % 3;
     if (tw < .35) blitGlow(cv, sx, sy, "#ffe25f", 8);
@@ -4652,6 +4660,58 @@ function drawGameOver() {
   smallButton(L.again,T("controls.retry")); smallButton(L.back,T("controls.title"));
 }
 
+/* ---------- 보물상자 보상 ----------
+   상자는 한 판에 한 번만 열린다. 무엇을 얻었는지 대사 두 줄로 흘려보내면
+   글자가 다 찍히기도 전에 지나가 버린다 - 잡은 물고기처럼 한 장 펼쳐 둔다. */
+let rewardCard = null;
+/* 글은 그릴 때 옮긴다 - 창을 열어 둔 채 말을 바꿔도 따라온다. */
+function rewardRows() {
+  if (!rewardCard) return [];
+  const rows = [[T("r.bait"), T("r.baitV"), C.lure]];
+  /* 숨은 가득 차 있으면 돌아오지 않는다 - 받지 않은 것은 적지 않는다. */
+  if (rewardCard.healed > 0) rows.push([T("r.heal"), T("r.healV", rewardCard.healed / 2), C.danger]);
+  return rows;
+}
+function rewardLayout() {
+  const w = Math.min(UW - 16, 286), LH = lineH();
+  const notes = wrapLines(T("r.note"), w - 16);
+  const artW = w < 200 ? 34 : 56, metaW = w - 24 - artW;
+  /* 이름 칸은 가장 긴 이름에 맞추되 절반을 넘기지 않는다. 남는 자리가
+     설명 칸이고, 거기 다 들어가지 않는 말은 줄을 바꾼다 - 잘라 버리면
+     무엇을 얻었는지가 말줄임표 뒤로 사라진다. */
+  const kw = Math.min(Math.max(1, ...rewardRows().map(r => textWidth(r[0]))) + 8, Math.floor(metaW * .5));
+  let rowY = 0;
+  const rows = rewardRows().map(([key, value, color]) => {
+    const keys = wrapLines(key, kw - 6), values = wrapLines(value, metaW - kw);
+    const row = { keys, values, color: color || C.text, y: rowY };
+    rowY += Math.max(keys.length, values.length) * LH;
+    return row;
+  });
+  const artH = Math.max(rowY, SPR.chestOpen.h * 2);
+  const head = 24;
+  const h = Math.min(UH - 8, head + artH + 8 + notes.length * LH + 28);
+  const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
+  return { x, y, w, h, LH, rows, notes, artW, artH, head, kw,
+           close: { x: x + 6, y: y + h - 24, w: w - 12, h: 18 } };
+}
+function drawReward() {
+  if (!rewardCard) return;
+  const L = rewardLayout(), { x, y, w, LH } = L;
+  drawWindow(x, y, w, L.h, { alpha: .97 });
+  drawText(x + 8, y + 5, fit(T("r.title"), w - 16), C.textWarn);
+  hline(x + 6, y + L.head - 3, w - 12, C.frameDim);
+  fitSprite(bake(SPR.chestOpen, CHEST_COLORS, false), x + 7, y + L.head, L.artW, L.artH, 2);
+  const tx = x + 16 + L.artW;
+  for (const row of L.rows) {
+    row.keys.forEach((line, i) => drawText(tx, y + L.head + row.y + i * LH, line, C.textDim));
+    row.values.forEach((line, i) => drawText(tx + L.kw, y + L.head + row.y + i * LH, line, row.color));
+  }
+  hline(x + 8, y + L.head + L.artH + 2, w - 16, C.frameDim);
+  L.notes.forEach((line, i) => drawText(x + 8, y + L.head + L.artH + 8 + i * LH, line, C.lure));
+  smallButton(L.close, T("g.back"));
+}
+function closeReward() { rewardCard = null; mode = "dive"; }
+
 /* ---------- 조작 안내 ---------- */
 const HELP_ROWS = [
   ["help.move", "help.moveV"],
@@ -4837,6 +4897,11 @@ function onPress(k) {
     else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
     return;
   }
+  if (mode === "reward") {
+    if (ok || back || k === "space") closeReward();
+    else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
+    return;
+  }
   if (mode === "catch") {
     if (k === "arrowdown" || k === "pagedown") { scrollInfo(lineH() * 3); return; }
     if (k === "arrowup" || k === "pageup") { scrollInfo(-lineH() * 3); return; }
@@ -4934,6 +4999,11 @@ screenCv.addEventListener("pointerdown", e => {
     const index = titleLayout().items.findIndex(r => inBox(p, r));
     pointer.down = false;
     if (index >= 0) { menuIndex = index; onPress("z"); }
+    return;
+  }
+  if (mode === "reward") {
+    pointer.down = false;
+    closeReward();
     return;
   }
   if (mode === "catch" || (mode === "guide" && guideDetail)) {
@@ -5132,6 +5202,7 @@ function openOverlay(next) {
   if (mode === next) { mode = returnMode; guideDetail = false; return; }
   if (mode === "title" || mode === "dive") returnMode = mode;
   else if (mode === "catch") { catchCard = null; returnMode = "dive"; }
+  else if (mode === "reward") { rewardCard = null; returnMode = "dive"; }
   mode = next; guideDetail = false; infoScroll = 0; helpPage = 0;
 }
 function controlAction(name) {
@@ -5327,13 +5398,18 @@ function stepSpear(u) {
 
 function openChest() {
   if (!chest || chest.open) return;
+  const hpBefore = player.hp;
   healPlayer(2);
+  const healed = player.hp - hpBefore;
   chest.open = 1; save.chest = 1; persist();
   flash = 1;
   say(T("m.chest"), C.textWarn);
   say(T("m.chest2"), C.lure);
   for (let i = 0; i < 22; i++)
     bubble(chest.x + rnd(0, SPR.chest.w), chest.y + rnd(-4, SPR.chest.h * .5), true);
+  rewardCard = { healed };
+  returnMode = "dive";
+  mode = "reward";
 }
 
 function caught(b, depth = metres()) {
@@ -5767,7 +5843,7 @@ function render() {
   try {
     /* 창들 */
     /* 뒷장 - 타이틀이거나, 바닷속 계기판이거나. */
-    const overlay = ["guide","help","catch","aqua","shop","bag"].includes(mode);
+    const overlay = ["guide","help","catch","reward","aqua","shop","bag"].includes(mode);
     if (mode === "title" || (overlay && returnMode === "title")) {
       drawTitle();
     } else if (!bare) {
@@ -5783,6 +5859,7 @@ function render() {
     if (mode === "guide") drawGuide();
     else if (mode === "help") drawHelp();
     else if (mode === "catch") drawCatchCard();
+    else if (mode === "reward") drawReward();
     else if (mode === "aqua" || mode === "shop" || mode === "bag") drawCommerce();
     else if (mode === "over") drawGameOver();
 

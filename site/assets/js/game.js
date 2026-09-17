@@ -3464,6 +3464,22 @@ function drawSky() {
   }
 }
 
+/* 배에서 내려 물속으로 들어갔다면, 그 배는 내린 자리에 그대로 떠 있다.
+   예전에는 아무 관계도 없는 장식용 배를 시차를 두고 띄웠는데, 배에서
+   잠수부로 바꾸는 순간 유령선처럼 나타나 보였다.
+   물을 칠하기 전에 그리면 수면 아래에 잠긴 뱃전이 물빛에 통째로 덮여
+   돛대만 남는다 - 타고 있는 배와 같이 물 위에 얹는다. */
+function drawMooredBoat() {
+  if (player.role === "boat" || moored === null) return;
+  const surf = Math.round(seaTop - cam);
+  if (surf < -30 || surf > SH + 30) return;
+  const boatX = Math.round(moored - camX);
+  if (boatX < -60 || boatX > SW + 60) return;
+  const bw = Math.sin(clock * 1.1) * 1.2;
+  /* 뱃전(도안 15번째 줄)이 수면에 닿는 자리. */
+  blit(bake(SPR.boat, boatColors, false), boatX, Math.round(surf - 14 + bw));
+}
+
 const boatColors = stamp({
   o: "#2a1a10",   /* 외곽선 */
   d: "#6b3f22",   /* 그늘진 뱃전 아래 */
@@ -5818,7 +5834,7 @@ function render() {
 
   drawTargetBait();
   drawParticles();
-  if (mode === "dive" || (mode !== "title" && returnMode === "dive")) drawPlayer();
+  if (mode === "dive" || (mode !== "title" && returnMode === "dive")) { drawMooredBoat(); drawPlayer(); }
   drawDarkness();
   /* 어둠을 덮은 뒤, 스스로 빛나는 것만 한 번 더 그린다. 심해에서 눈에
      들어오는 것은 이것들뿐이라야 한다 - 발광구, 등불고기, 변이, 그리고

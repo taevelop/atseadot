@@ -1,0 +1,300 @@
+{
+  "activeSeconds": 600.013,
+  "caught": {
+    "angler": 23,
+    "crab": 55,
+    "fish3": 172,
+    "fish5": 125,
+    "jelly": 109,
+    "lantern": 7,
+    "marlin": 73,
+    "octopus": 40,
+    "puffer": 63,
+    "ray": 46,
+    "seahorse": 59,
+    "squid": 56,
+    "tang": 115,
+    "tuna": 66,
+    "turtle": 27
+  },
+  "complete": true,
+  "consumables": {
+    "oxygenCapsule": 0,
+    "targetBait": 0
+  },
+  "deaths": 0,
+  "earnedCoin": 27453,
+  "endingCoin": 26163,
+  "events": [
+    {
+      "dpr": 1,
+      "order": [
+        "fins",
+        "targetBait",
+        "oxygenCapsule",
+        "line",
+        "sonar",
+        "fins"
+      ],
+      "seconds": 0,
+      "type": "start",
+      "viewport": [
+        1258,
+        622
+      ]
+    },
+    {
+      "coin": 737,
+      "gain": 737,
+      "seconds": 20.08,
+      "type": "sell"
+    },
+    {
+      "coin": 557,
+      "cost": 180,
+      "id": "fins",
+      "level": 1,
+      "seconds": 20.08,
+      "type": "buy"
+    },
+    {
+      "coin": 497,
+      "cost": 60,
+      "id": "targetBait",
+      "level": 0,
+      "seconds": 20.08,
+      "type": "buy"
+    },
+    {
+      "coin": 437,
+      "cost": 60,
+      "id": "oxygenCapsule",
+      "level": 0,
+      "seconds": 20.08,
+      "type": "buy"
+    },
+    {
+      "coin": 277,
+      "cost": 160,
+      "id": "line",
+      "level": 1,
+      "seconds": 20.08,
+      "type": "buy"
+    },
+    {
+      "hp": 5,
+      "id": "targetBait",
+      "seconds": 20.91,
+      "species": "marlin",
+      "stock": 0,
+      "type": "use"
+    },
+    {
+      "coin": 969,
+      "gain": 692,
+      "seconds": 40.09,
+      "type": "sell"
+    },
+    {
+      "coin": 569,
+      "cost": 400,
+      "id": "sonar",
+      "level": 1,
+      "seconds": 40.09,
+      "type": "buy"
+    },
+    {
+      "coin": 139,
+      "cost": 430,
+      "id": "fins",
+      "level": 2,
+      "seconds": 40.09,
+      "type": "buy"
+    },
+    {
+      "coin": 837,
+      "gain": 698,
+      "seconds": 60.12,
+      "type": "sell"
+    },
+    {
+      "coin": 1611,
+      "gain": 774,
+      "seconds": 80.14,
+      "type": "sell"
+    },
+    {
+      "coin": 2696,
+      "gain": 1085,
+      "seconds": 100.18,
+      "type": "sell"
+    },
+    {
+      "hp": 5,
+      "id": "oxygenCapsule",
+      "seconds": 103.68,
+      "species": null,
+      "stock": 0,
+      "type": "use"
+    },
+    {
+      "coin": 4044,
+      "gain": 1348,
+      "seconds": 120.2,
+      "type": "sell"
+    },
+    {
+      "coin": 5790,
+      "gain": 1746,
+      "seconds": 140.21,
+      "type": "sell"
+    },
+    {
+      "coin": 6683,
+      "gain": 893,
+      "seconds": 160.26,
+      "type": "sell"
+    },
+    {
+      "coin": 7235,
+      "gain": 552,
+      "seconds": 180.34,
+      "type": "sell"
+    },
+    {
+      "coin": 7914,
+      "gain": 679,
+      "seconds": 200.37,
+      "type": "sell"
+    },
+    {
+      "coin": 8491,
+      "gain": 577,
+      "seconds": 220.45,
+      "type": "sell"
+    },
+    {
+      "coin": 9216,
+      "gain": 725,
+      "seconds": 240.52,
+      "type": "sell"
+    },
+    {
+      "coin": 10267,
+      "gain": 1051,
+      "seconds": 260.55,
+      "type": "sell"
+    },
+    {
+      "coin": 11209,
+      "gain": 942,
+      "seconds": 280.61,
+      "type": "sell"
+    },
+    {
+      "coin": 12052,
+      "gain": 843,
+      "seconds": 300.62,
+      "type": "sell"
+    },
+    {
+      "coin": 13287,
+      "gain": 1235,
+      "seconds": 320.69,
+      "type": "sell"
+    },
+    {
+      "coin": 14447,
+      "gain": 1160,
+      "seconds": 340.7,
+      "type": "sell"
+    },
+    {
+      "coin": 14880,
+      "gain": 433,
+      "seconds": 360.78,
+      "type": "sell"
+    },
+    {
+      "coin": 15641,
+      "gain": 761,
+      "seconds": 380.81,
+      "type": "sell"
+    },
+    {
+      "coin": 16724,
+      "gain": 1083,
+      "seconds": 400.87,
+      "type": "sell"
+    },
+    {
+      "coin": 17921,
+      "gain": 1197,
+      "seconds": 420.9,
+      "type": "sell"
+    },
+    {
+      "coin": 19040,
+      "gain": 1119,
+      "seconds": 440.94,
+      "type": "sell"
+    },
+    {
+      "coin": 20270,
+      "gain": 1230,
+      "seconds": 460.96,
+      "type": "sell"
+    },
+    {
+      "coin": 21493,
+      "gain": 1223,
+      "seconds": 481.03,
+      "type": "sell"
+    },
+    {
+      "coin": 22559,
+      "gain": 1066,
+      "seconds": 501.06,
+      "type": "sell"
+    },
+    {
+      "coin": 23235,
+      "gain": 676,
+      "seconds": 521.14,
+      "type": "sell"
+    },
+    {
+      "coin": 24243,
+      "gain": 1008,
+      "seconds": 541.19,
+      "type": "sell"
+    },
+    {
+      "coin": 24865,
+      "gain": 622,
+      "seconds": 561.22,
+      "type": "sell"
+    },
+    {
+      "coin": 26163,
+      "gain": 1298,
+      "seconds": 581.23,
+      "type": "sell"
+    },
+    {
+      "seconds": 600.01,
+      "type": "complete"
+    }
+  ],
+  "hp": 3.5,
+  "rareCaught": 11,
+  "role": "diver",
+  "startingCoin": 0,
+  "totalCaught": 1036,
+  "up": {
+    "fins": 2,
+    "line": 1,
+    "sonar": 1
+  },
+  "wallSeconds": 672.047
+}

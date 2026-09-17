@@ -8,7 +8,9 @@ function tap(app, key, extra = {}) {
 }
 function openBlackSuit(app) {
   tap(app, 's');
-  for (let i = 0; i < 6; i++) tap(app, 'ArrowDown');
+  while(app.run('SHOP_TABS[shopTab]') !== 'look') tap(app, 'ArrowRight');
+  const index=app.run('commerceItems().findIndex(item=>item.id==="black")');
+  for (let i=0;i<index;i++) tap(app,'ArrowDown');
 }
 
 test('old and malformed suit saves default safely without restoring sold stock', () => {
@@ -27,7 +29,7 @@ test('old and malformed suit saves default safely without restoring sold stock',
   ];
   for (const [fields, black, suit] of cases) {
     const app = game({ raw: JSON.stringify({ ...progress, ...fields }) });
-    assert.deepEqual(app.data('({suits:save.suits,suit:save.suit})'), { suits: { black }, suit });
+    assert.deepEqual(app.data('({suits:save.suits,suit:save.suit})'), { suits: { black, blue:false, pearl:false }, suit });
     assert.deepEqual(app.data('({coin:save.coin,up:save.up,hold:save.hold,economyVersion:save.economyVersion})'),
       { coin: 730, up: { fins: 1 }, hold: { fish3: 1 }, economyVersion: 1 });
     assert.equal(app.run('ownsSuit("yellow")'), true);
@@ -41,7 +43,7 @@ test('a black suit costs 300 once and never sells the default or an unknown suit
     const bought = coin >= 300;
     assert.equal(app.run('buySuit("black")'), bought);
     assert.deepEqual(app.data('({coin:save.coin,suits:save.suits,suit:save.suit,up:save.up})'),
-      { coin: coin - (bought ? 300 : 0), suits: { black: bought }, suit: bought ? 'black' : 'yellow', up: {} });
+      { coin: coin - (bought ? 300 : 0), suits: { black: bought, blue:false, pearl:false }, suit: bought ? 'black' : 'yellow', up: {} });
     const after = app.data('save');
     for (const id of ['black', 'yellow', 'unknown']) {
       assert.equal(app.run('buySuit(' + JSON.stringify(id) + ')'), false);
@@ -77,12 +79,12 @@ test('keyboard purchase handles poor funds, cancellation, repeat and free switch
   app.emit('keyup', { key: 'Enter' });
   assert.equal(app.run('save.coin'), 0);
   assert.equal(app.run('save.suit'), 'black');
-  assert.equal(app.run('shopItemView(SHOP_ITEMS[6]).action'), 'equipped');
+  assert.equal(app.run('shopItemView(SHOP_ITEMS.find(item=>item.id==="black")).action'), 'equipped');
   const after = app.data('save');
   tap(app, 'Enter');
   assert.deepEqual(app.data('save'), after);
   tap(app, 'ArrowUp');
-  assert.equal(app.run('shopItemView(SHOP_ITEMS[tradeSel]).action'), 'equip');
+  assert.equal(app.run('shopItemView(commerceItems()[tradeSel]).action'), 'equip');
   tap(app, 'Enter');
   assert.equal(app.run('save.suit'), 'yellow');
   assert.equal(app.run('trade'), null);
@@ -94,8 +96,9 @@ test('keyboard purchase handles poor funds, cancellation, repeat and free switch
 test('canvas paging, cancel, buy and equip reach both suits', () => {
   const app = game({ width: 568, height: 201 });
   app.run('save.coin=500; openOverlay("shop")');
+  app.click(app.data('commerceLayout().tabs.find(tab=>tab.id==="look")'));
   function row(id) {
-    const index = app.run('SHOP_ITEMS.findIndex(item=>item.id===' + JSON.stringify(id) + ')');
+    const index = app.run('commerceItems().findIndex(item=>item.id===' + JSON.stringify(id) + ')');
     while (app.run('commerceLayout().page') !== app.run('Math.floor(' + index + '/commerceLayout().per)')) {
       const before = app.run('tradeSel');
       app.click(app.data('commerceLayout().' + (before < index ? 'next' : 'prev')));
@@ -123,7 +126,7 @@ test('ownership and equipment survive reload, new runs, role changes and game-ov
   app.emit('pagehide');
   const again = game({ raw: app.storage.get('atseadot.v4') });
   assert.deepEqual(again.data('({coin:save.coin,suits:save.suits,suit:save.suit,hold:save.hold,up:save.up})'),
-    { coin: 700, suits: { black: true }, suit: 'black', hold: { fish3: 1 }, up: { fins: 1 } });
+    { coin: 700, suits: { black: true, blue:false, pearl:false }, suit: 'black', hold: { fish3: 1 }, up: { fins: 1 } });
   const progress = again.data('save');
   again.run('startRun("diver"); swapRole(); swapRole(); player.hp=1; hurtPlayer(1)');
   assert.equal(again.run('mode'), 'over');
@@ -173,10 +176,10 @@ test('a suit changes no movement, collision, health or upgrade effects', () => {
 test('localized suit states and purchase confirmation fit portrait and short landscape pages', () => {
   for (const [width, height, pixelRatio] of [[320,411,1], [390,633,3], [568,201,2], [1280,800,1]]) {
     const app = game({ width, height, pixelRatio });
-    app.run('save.coin=300; openOverlay("shop"); tradeSel=6');
+    app.run('save.coin=300; openOverlay("shop"); shopTab=SHOP_TABS.indexOf("look"); tradeSel=commerceItems().findIndex(item=>item.id==="black")');
     for (const lang of ['ko', 'en']) {
       app.run('setLang(' + JSON.stringify(lang) + '); trade=null');
-      const view = app.data('shopItemView(SHOP_ITEMS[6])');
+      const view = app.data('shopItemView(SHOP_ITEMS.find(item=>item.id==="black"))');
       assert.equal(view.title, lang === 'ko' ? '검은 잠수복' : 'BLACK SUIT');
       assert.equal(view.price, app.run('T("ui.coin",300)'));
       assert.equal(view.action, 'buy');
@@ -187,9 +190,9 @@ test('localized suit states and purchase confirmation fit portrait and short lan
       assert.equal(app.run('confirmLayout().lines.every(line=>textWidth(line)<=confirmLayout().w-16)'), true);
     }
     app.run('finishTrade()');
-    assert.equal(app.run('shopItemView(SHOP_ITEMS[6]).disabled'), true);
-    assert.equal(app.run('shopItemView(SHOP_ITEMS[6]).price'), app.run('T("controls.equipped")'));
-    assert.equal(app.run('shopItemView(SHOP_ITEMS[5]).price'), app.run('T("s.owned")'));
+    assert.equal(app.run('shopItemView(SHOP_ITEMS.find(item=>item.id==="black")).disabled'), true);
+    assert.equal(app.run('shopItemView(SHOP_ITEMS.find(item=>item.id==="black")).price'), app.run('T("controls.equipped")'));
+    assert.equal(app.run('shopItemView(SHOP_ITEMS.find(item=>item.id==="yellow")).price'), app.run('T("s.owned")'));
   }
 });
 

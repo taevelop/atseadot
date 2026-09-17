@@ -181,11 +181,13 @@ test('touch suit purchase charges once, survives rotation and switches owned sui
   const app = game(), button = controlElement(74,74), pad = controlElement();
   app.context.testButton = button; app.context.testPad = pad;
   app.run('save.coin=1000; initDial(testPad); bindPrimaryAction(testButton); controlAction("shop")');
-  for (let i = 0; i < 6; i++) {
+  app.click(app.data('commerceLayout().tabs.find(tab=>tab.id==="look")'));
+  const index=app.run('commerceItems().findIndex(item=>item.id==="black")');
+  for (let i = 0; i < index; i++) {
     pad.emit('pointerdown', { pointerId: 2, clientY: 112 });
     pad.emit('pointerup', { pointerId: 2 });
   }
-  assert.equal(app.run('SHOP_ITEMS[tradeSel].id'), 'black');
+  assert.equal(app.run('commerceItems()[tradeSel].id'), 'black');
   button.emit('pointerdown'); button.emit('pointerdown', { pointerId: 3 });
   button.emit('pointerup'); button.emit('click');
   assert.equal(app.run('trade.type'), 'buySuit');
@@ -207,4 +209,34 @@ test('touch suit purchase charges once, survives rotation and switches owned sui
   button.emit('pointerdown'); button.emit('pointerup'); button.emit('click');
   assert.equal(app.run('save.suit'), 'black');
   assert.equal(app.run('save.coin'), 700);
+});
+
+test('touch bag confirmation consumes once after rotation and slow drags scroll purchase details', () => {
+  const app=game({width:320,height:160}), button=controlElement(74,74);
+  app.context.testButton=button;
+  app.run('startRun("diver"); closeMsg(); save.consumables.oxygenCapsule=2; player.hp=7; bindPrimaryAction(testButton); controlAction("bag"); moveCommerce(1)');
+  const press=()=>{button.emit('pointerdown');button.emit('pointerup');button.emit('click');};
+  press();
+  assert.equal(app.run('trade.type'),'use');
+  app.resize(844,260);
+  button.emit('pointerdown'); button.emit('pointerdown',{pointerId:3});
+  button.emit('pointerup');button.emit('click');
+  assert.equal(app.run('save.consumables.oxygenCapsule'),1);
+  assert.equal(app.run('capsulesUsed'),1);
+  assert.equal(app.run('player.hp'),9);
+  assert.equal(app.run('mode'),'dive');
+
+  app.resize(320,160);
+  app.run('save.coin=1000; openOverlay("shop"); tradeSel=commerceItems().findIndex(i=>i.id==="reel"); beginTrade()');
+  assert.ok(app.run('confirmLayout().maxScroll')>0);
+  const box=app.data('confirmLayout().body');
+  app.drag(box, -45, 2);
+  assert.ok(app.run('tradeScroll')>0,'small individual touch moves must accumulate');
+  const after=app.run('tradeScroll');
+  app.run('pointer.down=true; pointer.id=1');
+  app.canvasEvent('pointermove',{pointerId:2,clientX:1,clientY:1});
+  assert.equal(app.run('tradeScroll'),after,'a second finger cannot scroll the active gesture');
+  assert.equal(app.run('save.coin'),1000);
+  app.run('onPress("escape")');
+  assert.equal(app.run('upLv("reel")'),0);
 });

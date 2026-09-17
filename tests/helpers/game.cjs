@@ -43,6 +43,17 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false, 
     resize(w, h) { viewport.width = w; viewport.height = h; run('resize()'); },
     emit(name, event) { for (const fn of events.get(name) || []) fn(event); },
     hide() { document.visibilityState = 'hidden'; for (const fn of documentEvents.get('visibilitychange') || []) fn(); },
+    show() { document.visibilityState = "visible"; for (const fn of documentEvents.get("visibilitychange") || []) fn(); },
+    canvasEvent(name, event) { for (const fn of canvasEvents.get(name) || []) fn(event); },
+    drag(box, distance, step = 2) {
+      const size = data('({w:screenCv.width,h:screenCv.height,scale:UI_PIXEL_SCALE})');
+      const x=(box.x+box.w/2)*size.scale/size.w*viewport.width;
+      const y=(box.y+box.h/2)*size.scale/size.h*viewport.height;
+      this.canvasEvent('pointerdown',{pointerId:1,button:0,clientX:x,clientY:y});
+      for(let moved=step;moved<=Math.abs(distance);moved+=step)
+        this.canvasEvent('pointermove',{pointerId:1,clientX:x,clientY:y+Math.sign(distance)*moved});
+      this.canvasEvent('pointerup',{pointerId:1});
+    },
     click(box) {
       const size = data('({w:screenCv.width,h:screenCv.height,scale:UI_PIXEL_SCALE})');
       const e = { pointerId: 1, button: 0,

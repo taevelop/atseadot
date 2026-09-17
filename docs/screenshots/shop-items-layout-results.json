@@ -1,0 +1,86 @@
+[
+  {
+    "cases": 36,
+    "dpr": 1,
+    "passed": true,
+    "ui": [
+      320,
+      413
+    ],
+    "viewport": [
+      320,
+      640
+    ],
+    "visibleButtons": 21
+  },
+  {
+    "cases": 36,
+    "dpr": 1,
+    "passed": true,
+    "ui": [
+      195,
+      309
+    ],
+    "viewport": [
+      390,
+      844
+    ],
+    "visibleButtons": 21
+  },
+  {
+    "cases": 36,
+    "dpr": 1,
+    "passed": true,
+    "ui": [
+      568,
+      190
+    ],
+    "viewport": [
+      568,
+      320
+    ],
+    "visibleButtons": 21
+  },
+  {
+    "cases": 36,
+    "dpr": 1,
+    "passed": true,
+    "ui": [
+      844,
+      260
+    ],
+    "viewport": [
+      844,
+      390
+    ],
+    "visibleButtons": 21
+  },
+  {
+    "cases": 36,
+    "dpr": 1,
+    "passed": true,
+    "ui": [
+      640,
+      400
+    ],
+    "viewport": [
+      1280,
+      800
+    ],
+    "visibleButtons": 0
+  },
+  {
+    "cases": 36,
+    "dpr": 3,
+    "passed": true,
+    "ui": [
+      236,
+      375
+    ],
+    "viewport": [
+      393,
+      852
+    ],
+    "visibleButtons": 21
+  }
+]

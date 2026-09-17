@@ -1,0 +1,80 @@
+[
+  {
+    "dpr": 1,
+    "passed": true,
+    "results": [
+      {
+        "bait": true,
+        "cancel": true,
+        "capsule": true,
+        "language": "ko",
+        "pauseRestored": true,
+        "purchase": 120
+      },
+      {
+        "bait": true,
+        "cancel": true,
+        "capsule": true,
+        "language": "en",
+        "pauseRestored": true,
+        "purchase": 120
+      }
+    ],
+    "viewport": [
+      1280,
+      800
+    ]
+  },
+  {
+    "dpr": 1,
+    "passed": true,
+    "results": [
+      {
+        "bait": true,
+        "cancel": true,
+        "capsule": true,
+        "language": "ko",
+        "pauseRestored": true,
+        "purchase": 120
+      },
+      {
+        "bait": true,
+        "cancel": true,
+        "capsule": true,
+        "language": "en",
+        "pauseRestored": true,
+        "purchase": 120
+      }
+    ],
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  {
+    "dpr": 1,
+    "passed": true,
+    "results": [
+      {
+        "bait": true,
+        "cancel": true,
+        "capsule": true,
+        "language": "ko",
+        "pauseRestored": true,
+        "purchase": 120
+      },
+      {
+        "bait": true,
+        "cancel": true,
+        "capsule": true,
+        "language": "en",
+        "pauseRestored": true,
+        "purchase": 120
+      }
+    ],
+    "viewport": [
+      568,
+      320
+    ]
+  }
+]

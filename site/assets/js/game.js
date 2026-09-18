@@ -3481,26 +3481,43 @@ const BAYER = [
   [15, 7, 13, 5],
 ];
 
-function drawWater() {
-  const bedTop = seaBed - cam;
-  for (let y = 0; y < SH; y++) {
-    const wy = y + cam;
-    if (wy < seaTop) continue;                 /* 하늘은 따로 그린다 */
-    if (wy >= seaBed + 2) break;               /* 모래도 따로 */
+/* 물빛은 깊이에만 달렸다. 그런데 이것을 프레임마다 칸칸이 찍으면 화면
+   가득한 바다가 한 장에 칠만 번 넘는 사각형이 된다 - 눈에 보이는 끊김은
+   대개 여기서 나온다. 바다 한 기둥을 미리 한 번 구워 두고, 보이는 만큼만
+   한 번에 퍼 온다. 시간대나 화면 크기가 바뀔 때만 다시 굽는다. */
+let waterColumn = null, waterKey = "";
+function buildWaterColumn() {
+  const top = Math.round(seaTop), bed = Math.round(seaBed);
+  const h = Math.max(1, bed + 2 - top);
+  waterColumn = document.createElement("canvas");
+  waterColumn.width = SW; waterColumn.height = h;
+  const c = waterColumn.getContext("2d");
+  const img = c.createImageData(SW, h), px = img.data;
+  const rgb = waterCache.map(hex2rgb);
+  for (let y = 0; y < h; y++) {
+    const wy = top + y;
     const f = clamp((wy - seaTop) / (seaBed - seaTop), 0, 1);
-    const t = f * WATER_STEPS;
-    const i = Math.floor(t), frac = t - i;
-    const a = waterCache[Math.min(WATER_STEPS, i)];
-    const b = waterCache[Math.min(WATER_STEPS, i + 1)];
-    if (frac < .04 || a === b) { hline(0, y, SW, a); continue; }
+    const t = f * WATER_STEPS, i = Math.floor(t), frac = t - i;
+    const a = rgb[Math.min(WATER_STEPS, i)], b = rgb[Math.min(WATER_STEPS, i + 1)];
+    const mixed = frac >= .04 && waterCache[Math.min(WATER_STEPS, i)] !== waterCache[Math.min(WATER_STEPS, i + 1)];
     /* 두 계단을 베이어 무늬로 섞는다. 한 줄이므로 표의 한 행만 쓴다. */
-    hline(0, y, SW, a);
-    const row = BAYER[((Math.floor(wy) % 4) + 4) % 4];
-    g.fillStyle = b;
+    const row = BAYER[((wy % 4) + 4) % 4];
     for (let x = 0; x < SW; x++) {
-      if (frac * 16 > row[x & 3]) g.fillRect(x, y, 1, 1);
+      const col = mixed && frac * 16 > row[x & 3] ? b : a;
+      const o = (y * SW + x) * 4;
+      px[o] = col[0]; px[o+1] = col[1]; px[o+2] = col[2]; px[o+3] = 255;
     }
   }
+  c.putImageData(img, 0, 0);
+  waterKey = SW + "|" + top + "|" + bed + "|" + timeIx;
+}
+function drawWater() {
+  const key = SW + "|" + Math.round(seaTop) + "|" + Math.round(seaBed) + "|" + timeIx;
+  if (!waterColumn || waterKey !== key) buildWaterColumn();
+  const top = Math.round(seaTop - cam);
+  const dy = Math.max(0, top), sy = Math.max(0, -top);
+  const h = Math.min(SH - dy, waterColumn.height - sy);
+  if (h > 0) g.drawImage(waterColumn, 0, sy, SW, h, 0, dy, SW, h);
 }
 
 /* 수면 위. 하늘과 해, 그리고 물결. */

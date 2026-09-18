@@ -54,13 +54,16 @@ test('G toggles the guide from the title and play, while D never opens or closes
   assert.deepEqual(app.data('({mode,guideDetail})'), {mode:'dive',guideDetail:false});
 });
 
-test('Space acts through dialogue for the spear, casting, reeling, and strikes', () => {
+test('Space both dismisses dialogue and acts for the spear, casting, reeling, and strikes', () => {
   const diver = game();
   diver.run('startRun("diver"); beings=[]; chest=null');
-  const dialogue = diver.data('({text:msg.text,shown:msg.shown,queue:msg.queue})');
+  assert.ok(diver.run('msg.shown < msgTotal()'), 'the opening line starts part-way drawn');
   assert.equal(tap(diver, ' ').defaultPrevented, true);
-  assert.ok(diver.run('spear.on') > 0);
-  assert.deepEqual(diver.data('({text:msg.text,shown:msg.shown,queue:msg.queue})'), dialogue);
+  assert.ok(diver.run('spear.on') > 0, 'the spear still flies while a line is on screen');
+  assert.ok(diver.run('msg.shown >= msgTotal()'), 'the same press reveals the rest of the line');
+  /* 두 줄이 줄지어 있다 - 눌러 가다 보면 창이 비워진다. */
+  for (let i = 0; i < 6 && diver.run('msg.lines.length'); i++) tap(diver, ' ');
+  assert.equal(diver.run('msg.lines.length'), 0, 'repeated presses close the box');
   diver.run('paused=true; spear.on=0');
   tap(diver, ' ');
   assert.equal(diver.run('spear.on'), 0);
@@ -69,7 +72,7 @@ test('Space acts through dialogue for the spear, casting, reeling, and strikes',
   boat.run('startRun("boat")');
   tap(boat, ' ');
   assert.equal(boat.run('rod.state'), 'out');
-  assert.equal(boat.run('msg.shown'), 0);
+  assert.ok(boat.run('msg.shown >= msgTotal()'));
   tap(boat, ' ');
   assert.equal(boat.run('rod.state'), 'idle');
   boat.run('rod.state="bite"; rod.target=beings.find(b=>b.K.catchable); rod.timer=BITE_TIME');
@@ -141,7 +144,7 @@ test('X and Escape close the current panel and dialogue before returning to the 
 });
 
 test('confirmation and old aliases do not close panels; the touch close button still does', () => {
-  for (const setup of ['onPress("h")', 'mode="catch"; catchCard={id:GUIDE[0].id}', 'onPress("g"); onPress("enter")']) {
+  for (const setup of ['onPress("h")', 'onPress("g"); onPress("enter")']) {
     const app = game();
     app.run('startRun("diver"); ' + setup);
     const before = app.data('({mode,guideDetail,catchCard})');
@@ -152,6 +155,33 @@ test('confirmation and old aliases do not close panels; the touch close button s
     app.run('controlAction("primary")');
     assert.equal(app.run('mode'), before.mode === 'guide' ? 'guide' : 'dive');
     assert.equal(app.run('guideDetail'), false);
+  }
+});
+
+/* 포획 카드와 상자 카드는 확인·액션 키로도 닫힌다. 예전 별칭은 아무 일도 하지 않는다. */
+test('the catch and reward cards close on the same keys, and old aliases do nothing', () => {
+  for (const [card, setup] of [
+    ['catch', 'mode="catch"; catchCard={id:GUIDE[0].id,rare:false,isNew:true,at:120}'],
+    ['reward', 'openChest()']]) {
+    const start = 'startRun("diver"); ' + setup;
+    const app = game();
+    app.run(start);
+    const before = app.data('({mode,guideDetail})');
+    assert.equal(before.mode, card);
+    tap(app, 'd');
+    assert.deepEqual(app.data('({mode,guideDetail})'), before, card + ' d keeps the card open');
+    for (const key of ['x', 'Escape', 'z', 'Enter', ' ']) {
+      const one = game();
+      one.run(start);
+      tap(one, key);
+      assert.equal(one.run('mode'), 'dive', card + ' ' + key);
+      assert.equal(one.run('catchCard'), null, card + ' ' + key);
+      assert.equal(one.run('rewardCard'), null, card + ' ' + key);
+    }
+    const touch = game();
+    touch.run(start);
+    touch.run('controlAction("primary")');
+    assert.equal(touch.run('mode'), 'dive', card + ' touch close');
   }
 });
 

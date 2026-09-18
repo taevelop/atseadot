@@ -308,3 +308,33 @@ npm run build
 - [모바일 가방](screenshots/shop-items-mobile-bag-ko.png), [회복량 확인](screenshots/shop-items-mobile-heal-ko.png)
 - [회복 확인 중 가로 회전](screenshots/shop-items-landscape-heal-ko.png), [영문 표적 미끼](screenshots/shop-items-landscape-bait-en.png)
 - [조종 중인 황금 배](screenshots/shop-items-gold-boat.png), [진주 잠수복·수면 황금 배·탐지기](screenshots/shop-items-cosmetics-sonar.png)
+
+## 시작 메뉴 순서·카드 가독성·조작 안내 (2026-09-18)
+
+검증 대상은 origin/main `8eac7e5` 위로 다시 얹은 `feat/fixes-round2`다. Node.js 24.15.0, npm 11.12.1에서 실행했고, `site/`를 정적 서버(http-server, localhost:8791)로 그대로 띄워 Claude 내장 브라우저에서 확인했다. Wrangler 로컬 서버는 이번 절에 쓰지 않았다.
+
+리베이스 과정에서 `render()`의 창 목록 한 곳이 충돌했다. main이 더한 `bag`과 이 브랜치가 더한 `reward`가 같은 자리를 고쳤고, 두 모드를 모두 남기는 쪽으로 합쳤다.
+
+### 자동 회귀
+
+최종 `npm run build`는 JavaScript 구문 검사와 **98개 테스트 모두 통과**했다. 리베이스 기준인 main은 94개였다.
+
+- `tests/typography.test.cjs`: 카드 안쪽 여백이 글자가 기준선 위로 올라오는 만큼(`FONT_DY`, 키캡은 세 칸) 확보되는지, 다섯 화면 크기와 두 언어에서 카드가 화면 안에 들어오고 넘길 것이 없으면 스크롤도 생기지 않는지 검사한다. 여백만 넣고 창 높이를 늘리지 않으면 이 검사가 실제로 실패하는 것을 확인한 뒤 되돌렸다.
+- `tests/typography.test.cjs`: 플레이 힌트에서 방향키가 사라졌는지, 다섯 화면 크기·두 언어·두 역할에서 `fit()`으로 줄인 뒤에도 `[A]`·`[S]`·`[T]`가 남는지 검사한다.
+- `tests/keyboard.test.cjs`: 포획 카드와 보물 카드가 X·Esc·Z·Enter·Space 모두에 닫히고 예전 `D` 별칭에는 반응하지 않는지 검사한다. 조작법과 도감 상세가 확인 키로는 닫히지 않는 기존 계약은 그대로 둔다.
+- `tests/game.test.cjs`: 시작 메뉴 동작을 배열 위치가 아니라 항목 이름으로 검사한다. 항목이 늘면 매핑 누락에서 실패한다.
+
+### 실제 브라우저 검증
+
+| 흐름 | 확인 결과 |
+| --- | --- |
+| 1280×720 영어 시작 메뉴 | 언어 행이 맨 아래, `FISH FROM A BOAT`, 도감·수족관·상점·언어 행의 키캡 표시 |
+| 1280×720 한국어·영어 플레이 힌트 | 방향키 없음. `[A] 수족관 · [S] 상점 · [T] 하늘`과 `[A] AQUARIUM [S] SHOP [T] SKY` 표시 |
+| T 연속 입력 | 하늘·물빛·빛줄기가 바뀌고 대사에 현재 시간대가 뜬다 |
+| 희귀 BLUE TANG 676M 포획 카드 | `CAUGHT AT 676M`과 `SO FAR X2`의 글자 윗부분이 잘리지 않는다. 고치기 전 화면에서는 676M의 7 윗부분이 잘려 6/6M처럼 보였다 |
+| 포획 카드에서 Enter·Space·X | 셋 다 플레이로 돌아가고 카드가 비워진다 |
+| 보물 카드·가방·상점 | 합쳐 둔 `reward`와 `bag`이 모두 그려지고, 시작 화면에서 연 상점은 제목 배경 위에 뜬다 |
+
+### 이번 절에서 검증하지 않은 것
+
+실제 iOS·Android 기기, 모바일 터치 흐름, 배포 실행은 포함하지 않았다. 앞선 다섯 커밋(시작 메뉴 순서, 대사창 닫기, 시작 메뉴 키캡, 보물상자 카드, 정박한 배)은 리베이스 뒤 자동 회귀와 위 화면 확인이 닿는 범위까지만 다시 봤고, 각 커밋을 만들 때의 검증을 여기서 되풀이하지는 않았다.

@@ -1656,19 +1656,21 @@ const STR = {
     "zone.MIDNIGHT": "암흑층", "zone.ABYSS": "심연",
     "zone.s.SUNLIGHT": "표층", "zone.s.TWILIGHT": "약광",
     "zone.s.MIDNIGHT": "암흑", "zone.s.ABYSS": "심연",
-    "hint.diver": "[↑][←][↓][→] 이동 · [Shift] 가속 · [Space] 작살 · [G] 도감",
-    "hint.boat": "[←][→] 배 · [↓][↑] 줄 · [Space] 액션",
-    "hint.short": "[Space] 액션 · [G] 도감",
+    "hint.diver": "[Shift] 가속 · [Space] 작살 · [G] 도감",
+    "hint.boat": "[Space] 액션 · [G] 도감",
+    "hint.keys": "[A] 수족관 · [S] 상점 · [T] 하늘",
+    "hint.keysShort": "[A][S][T]",
     "hint.swap": "[Tab] 배↔잠수부",
     "ui.paused": "일시정지",
     "help.title": "조작법",
     "help.close": "[X] / [Esc] 닫기",
     "help.move": "[↑][←][↓][→]", "help.moveV": "헤엄치기 · 배 몰기",
     "help.dash": "[Shift]", "help.dashV": "빠르게 이동 · 줄 조절",
-    "help.act": "[Space]", "help.actV": "작살·상자 · 낚시 액션 (대사 중에도 작동)",
+    "help.act": "[Space]", "help.actV": "작살·상자 · 낚시 액션",
     "help.swap": "[Tab]", "help.swapV": "잠수부 ↔ 낚싯배 바꾸기",
     "help.line": "[↓][↑]", "help.lineV": "줄 내리기 · 감아올리기",
     "help.ok": "[Z] / [Enter]", "help.okV": "선택 · 대사 표시/넘기기",
+    "help.msg": "[X] / [Enter] / [Space]", "help.msgV": "대사창 닫기",
     "help.guide": "[G]", "help.guideV": "도감 열기/닫기",
     "help.page": "[Q] / [E] · 마우스 휠", "help.pageV": "도감·조작법 쪽 넘기기 (또는 < > 누르기)",
     "help.sub": "[B]", "help.subV": "잠수함 부르기",
@@ -1720,6 +1722,10 @@ const STR = {
     "m.sight": "{0} 발견.",
     "m.chest": "상자를 열었습니다!",
     "m.chest2": "특별한 미끼를 얻었습니다. 깊은 물에서 [M]을 누르세요.",
+    "r.title": "보물상자를 열었습니다", "r.sub": "얻은 것",
+    "r.bait": "특별한 미끼", "r.baitV": "메갈로돈을 부른다",
+    "r.heal": "산소통", "r.healV": "하트 {0}칸 회복",
+    "r.note": "깊은 물에서 [M]을 누르면 미끼를 뿌립니다.",
     "m.nobait": "미끼가 없습니다. 해저에 있는 상자를 찾아보세요.",
     "m.baitdeep": "여기는 너무 얕습니다. 더 깊이 내려가세요.",
     "m.baitalready": "이미 커다란 것이 와 있습니다.",
@@ -1819,7 +1825,7 @@ const STR = {
     "app.title": "AT SEA :: DOT",
     "app.sub": "- DOT EDITION -",
     "menu.diver": "DIVE AS A DIVER",
-    "menu.boat": "FISH BY BOAT",
+    "menu.boat": "FISH FROM A BOAT",
     "menu.guide": "FIELD GUIDE",
     "menu.help": "HOW TO PLAY",
     "menu.lang": "LANG: ENGLISH",
@@ -1831,17 +1837,19 @@ const STR = {
     "zone.MIDNIGHT": "MIDNIGHT", "zone.ABYSS": "ABYSS",
     "zone.s.SUNLIGHT": "SUN", "zone.s.TWILIGHT": "TWI",
     "zone.s.MIDNIGHT": "MID", "zone.s.ABYSS": "ABY",
-    "hint.diver": "[↑][←][↓][→] SWIM   [Shift] DASH   [Space] SPEAR   [G] GUIDE",
-    "hint.boat": "[←][→] BOAT  [↓][↑] LINE  [Space] ACT",
-    "hint.short": "[Space] ACT   [G] GUIDE",
+    "hint.diver": "[Shift] DASH   [Space] SPEAR   [G] GUIDE",
+    "hint.boat": "[Space] ACT   [G] GUIDE",
+    "hint.keys": "[A] AQUARIUM   [S] SHOP   [T] SKY",
+    "hint.keysShort": "[A][S][T]",
     "ui.paused": "PAUSED",
     "help.title": "HOW TO PLAY",
     "help.close": "[X] / [Esc] CLOSE",
     "help.move": "[↑][←][↓][→]", "help.moveV": "SWIM OR STEER",
     "help.dash": "[Shift]", "help.dashV": "FASTER MOVEMENT / LINE CONTROL",
-    "help.act": "[Space]", "help.actV": "SPEAR / CHEST / FISHING (EVEN DURING DIALOGUE)",
+    "help.act": "[Space]", "help.actV": "SPEAR / CHEST / FISHING",
     "help.line": "[↓][↑]", "help.lineV": "PAY OUT / REEL IN",
     "help.ok": "[Z] / [Enter]", "help.okV": "SELECT / REVEAL OR ADVANCE DIALOGUE",
+    "help.msg": "[X] / [Enter] / [Space]", "help.msgV": "CLOSE THE DIALOGUE BOX",
     "help.guide": "[G]", "help.guideV": "OPEN / CLOSE FIELD GUIDE",
     "help.page": "[Q] / [E] · WHEEL", "help.pageV": "TURN GUIDE / HELP PAGES (OR CLICK < >)",
     "help.sub": "[B]", "help.subV": "CALL THE SUBMARINE",
@@ -1892,6 +1900,10 @@ const STR = {
     "m.sight": "SIGHTED: {0}.",
     "m.chest": "OPENED THE CHEST!",
     "m.chest2": "GOT THE SPECIAL BAIT. PRESS [M] IN DEEP WATER.",
+    "r.title": "OPENED THE TREASURE CHEST", "r.sub": "WHAT YOU GOT",
+    "r.bait": "SPECIAL BAIT", "r.baitV": "CALLS THE MEGALODON",
+    "r.heal": "AIR TANK", "r.healV": "{0} HEART BACK",
+    "r.note": "PRESS [M] IN DEEP WATER TO CAST THE BAIT.",
     "m.nobait": "YOU HAVE NO BAIT. LOOK FOR A CHEST ON THE SEABED.",
     "m.baitdeep": "TOO SHALLOW. TAKE IT DEEPER.",
     "m.baitalready": "SOMETHING HUGE IS ALREADY HERE.",
@@ -2604,6 +2616,22 @@ class Being {
     const w = worldW();
     return this.dir === 1 ? this.x > w + 40 : this.x + this.w < -40;
   }
+  /* 바다 끝에 닿은 것은 반대편에서 다시 들어온다. 예전에는 늘 같은 자리,
+     같은 깊이로 되돌려 보냈다 - 빠른 것이 느린 것을 따라잡을 때마다
+     둘이 가장자리에서 나란히 서서 다시 들어오고, 속도가 비슷하니 그대로
+     붙어 다녔다. 그렇게 한참 헤엄치고 나면 같은 종이 한 덩어리로 몰린다.
+     들어오는 자리와 깊이와 속도를 매번 새로 뽑아 흩어 놓는다. */
+  reenter() {
+    this.dir = -this.dir;
+    const margin = 10 + Math.random() * 190;
+    this.x = this.dir === 1 ? -this.w - margin : worldW() + margin;
+    const b = this.band();
+    this.top = b[0]; this.bottom = b[1];
+    this.y = this.top === this.bottom ? this.top : rnd(this.top, this.bottom);
+    this.speed = rnd(this.K.speed[0], this.K.speed[1]);
+    this.vy = rnd(this.K.drift[0], this.K.drift[1]) * (Math.random() < .5 ? 1 : -1);
+    this.phase = Math.random() * Math.PI * 2;
+  }
   /* 놀라 흩어진다. 놀란 자리에서 반대쪽으로 돈다. */
   scare(fromX) {
     this.flee = 1;
@@ -3306,7 +3334,21 @@ let clock = 0;
 let flash = 0;            /* 무언가를 잡은 순간의 흰 번쩍임 */
 let shake = 0;
 
-const MENU_KEYS = ["menu.diver", "menu.boat", "menu.guide", "menu.help", "menu.lang", "menu.aqua", "menu.shop"];
+/* 언어는 한 번 고르면 다시 건드릴 일이 없다 - 놀거리를 위로 올리고 맨 아래에 둔다. */
+const MENU_KEYS = ["menu.diver", "menu.boat", "menu.guide", "menu.help", "menu.aqua", "menu.shop", "menu.lang"];
+/* 자리가 아니라 이름으로 고른다. 차례를 바꿔도 하는 일은 따라오지 않는다. */
+const MENU_ACTIONS = {
+  "menu.diver": () => startRun("diver"),
+  "menu.boat":  () => startRun("boat"),
+  "menu.guide": () => { returnMode = "title"; mode = "guide"; guideDetail = false; },
+  "menu.help":  () => { returnMode = "title"; helpPage = 0; mode = "help"; },
+  "menu.aqua":  () => openOverlay("aqua"),
+  "menu.shop":  () => openOverlay("shop"),
+  "menu.lang":  () => setLang(lang === "ko" ? "en" : "ko"),
+};
+/* 타이틀에서도 듣는 한 글자 열쇠들. 눌러 보기 전에는 알 수 없으니 줄 끝에 세워 둔다. */
+const MENU_SHORTCUTS = { "menu.guide": "G", "menu.aqua": "A", "menu.shop": "S", "menu.lang": "L" };
+const MENU_SHORTCUT_W = Math.max(...Object.values(MENU_SHORTCUTS).map(keyWidth)) + 4;
 
 /* =========================================================================
    바다 그리기
@@ -3440,6 +3482,22 @@ function drawSky() {
   }
 }
 
+/* 배에서 내려 물속으로 들어갔다면, 그 배는 내린 자리에 그대로 떠 있다.
+   예전에는 아무 관계도 없는 장식용 배를 시차를 두고 띄웠는데, 배에서
+   잠수부로 바꾸는 순간 유령선처럼 나타나 보였다.
+   물을 칠하기 전에 그리면 수면 아래에 잠긴 뱃전이 물빛에 통째로 덮여
+   돛대만 남는다 - 타고 있는 배와 같이 물 위에 얹는다. */
+function drawMooredBoat() {
+  if (player.role === "boat" || moored === null) return;
+  const surf = Math.round(seaTop - cam);
+  if (surf < -30 || surf > SH + 30) return;
+  const boatX = Math.round(moored - camX);
+  if (boatX < -60 || boatX > SW + 60) return;
+  const bw = Math.sin(clock * 1.1) * 1.2;
+  /* 뱃전(도안 15번째 줄)이 수면에 닿는 자리. */
+  blit(bake(SPR.boat, boatColors, false), boatX, Math.round(surf - 14 + bw));
+}
+
 const boatColors = stamp({
   o: "#2a1a10",   /* 외곽선 */
   d: "#6b3f22",   /* 그늘진 뱃전 아래 */
@@ -3558,16 +3616,16 @@ function drawDecor() {
 }
 
 /* 상자. 열기 전에는 이따금 반짝인다 - 다가오라는 신호다. */
+const CHEST_COLORS = stamp({
+  o: "#241607", d: "#5f3f18", m: "#9a6a26", l: "#c4913f",
+  h: "#e6c078", r: "#3f3830",   /* 쇠테 - 나무와 같은 색이면 테가 없는 셈이다 */
+  w: "#ffd45e", k: "#120c05", y: "#ffe25f",
+});
 function drawChest() {
   if (!chest) return;
   const sx = chest.x - camX, sy = chest.y - cam;
   if (sy > SH + 20 || sy < -20) return;
-  const colors = stamp({
-    o: "#241607", d: "#5f3f18", m: "#9a6a26", l: "#c4913f",
-    h: "#e6c078", r: "#3f3830",   /* 쇠테 - 나무와 같은 색이면 테가 없는 셈이다 */
-    w: "#ffd45e", k: "#120c05", y: "#ffe25f",
-  });
-  const cv = bake(chest.open ? SPR.chestOpen : SPR.chest, colors, false);
+  const cv = bake(chest.open ? SPR.chestOpen : SPR.chest, CHEST_COLORS, false);
   if (!chest.open) {
     const tw = (clock * 1.4) % 3;
     if (tw < .35) blitGlow(cv, sx, sy, "#ffe25f", 8);
@@ -3929,16 +3987,27 @@ function drawMessage() {
 }
 
 /* 조작 안내 한 줄. 배경화면 모드에서는 사라진다. */
+/* 방향키는 손이 먼저 찾는다 - 한 줄을 그것으로 채우느니 창을 여는 열쇠를
+   적는다. 자리가 좁아지면 역할 전환·역할별 조작부터 접고 수족관·상점·하늘은
+   끝까지 남긴다. */
+function hintText(room) {
+  const role = player.role === "boat" ? T("hint.boat") : T("hint.diver");
+  const keys = T("hint.keys");
+  const full = role + "   " + keys + "   " + T("hint.swap");
+  const mid = role + "   " + keys;
+  const controls = document.getElementById("touch-controls");
+  /* 가장 좁은 화면에서는 열쇠만 남긴다 - 뜻은 [H] 조작법에 적혀 있고,
+     말머리만 남고 잘린 줄보다 온전한 키캡 석 장이 낫다. */
+  return controls && controls.offsetHeight > 0 ? T("hint.touch")
+       : textWidth(full) + 16 <= room ? full
+       : textWidth(mid) + 16 <= room ? mid
+       : textWidth(keys) + 16 <= room ? keys
+       : T("hint.keysShort");
+}
 function drawHints() {
   if (msg.lines.length) return;
   const room = UW - GAUGE_W - 9;
-  const full = (player.role === "boat" ? T("hint.boat") : T("hint.diver")) + "   " + T("hint.swap");
-  const mid = (player.role === "boat" ? T("hint.boat") : T("hint.diver"));
-  const controls = document.getElementById("touch-controls");
-  const str = controls && controls.offsetHeight > 0 ? T("hint.touch")
-            : textWidth(full) + 16 <= room ? full
-            : textWidth(mid) + 16 <= room ? mid
-            : T("hint.short") + "   " + T("hint.swap");
+  const str = hintText(room);
   // Keycaps need a little more height than plain touch instructions.
   const h = lineH(str) + 6, x = 3, y = UH - h - 3;
   drawWindow(x, y, Math.min(textWidth(str) + 13, room), h, { alpha: .7 });
@@ -4248,6 +4317,10 @@ function currentInfo() {
     heading: isCatch ? T(catchCard.rare ? "c.rare" : catchCard.isNew ? "c.new" : "c.title") : spName(e.id),
     tag: isCatch ? spName(e.id) : e.sight ? T(known ? "g.sighted" : "g.none") : n ? T("g.count", n) : T("g.none") };
 }
+/* 글자는 기준선보다 두 칸 위에서 그려지고(FONT_DY) 키캡은 세 칸 위다.
+   잘라내는 칸이 기준선에서 시작하면 첫 줄 머리가 구분선에 먹힌다 -
+   안쪽 내용을 그만큼 내려서 자리를 비워 둔다. */
+const INFO_PAD = 3;
 function infoLayout(info = currentInfo()) {
   const w = Math.min(UW - 20, 266), LH = lineH(spNote(info.e.id));
   const headings = wrapLines(info.heading, w - 16);
@@ -4265,11 +4338,11 @@ function infoLayout(info = currentInfo()) {
   const artH = Math.max(rowY, Math.min(52, SPR[info.e.spr].h * 2 + 4));
   const notes = wrapLines(spNote(info.e.id), w - 16);
   const contentH = artH + 8 + notes.length * LH;
-  const h = Math.min(UH - 8, head + contentH + 28);
+  const h = Math.min(UH - 8, head + INFO_PAD + contentH + 28);
   const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
   const viewH = Math.max(1, h - head - 28), by = y + h - 22;
   return { w, h, x, y, LH, head, headings, tags, rows, artW, artH, kw, metaW, notes, viewH,
-    maxScroll: Math.max(0, contentH - viewH),
+    maxScroll: Math.max(0, contentH + INFO_PAD - viewH),
     close: { x: x + 6, y: by, w: w - 78, h: 18 },
     prev: { x: x + w - 68, y: by, w: 13, h: 18 },
     next: { x: x + w - 52, y: by, w: 13, h: 18 },
@@ -4291,7 +4364,7 @@ function drawInfoCard() {
   hline(x + 6, y + L.head - 3, w - 12, C.frameDim);
   g.save();
   g.beginPath(); g.rect(x + 6, y + L.head, w - 12, L.viewH); g.clip();
-  const top = y + L.head - infoScroll;
+  const top = y + L.head + INFO_PAD - infoScroll;
   fitSprite(bake(SPR[info.e.spr], guideColors(info.e, info.known, info.pale), false),
             x + 7, top, L.artW, Math.min(L.artH, 60), 2);
   const tx = x + 16 + L.artW;
@@ -4636,6 +4709,58 @@ function drawGameOver() {
   smallButton(L.again,T("controls.retry")); smallButton(L.back,T("controls.title"));
 }
 
+/* ---------- 보물상자 보상 ----------
+   상자는 한 판에 한 번만 열린다. 무엇을 얻었는지 대사 두 줄로 흘려보내면
+   글자가 다 찍히기도 전에 지나가 버린다 - 잡은 물고기처럼 한 장 펼쳐 둔다. */
+let rewardCard = null;
+/* 글은 그릴 때 옮긴다 - 창을 열어 둔 채 말을 바꿔도 따라온다. */
+function rewardRows() {
+  if (!rewardCard) return [];
+  const rows = [[T("r.bait"), T("r.baitV"), C.lure]];
+  /* 숨은 가득 차 있으면 돌아오지 않는다 - 받지 않은 것은 적지 않는다. */
+  if (rewardCard.healed > 0) rows.push([T("r.heal"), T("r.healV", rewardCard.healed / 2), C.danger]);
+  return rows;
+}
+function rewardLayout() {
+  const w = Math.min(UW - 16, 286), LH = lineH();
+  const notes = wrapLines(T("r.note"), w - 16);
+  const artW = w < 200 ? 34 : 56, metaW = w - 24 - artW;
+  /* 이름 칸은 가장 긴 이름에 맞추되 절반을 넘기지 않는다. 남는 자리가
+     설명 칸이고, 거기 다 들어가지 않는 말은 줄을 바꾼다 - 잘라 버리면
+     무엇을 얻었는지가 말줄임표 뒤로 사라진다. */
+  const kw = Math.min(Math.max(1, ...rewardRows().map(r => textWidth(r[0]))) + 8, Math.floor(metaW * .5));
+  let rowY = 0;
+  const rows = rewardRows().map(([key, value, color]) => {
+    const keys = wrapLines(key, kw - 6), values = wrapLines(value, metaW - kw);
+    const row = { keys, values, color: color || C.text, y: rowY };
+    rowY += Math.max(keys.length, values.length) * LH;
+    return row;
+  });
+  const artH = Math.max(rowY, SPR.chestOpen.h * 2);
+  const head = 24;
+  const h = Math.min(UH - 8, head + artH + 8 + notes.length * LH + 28);
+  const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
+  return { x, y, w, h, LH, rows, notes, artW, artH, head, kw,
+           close: { x: x + 6, y: y + h - 24, w: w - 12, h: 18 } };
+}
+function drawReward() {
+  if (!rewardCard) return;
+  const L = rewardLayout(), { x, y, w, LH } = L;
+  drawWindow(x, y, w, L.h, { alpha: .97 });
+  drawText(x + 8, y + 5, fit(T("r.title"), w - 16), C.textWarn);
+  hline(x + 6, y + L.head - 3, w - 12, C.frameDim);
+  fitSprite(bake(SPR.chestOpen, CHEST_COLORS, false), x + 7, y + L.head, L.artW, L.artH, 2);
+  const tx = x + 16 + L.artW;
+  for (const row of L.rows) {
+    row.keys.forEach((line, i) => drawText(tx, y + L.head + row.y + i * LH, line, C.textDim));
+    row.values.forEach((line, i) => drawText(tx + L.kw, y + L.head + row.y + i * LH, line, row.color));
+  }
+  hline(x + 8, y + L.head + L.artH + 2, w - 16, C.frameDim);
+  L.notes.forEach((line, i) => drawText(x + 8, y + L.head + L.artH + 8 + i * LH, line, C.lure));
+  smallButton(L.close, T("g.back"));
+}
+function closeReward() { rewardCard = null; mode = "dive"; }
+
 /* ---------- 조작 안내 ---------- */
 const HELP_ROWS = [
   ["help.move", "help.moveV"],
@@ -4644,6 +4769,7 @@ const HELP_ROWS = [
   ["help.swap", "help.swapV"],
   ["help.line", "help.lineV"],
   ["help.ok", "help.okV"],
+  ["help.msg", "help.msgV"],
   ["help.guide", "help.guideV"],
   ["help.aqua", "help.aquaV"],
   ["help.shop", "help.shopV"],
@@ -4716,7 +4842,7 @@ function menuLabel(i) { return T(MENU_KEYS[i]); }
 function titleLayout() {
   const labelWidths = UI_LANGUAGES.flatMap(language => MENU_KEYS.map(key => textWidth(translate(language, key))));
   const columns = UH < 240 && UW >= 300 ? 2 : 1;
-  const w = Math.min(UW - 20, (Math.max(...labelWidths) + 40) * columns);
+  const w = Math.min(UW - 20, (Math.max(...labelWidths) + 40 + MENU_SHORTCUT_W) * columns);
   const rowH = 16, h = Math.ceil(MENU_KEYS.length / columns) * rowH + 12;
   const room = Math.min(UW - 28, w - 16), pickLH = lineH("[Z]");
   const contents = UI_LANGUAGES.map(language => {
@@ -4751,6 +4877,8 @@ function drawTitle() {
        그림이 먼저 말한다. */
     drawText(item.x + 16, item.y + 3, menuLabel(i), on ? C.textWarn : C.textDim);
     if (on && Math.floor(clock * 4) % 2 === 0) drawText(item.x + 5, item.y + 3, ">", C.textWarn);
+    const key = MENU_SHORTCUTS[MENU_KEYS[i]];
+    if (key) drawKeycap(item.x + item.w - keyWidth(key) - 2, item.y, key);
   }
   // A dark panel keeps unshadowed text legible over both daylight and deep water.
   drawWindow(L.footer.x, L.footer.y, L.footer.w, L.footer.h, { alpha: .96 });
@@ -4814,20 +4942,21 @@ function onPress(k) {
   if (mode === "title") {
     if (k === "arrowup") menuIndex = (menuIndex + MENU_KEYS.length - 1) % MENU_KEYS.length;
     else if (k === "arrowdown") menuIndex = (menuIndex + 1) % MENU_KEYS.length;
-    else if (ok) {
-      if (menuIndex === 0) startRun("diver");
-      else if (menuIndex === 1) startRun("boat");
-      else if (menuIndex === 2) { returnMode = "title"; mode = "guide"; guideDetail = false; }
-      else if (menuIndex === 3) { returnMode = "title"; helpPage = 0; mode = "help"; }
-      else if (menuIndex === 4) setLang(lang === "ko" ? "en" : "ko");
-      else openOverlay(menuIndex === 5 ? "aqua" : "shop");
-    } else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
+    else if (ok) MENU_ACTIONS[MENU_KEYS[menuIndex]]();
+    else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
+    return;
+  }
+  if (mode === "reward") {
+    if (ok || back || k === "space") closeReward();
+    else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
     return;
   }
   if (mode === "catch") {
     if (k === "arrowdown" || k === "pagedown") { scrollInfo(lineH() * 3); return; }
     if (k === "arrowup" || k === "pageup") { scrollInfo(-lineH() * 3); return; }
-    if (back) { catchCard = null; mode = "dive"; }
+    /* 상자 카드와 같은 열쇠로 닫는다 - 한 손으로 계속 잡으러 가는 사람에게
+       창마다 닫는 법이 다른 것만큼 거슬리는 것이 없다. */
+    if (back || ok || k === "space") { catchCard = null; mode = "dive"; }
     return;
   }
   if (mode === "help") {
@@ -4868,9 +4997,11 @@ function onPress(k) {
   }
 
   /* 바닷속 */
-  /* 확인은 대사를 넘기고, 액션은 대사 중에도 바로 실행한다. */
+  /* 창을 닫는 열쇠가 [X] 하나뿐이면 손이 가는 자리를 눌러도 닫히지 않아
+     답답하다. 액션도 대사를 함께 넘긴다 - 다만 넘기느라 손을 멈추면
+     입질을 놓치므로, 넘기는 것과 채는 것을 한 번에 한다. */
   if (ok) { advanceMsg(); return; }
-  if (k === "space") { action(); return; }
+  if (k === "space") { advanceMsg(); action(); return; }
   if (k === "tab") { swapRole(); return; }
   if (k === "t") { setTime(timeIx + 1); say(T("m.time", T("time." + timeNow().id))); return; }
   if (k === "h" || k === "?" || k === "/") { returnMode = "dive"; helpPage = 0; mode = "help"; return; }
@@ -4919,6 +5050,11 @@ screenCv.addEventListener("pointerdown", e => {
     const index = titleLayout().items.findIndex(r => inBox(p, r));
     pointer.down = false;
     if (index >= 0) { menuIndex = index; onPress("z"); }
+    return;
+  }
+  if (mode === "reward") {
+    pointer.down = false;
+    closeReward();
     return;
   }
   if (mode === "catch" || (mode === "guide" && guideDetail)) {
@@ -5117,6 +5253,7 @@ function openOverlay(next) {
   if (mode === next) { mode = returnMode; guideDetail = false; return; }
   if (mode === "title" || mode === "dive") returnMode = mode;
   else if (mode === "catch") { catchCard = null; returnMode = "dive"; }
+  else if (mode === "reward") { rewardCard = null; returnMode = "dive"; }
   mode = next; guideDetail = false; infoScroll = 0; helpPage = 0;
 }
 function controlAction(name) {
@@ -5312,13 +5449,18 @@ function stepSpear(u) {
 
 function openChest() {
   if (!chest || chest.open) return;
+  const hpBefore = player.hp;
   healPlayer(2);
+  const healed = player.hp - hpBefore;
   chest.open = 1; save.chest = 1; persist();
   flash = 1;
   say(T("m.chest"), C.textWarn);
   say(T("m.chest2"), C.lure);
   for (let i = 0; i < 22; i++)
     bubble(chest.x + rnd(0, SPR.chest.w), chest.y + rnd(-4, SPR.chest.h * .5), true);
+  rewardCard = { healed };
+  returnMode = "dive";
+  mode = "reward";
 }
 
 function caught(b, depth = metres()) {
@@ -5595,8 +5737,7 @@ function stepBeings(u) {
     b.step(u);
     if (b.gone()) {
       if (b.kind === "sub" || b.kind === "mega") { beings.splice(i, 1); continue; }
-      b.dir = -b.dir;
-      b.x = b.dir === 1 ? -b.w - 10 : worldW() + 10;
+      b.reenter();
       continue;
     }
     if (b.K.glow || b.kind === "angler") {
@@ -5727,7 +5868,7 @@ function render() {
 
   drawTargetBait();
   drawParticles();
-  if (mode === "dive" || (mode !== "title" && returnMode === "dive")) drawPlayer();
+  if (mode === "dive" || (mode !== "title" && returnMode === "dive")) { drawMooredBoat(); drawPlayer(); }
   drawDarkness();
   /* 어둠을 덮은 뒤, 스스로 빛나는 것만 한 번 더 그린다. 심해에서 눈에
      들어오는 것은 이것들뿐이라야 한다 - 발광구, 등불고기, 변이, 그리고
@@ -5752,7 +5893,7 @@ function render() {
   try {
     /* 창들 */
     /* 뒷장 - 타이틀이거나, 바닷속 계기판이거나. */
-    const overlay = ["guide","help","catch","aqua","shop","bag"].includes(mode);
+    const overlay = ["guide","help","catch","reward","aqua","shop","bag"].includes(mode);
     if (mode === "title" || (overlay && returnMode === "title")) {
       drawTitle();
     } else if (!bare) {
@@ -5768,6 +5909,7 @@ function render() {
     if (mode === "guide") drawGuide();
     else if (mode === "help") drawHelp();
     else if (mode === "catch") drawCatchCard();
+    else if (mode === "reward") drawReward();
     else if (mode === "aqua" || mode === "shop" || mode === "bag") drawCommerce();
     else if (mode === "over") drawGameOver();
 

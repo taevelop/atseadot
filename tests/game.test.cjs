@@ -329,3 +329,20 @@ test('the water is one blit from a cached column, not a fill for every pixel', (
   assert.equal(calls(), 1);
 });
 
+test('the sky decides what the next sea is made of', () => {
+  const app = game();
+  const census = sky => app.data(`(() => { setTime(${sky}); respawnAll();
+    const n = {}; for (const b of beings) n[b.kind] = (n[b.kind] || 0) + 1; return n; })()`);
+  const dawn = census(0), noon = census(1), night = census(3);
+  /* 밤에는 스스로 빛나는 것과 깊은 데 사는 것이 늘고, 얕은 무리는 준다. */
+  assert.ok(night.lantern > noon.lantern, `lantern ${night.lantern} should beat ${noon.lantern}`);
+  assert.ok(night.fish < noon.fish, `shallow schools ${night.fish} should thin from ${noon.fish}`);
+  assert.ok(dawn.fish > noon.fish, `and crowd back at dawn: ${dawn.fish} vs ${noon.fish}`);
+  /* 적어 두지 않은 무리는 하루 내내 같은 수다. */
+  assert.equal(night.turtle, noon.turtle, 'turtles keep their own hours');
+  /* 하늘만 바꾼다고 눈앞의 바다가 비지는 않는다. */
+  app.run('setTime(1); respawnAll(); globalThis.before = beings.length; setTime(3)');
+  assert.equal(app.run('beings.length'), app.run('before'), 'the sea in front of you stays put');
+  assert.equal(app.run('chest !== null'), true, 'and the chest is not made again');
+});
+

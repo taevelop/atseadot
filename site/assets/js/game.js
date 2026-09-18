@@ -1821,7 +1821,7 @@ const STR = {
     "time.dawn": "일출", "time.noon": "정오",
     "time.dusk": "석양", "time.night": "달밤",
     "m.time": "하늘 : {0}",
-    "help.time": "[T]", "help.timeV": "하늘 바꾸기 (일출·정오·석양·달밤)",
+    "help.time": "[T]", "help.timeV": "하늘 바꾸기 (일출·정오·석양·달밤). 새로 만드는 바다부터 드는 무리가 달라진다",
     "lang.name": "한국어",
 
     /* ---- 상점·수족관·하트·보상. 도트판에서 늘어난 것들 ---- */
@@ -2003,7 +2003,7 @@ const STR = {
     "time.dawn": "DAWN", "time.noon": "NOON",
     "time.dusk": "SUNSET", "time.night": "MOONLIT",
     "m.time": "SKY : {0}",
-    "help.time": "[T]", "help.timeV": "CHANGE THE SKY (DAWN/NOON/SUNSET/NIGHT)",
+    "help.time": "[T]", "help.timeV": "CHANGE THE SKY (DAWN/NOON/SUNSET/NIGHT). THE NEXT SEA IS STOCKED TO MATCH",
     "lang.name": "ENGLISH",
 
     /* ---- 상점·수족관·하트·보상. 도트판에서 늘어난 것들 ---- */
@@ -2843,7 +2843,7 @@ function respawnAll() {
   beings = [];
   for (const k in KIND) {
     const K = KIND[k];
-    const n = Math.round((K.count || 0) * (worldW() / 520));
+    const n = Math.round((K.count || 0) * timeShare(k) * (worldW() / 520));
     /* 같은 종이 한자리에 뭉치지 않게, 바다를 마릿수만큼 칸으로 나눠
        한 칸에 한 마리씩 들여보낸다. 도안이 여럿인 무리는 도안별로 나눈다 -
        그래야 고비만 스무 마리 몰려 있는 구석이 생기지 않는다. */
@@ -2855,7 +2855,9 @@ function respawnAll() {
   }
   /* 나머지를 다 넣은 뒤에야 발광어 몫이 정해진다. */
   const rest = beings.length;
-  const nL = Math.max(1, Math.round(rest * LANTERN_SHARE / (1 - LANTERN_SHARE)));
+  /* 발광어는 마릿수가 아니라 몫으로 정해지므로 그 몫 자체를 밤에 늘린다. */
+  const share = Math.min(.5, LANTERN_SHARE * timeShare("lantern"));
+  const nL = Math.max(1, Math.round(rest * share / (1 - share)));
   for (let i = 0; i < nL; i++)
     beings.push(new Being("lantern", { slot: i, slots: nL }));
 
@@ -3456,19 +3458,29 @@ const MENU_SHORTCUT_W = Math.max(...Object.values(MENU_SHORTCUTS).map(keyWidth))
 const TIMES = [
   { id: "dawn",  sky1: "#e9a173", sky2: "#ffd9ae", band: "#ffb98a",
     sun: "#fff2cf", sunY: -8,  sunR: 5, tint: [1.04, .93, .84],
-    ray: .10, rayCol: "#ffe0bf", star: 0, foam: "#ffe6cf", foam2: "#f0a878" },
+    ray: .10, rayCol: "#ffe0bf", star: 0, foam: "#ffe6cf", foam2: "#f0a878",
+    fish: { fish: 1.3, seahorse: 1.3, crab: 1.2, squid: .8, lantern: .5, angler: .6 } },
   { id: "noon",  sky1: "#7ec8e8", sky2: "#bfe6f2", band: "#a6dcee",
     sun: "#fff2b0", sunY: -18, sunR: 5, tint: [1, 1, 1],
-    ray: .11, rayCol: "#bfe8ff", star: 0, foam: "#dff4ff", foam2: "#8fd8f2" },
+    ray: .11, rayCol: "#bfe8ff", star: 0, foam: "#dff4ff", foam2: "#8fd8f2",
+    fish: {} },
   { id: "dusk",  sky1: "#c8543f", sky2: "#ffb079", band: "#e8794f",
     sun: "#ffd08a", sunY: -3,  sunR: 6, tint: [1.02, .84, .88],
-    ray: .07, rayCol: "#ffc79a", star: .25, foam: "#ffd0a8", foam2: "#c8684a" },
+    ray: .07, rayCol: "#ffc79a", star: .25, foam: "#ffd0a8", foam2: "#c8684a",
+    fish: { squid: 1.3, ray: 1.2, octopus: 1.2, fish: .9, lantern: .8 } },
   { id: "night", sky1: "#070f26", sky2: "#1b2c55", band: "#132247",
     sun: "#eef4ff", sunY: -22, sunR: 4, tint: [.34, .42, .66],
-    ray: .04, rayCol: "#b9cff0", star: 1, foam: "#cfe0f5", foam2: "#5d79a8" },
+    ray: .04, rayCol: "#b9cff0", star: 1, foam: "#cfe0f5", foam2: "#5d79a8",
+    fish: { lantern: 2.2, angler: 1.8, squid: 1.6, jelly: 1.5, octopus: 1.3,
+            fish: .6, seahorse: .7, crab: .8 } },
 ];
 let timeIx = 1;
 const timeNow = () => TIMES[timeIx];
+/* 하늘이 바뀌면 바다에 드는 것도 바뀐다. 밤에는 스스로 빛나는 것과 깊은 데
+   사는 것이 늘고, 볕이 좋을 때는 얕은 물의 무리가 늘어난다. 적어 두지 않은
+   무리는 하루 내내 같은 수다. 이 몫은 바다를 새로 만들 때 쓴다 - 하늘만
+   바꾼다고 눈앞의 물고기가 사라지면 그건 바다가 아니라 무대 장치다. */
+const timeShare = kind => (timeNow().fish || {})[kind] || 1;
 
 const WATER_STEPS = 18;
 const waterCache = new Array(WATER_STEPS + 1);

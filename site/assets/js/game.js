@@ -1821,7 +1821,7 @@ const STR = {
     "time.dawn": "일출", "time.noon": "정오",
     "time.dusk": "석양", "time.night": "달밤",
     "m.time": "하늘 : {0}",
-    "help.time": "[T]", "help.timeV": "하늘 바꾸기 (일출·정오·석양·달밤)",
+    "help.time": "[T]", "help.timeV": "하늘 바꾸기 (일출·정오·석양·달밤). 새로 만드는 바다부터 드는 무리가 달라진다",
     "lang.name": "한국어",
 
     /* ---- 상점·수족관·하트·보상. 도트판에서 늘어난 것들 ---- */
@@ -2003,7 +2003,7 @@ const STR = {
     "time.dawn": "DAWN", "time.noon": "NOON",
     "time.dusk": "SUNSET", "time.night": "MOONLIT",
     "m.time": "SKY : {0}",
-    "help.time": "[T]", "help.timeV": "CHANGE THE SKY (DAWN/NOON/SUNSET/NIGHT)",
+    "help.time": "[T]", "help.timeV": "CHANGE THE SKY (DAWN/NOON/SUNSET/NIGHT). THE NEXT SEA IS STOCKED TO MATCH",
     "lang.name": "ENGLISH",
 
     /* ---- 상점·수족관·하트·보상. 도트판에서 늘어난 것들 ---- */
@@ -2437,7 +2437,7 @@ const KIND = {
   angler:   { spr: ["angler"], pal: "angler", band: [.9, 1], speed: [.05, .11],
               drift: [.01, .03], sizes: [1, 2], catchable: 1, count: 3 },
   shark:    { spr: ["shark"], pal: "shark", band: [0, .95], speed: [.16, .34],
-              drift: [.01, .04], wave: 1, tail: 5, sizes: [1, 2, 2], count: 6 },
+              drift: [.01, .04], wave: 1, tail: 5, sizes: [1, 2, 2], count: 6 , hunt: 1 },
   mega:     { spr: ["mega"], pal: null, band: [.2, .9], speed: [.10, .18],
               drift: [.01, .02], wave: 1, tail: 18, sizes: [2], count: 0 },
   sub:      { spr: ["sub"], pal: null, band: [0, 1], speed: [.35, .55],
@@ -2472,6 +2472,13 @@ for (const e of GUIDE) GUIDE_BY_ID[e.id] = e;
    '무언가 더 있다'가 새어나가 이스터에그가 아니게 된다. */
 const guideList = () => GUIDE.filter(e => !e.egg || save.seen[e.id]);
 const CATCH_IDS = GUIDE.filter(e => !e.sight).map(e => e.id);
+/* 상어는 원래 구경만 하는 것이다. 작살줄을 끝까지 올린 사람에게만 열린다 -
+   도감의 채집 대상과 칭호 조건은 그대로 두고, 이쪽만 따로 센다. */
+const HUNT_IDS = ["shark"];
+const huntUnlocked = () => upLv("line") >= upMax("line");
+const canCatch = K => !!(K && (K.catchable || (K.hunt && huntUnlocked())));
+const sellableId = id => CATCH_IDS.includes(id) || (HUNT_IDS.includes(id) && huntUnlocked());
+const STOCK_IDS = CATCH_IDS.concat(HUNT_IDS);
 const SMALL_FISH = ["fish3", "fish5", "puffer", "tang", "tuna", "marlin"];
 
 /* 서식 수심·수역·헤엄. 도감에 적히는 값은 실제로 쓰이는 값에서 그대로 뽑는다 -
@@ -2532,7 +2539,7 @@ const SPR_SIZES = {
 const PRICE = {
   fish3: 8, jelly: 12, fish5: 14, crab: 16, tang: 18, puffer: 22,
   seahorse: 26, lantern: 30, squid: 34, tuna: 40, octopus: 48, turtle: 55,
-  ray: 60, marlin: 70, angler: 90,
+  ray: 60, marlin: 70, angler: 90, shark: 150,
 };
 const priceOf = (id, rare) => Math.round((PRICE[id] || 10) * (rare ? 3 : 1));
 
@@ -2542,14 +2549,24 @@ const UPGRADES = [
   { id: "tank", cost: [260, 620], role: "diver" },
   { id: "fins", cost: [180, 430], role: "diver" },
   { id: "lamp", cost: [210, 500], role: "both" },
-  { id: "line", cost: [160, 380], role: "diver" },
+  { id: "line", cost: [160, 380], role: "diver", max: 15 },
   { id: "bait", cost: [320, 760], role: "both" },
   { id: "reel", cost: [180, 430], role: "boat" },
   { id: "hook", cost: [220, 520], role: "boat" },
   { id: "sonar", cost: [400, 900], role: "both" },
   { id: "ship", cost: [700, 1600], role: "boat" },
 ];
-const UP_MAX = 2;
+const UP_MAX = 2;                  /* 따로 적지 않은 장비의 상한 */
+/* 작살줄만 끝까지 올린다. 릴과 바늘은 성공률이 백 퍼센트를 넘어 버리고,
+   나머지는 두 단계로 충분하다. */
+const upMax = id => (UPGRADES.find(item => item.id === id) || {}).max || UP_MAX;
+/* 정해 둔 두 단계 너머는 단계마다 값이 22%씩 가팔라진다. 마지막 한 단이
+   싸면 바다에 나갈 까닭이 없어진다. */
+function upCost(item, level) {
+  if (level < item.cost.length) return item.cost[level];
+  const last = item.cost[item.cost.length - 1];
+  return Math.round(last * Math.pow(1.22, level - item.cost.length + 1) / 10) * 10;
+}
 /* 복장은 한 번 구매해 계속 입는다. 성능 장비의 단계와는 별개다. */
 const CONSUMABLES = [
   { id: "targetBait", cost: 60, cap: 5, role: "both", kind: "consumable" },
@@ -2826,7 +2843,7 @@ function respawnAll() {
   beings = [];
   for (const k in KIND) {
     const K = KIND[k];
-    const n = Math.round((K.count || 0) * (worldW() / 520));
+    const n = Math.round((K.count || 0) * timeShare(k) * (worldW() / 520));
     /* 같은 종이 한자리에 뭉치지 않게, 바다를 마릿수만큼 칸으로 나눠
        한 칸에 한 마리씩 들여보낸다. 도안이 여럿인 무리는 도안별로 나눈다 -
        그래야 고비만 스무 마리 몰려 있는 구석이 생기지 않는다. */
@@ -2838,7 +2855,9 @@ function respawnAll() {
   }
   /* 나머지를 다 넣은 뒤에야 발광어 몫이 정해진다. */
   const rest = beings.length;
-  const nL = Math.max(1, Math.round(rest * LANTERN_SHARE / (1 - LANTERN_SHARE)));
+  /* 발광어는 마릿수가 아니라 몫으로 정해지므로 그 몫 자체를 밤에 늘린다. */
+  const share = Math.min(.5, LANTERN_SHARE * timeShare("lantern"));
+  const nL = Math.max(1, Math.round(rest * share / (1 - share)));
   for (let i = 0; i < nL; i++)
     beings.push(new Being("lantern", { slot: i, slots: nL }));
 
@@ -2887,7 +2906,7 @@ function normalizeSave(value) {
     /* 수족관에 든 것은 잡은 수를 넘을 수 없다. 손으로 고친 저장값이
        들어와도 없는 물고기를 팔지는 못하게 한다. */
     for (const field of ["hold", "holdR"]) {
-      const cap = !CATCH_IDS.includes(id) ? 0 : field === "hold"
+      const cap = !STOCK_IDS.includes(id) ? 0 : field === "hold"
         ? Math.max(0, (out.caught[id] || 0) - (out.rare[id] || 0))
         : Math.min(out.caught[id] || 0, out.rare[id] || 0);
       if (record(value[field]) && count(value[field][id]) && cap > 0)
@@ -2901,7 +2920,7 @@ function normalizeSave(value) {
   if (record(value.up)) {
     for (const u of UPGRADES)
       if (count(value.up[u.id]) && value.up[u.id] > 0)
-        out.up[u.id] = Math.min(UP_MAX, value.up[u.id]);
+        out.up[u.id] = Math.min(upMax(u.id), value.up[u.id]);
   }
   out.stocked = flag(value.stocked) ? 1 : 0;
   out.economyVersion = value.economyVersion === 1 ? 1 : 0;
@@ -2966,7 +2985,7 @@ function markSeen(id) {
   return true;
 }
 function markCaught(b, depth = metres()) {
-  if (!CATCH_IDS.includes(b.gid)) return;
+  if (!sellableId(b.gid)) return;
   save.caught[b.gid] = (save.caught[b.gid] || 0) + 1;
   save.seen[b.gid] = 1;
   if (b.rare) save.rare[b.gid] = (save.rare[b.gid] || 0) + 1;
@@ -2982,12 +3001,12 @@ const seenCount = () => guideList().filter(e => save.seen[e.id]).length;
 const speciesName = b => spName(b.gid);
 
 function aquariumStock() {
-  return CATCH_IDS.flatMap(id => [false, true].map(rare => ({
+  return STOCK_IDS.filter(sellableId).flatMap(id => [false, true].map(rare => ({
     id, rare, count: (rare ? save.holdR : save.hold)[id] || 0, price: priceOf(id, rare)
   }))).filter(item => item.count > 0);
 }
 function sellFish(id, rare, quantity) {
-  if (!CATCH_IDS.includes(id) || typeof rare !== "boolean" ||
+  if (!sellableId(id) || typeof rare !== "boolean" ||
       !Number.isSafeInteger(quantity) || quantity <= 0) return false;
   const stock = rare ? save.holdR : save.hold, pay = priceOf(id, rare) * quantity;
   if (quantity > (stock[id] || 0) || !Number.isSafeInteger(pay) ||
@@ -3003,13 +3022,13 @@ function sellAllFish() {
 }
 function upgradeStatus(id) {
   const item = UPGRADES.find(item => item.id === id);
-  if (!item || upLv(id) >= UP_MAX) return "s.maxed";
-  return save.coin < item.cost[upLv(id)] ? "s.poor" : "";
+  if (!item || upLv(id) >= upMax(id)) return "s.maxed";
+  return save.coin < upCost(item, upLv(id)) ? "s.poor" : "";
 }
 function buyUpgrade(id) {
   if (upgradeStatus(id)) return false;
   const item = UPGRADES.find(item => item.id === id);
-  save.coin -= item.cost[upLv(id)]; save.up[id] = upLv(id) + 1;
+  save.coin -= upCost(item, upLv(id)); save.up[id] = upLv(id) + 1;
   if (id === "tank") player.hp = Math.min(heartMax(), player.hp + 2);
   if (id === "sonar") resetSonar();
   persist(); return true;
@@ -3043,7 +3062,7 @@ function consumableUseStatus(id, species) {
     if (species !== undefined) {
       if (!known.includes(species)) return "bag.noSpecies";
       const p = focusPoint();
-      if (!beings.some(b => b.gid === species && b.K.catchable &&
+      if (!beings.some(b => b.gid === species && canCatch(b.K) &&
           Math.hypot(b.cx()-p.x,b.cy()-p.y) <= 160)) return "bag.noTarget";
     }
   }
@@ -3061,7 +3080,7 @@ function useConsumable(id, species) {
   persist(); return true;
 }
 function attractToBait(b,u) {
-  if (!activeBait || activeBait.remaining <= 0 || b.gid !== activeBait.id || !b.K.catchable ||
+  if (!activeBait || activeBait.remaining <= 0 || b.gid !== activeBait.id || !canCatch(b.K) ||
       b === rod.target || b.pause > 0 || b.flee > 0 ||
       Math.hypot(b.cx()-activeBait.x,b.cy()-activeBait.y) > 160) return false;
   const tx=activeBait.x, ty=clamp(activeBait.y-b.h/2,b.top,b.bottom)+b.h/2;
@@ -3315,7 +3334,7 @@ function focusPoint() {
 }
 function resetSonar() { sonar.target = null; sonar.timer = 0; }
 function sonarEligible(b, point = focusPoint()) {
-  return b && b.K.catchable && CATCH_IDS.includes(b.gid) && b !== rod.target &&
+  return b && canCatch(b.K) && CATCH_IDS.includes(b.gid) && b !== rod.target &&
     beings.includes(b) && Math.hypot(b.cx()-point.x,b.cy()-point.y) <= sonarRange();
 }
 function stepSonar(u) {
@@ -3439,19 +3458,29 @@ const MENU_SHORTCUT_W = Math.max(...Object.values(MENU_SHORTCUTS).map(keyWidth))
 const TIMES = [
   { id: "dawn",  sky1: "#e9a173", sky2: "#ffd9ae", band: "#ffb98a",
     sun: "#fff2cf", sunY: -8,  sunR: 5, tint: [1.04, .93, .84],
-    ray: .10, rayCol: "#ffe0bf", star: 0, foam: "#ffe6cf", foam2: "#f0a878" },
+    ray: .10, rayCol: "#ffe0bf", star: 0, foam: "#ffe6cf", foam2: "#f0a878",
+    fish: { fish: 1.3, seahorse: 1.3, crab: 1.2, squid: .8, lantern: .5, angler: .6 } },
   { id: "noon",  sky1: "#7ec8e8", sky2: "#bfe6f2", band: "#a6dcee",
     sun: "#fff2b0", sunY: -18, sunR: 5, tint: [1, 1, 1],
-    ray: .11, rayCol: "#bfe8ff", star: 0, foam: "#dff4ff", foam2: "#8fd8f2" },
+    ray: .11, rayCol: "#bfe8ff", star: 0, foam: "#dff4ff", foam2: "#8fd8f2",
+    fish: {} },
   { id: "dusk",  sky1: "#c8543f", sky2: "#ffb079", band: "#e8794f",
     sun: "#ffd08a", sunY: -3,  sunR: 6, tint: [1.02, .84, .88],
-    ray: .07, rayCol: "#ffc79a", star: .25, foam: "#ffd0a8", foam2: "#c8684a" },
+    ray: .07, rayCol: "#ffc79a", star: .25, foam: "#ffd0a8", foam2: "#c8684a",
+    fish: { squid: 1.3, ray: 1.2, octopus: 1.2, fish: .9, lantern: .8 } },
   { id: "night", sky1: "#070f26", sky2: "#1b2c55", band: "#132247",
     sun: "#eef4ff", sunY: -22, sunR: 4, tint: [.34, .42, .66],
-    ray: .04, rayCol: "#b9cff0", star: 1, foam: "#cfe0f5", foam2: "#5d79a8" },
+    ray: .04, rayCol: "#b9cff0", star: 1, foam: "#cfe0f5", foam2: "#5d79a8",
+    fish: { lantern: 2.2, angler: 1.8, squid: 1.6, jelly: 1.5, octopus: 1.3,
+            fish: .6, seahorse: .7, crab: .8 } },
 ];
 let timeIx = 1;
 const timeNow = () => TIMES[timeIx];
+/* 하늘이 바뀌면 바다에 드는 것도 바뀐다. 밤에는 스스로 빛나는 것과 깊은 데
+   사는 것이 늘고, 볕이 좋을 때는 얕은 물의 무리가 늘어난다. 적어 두지 않은
+   무리는 하루 내내 같은 수다. 이 몫은 바다를 새로 만들 때 쓴다 - 하늘만
+   바꾼다고 눈앞의 물고기가 사라지면 그건 바다가 아니라 무대 장치다. */
+const timeShare = kind => (timeNow().fish || {})[kind] || 1;
 
 const WATER_STEPS = 18;
 const waterCache = new Array(WATER_STEPS + 1);
@@ -3885,7 +3914,7 @@ function drawBoatAndLine() {
     /* 무언가 다가오고 있으면 미끼가 조금 흔들린다. */
     let near = null, nd = 1e9;
     for (const b of beings) {
-      if (!b.K.catchable) continue;
+      if (!canCatch(b.K)) continue;
       const d = Math.hypot(b.cx() - rod.x, b.cy() - rod.y);
       if (d < nd) { nd = d; near = b; }
     }
@@ -4424,7 +4453,7 @@ function currentInfo() {
        [T("c.pay"), T("ui.coin", priceOf(e.id, catchCard.rare)), C.coin],
         [T("g.zone"), zoneText(e.kind)], [T("g.pace"), paceText(e.kind)]]
     : [[T("g.depth"), bandText(e.kind), C.lure], [T("g.zone"), zoneText(e.kind)],
-       [T("g.pace"), paceText(e.kind)], [T("g.net"), e.sight ? T("g.no") : T("g.yes")]];
+       [T("g.pace"), paceText(e.kind)], [T("g.net"), sellableId(e.id) ? T("g.yes") : T("g.no")]];
   if (!isCatch && Object.hasOwn(save.at, e.id)) rows.push([T("g.first"), save.at[e.id] + "M"]);
   if (rare) rows.push([T("g.tab.rare"), T("g.count", rare), C.rare]);
   return { e, rows, known, pale: isCatch ? catchCard.rare : guideTab === 1,
@@ -4522,7 +4551,9 @@ function turnShopTab(delta) {
 function upgradeValue(id, level) {
   const values = {
     tank: 5 + level, fins: 100 + level * 15, lamp: level * 16,
-    line: SPEAR_RANGE + level * 26, bait: +(RARE_CHANCE * Math.pow(1.9, level) * 100).toFixed(3),
+    /* 두 단계까지는 예전 그대로 두고, 그 위로는 완만하게 늘린다 -
+       계속 26씩 더하면 작살이 화면을 가로지른다. */
+    line: SPEAR_RANGE + (level <= 2 ? level * 26 : 52 + Math.round((level - 2) * 11.7)), bait: +(RARE_CHANCE * Math.pow(1.9, level) * 100).toFixed(3),
     reel: 100 + level * 20, hook: Math.round((HOOK_RATE + level * .05) * 100), sonar: [0,180,300][level],
     ship: 100 + level * 20
   };
@@ -4530,7 +4561,7 @@ function upgradeValue(id, level) {
 }
 function upgradeEffect(item) {
   const level = upLv(item.id), current = upgradeValue(item.id, level);
-  const value = level >= UP_MAX ? current : current + " → " + upgradeValue(item.id, level + 1);
+  const value = level >= upMax(item.id) ? current : current + " → " + upgradeValue(item.id, level + 1);
   return T("s.effect." + item.id, value);
 }
 function shopDescription(item) {
@@ -4569,9 +4600,9 @@ function shopItemView(item) {
     };
   }
   return {
-    title: shopItemName(item) + " " + upLv(item.id) + "/" + UP_MAX,
+    title: shopItemName(item) + " " + upLv(item.id) + "/" + upMax(item.id),
     detail: upgradeEffect(item),
-    price: upLv(item.id) >= UP_MAX ? T("s.full") : T("ui.coin", item.cost[upLv(item.id)]),
+    price: upLv(item.id) >= upMax(item.id) ? T("s.full") : T("ui.coin", upCost(item, upLv(item.id))),
     action: "buy", disabled: false,
   };
 }
@@ -4646,7 +4677,7 @@ function beginTrade() {
 function tradeQuote() {
   if (!trade || trade.type === "use") return 0;
   if (trade.type === "buyConsumable") return CONSUMABLES.find(item=>item.id===trade.id).cost;
-  if (trade.type === "buy") return UPGRADES.find(item => item.id === trade.id).cost[upLv(trade.id)] || 0;
+  if (trade.type === "buy") return upCost(UPGRADES.find(item => item.id === trade.id), upLv(trade.id)) || 0;
   if (trade.type === "buySuit") return SUITS.find(item => item.id === trade.id).cost;
   if (trade.type === "buyBoat") return BOATS.find(item => item.id === trade.id).cost;
   if (trade.type === "all") return aquariumStock().reduce((sum, item) => sum + item.count * item.price, 0);
@@ -5531,8 +5562,9 @@ function spearHit() {
   for (const b of beings) {
     const dx = Math.abs(b.cx() - spear.x), dy = Math.abs(b.cy() - spear.y);
     if (dx > b.w * .5 + 3 || dy > b.h * .5 + 3) continue;
-    if (!b.K.catchable) {
-      /* 상어와 메갈로돈, 잠수함에는 작살이 들지 않는다. */
+    if (!canCatch(b.K)) {
+      /* 메갈로돈과 잠수함에는 작살이 들지 않는다. 상어는 작살줄을 끝까지
+         올리기 전까지 같은 대접을 받는다. */
       b.scare(spear.x);
       say(b.kind === "sub" ? T("m.subignore") : T("m.toobig"), C.textWarn);
       if (markSeen(b.gid)) sighted(b);
@@ -5812,7 +5844,7 @@ function stepBoat(u, fast) {
       if (d < 60 * 60 && d < bestD) shark = b;
       continue;
     }
-    if (!b.K.catchable || b.pause > 0) continue;
+    if (!canCatch(b.K) || b.pause > 0) continue;
     if (d < 70 * 70 && d < bestD) { best = b; bestD = d; }
   }
   if (shark) {
@@ -5891,7 +5923,7 @@ function stepBeings(u) {
     /* 상어가 지나가면 작은 것들이 흩어진다 */
     if (b.kind === "shark" || b.kind === "mega") {
       for (const o of beings) {
-        if (o === b || !o.K.catchable || o.flee > 0 || o.pause > 0) continue;
+        if (o === b || !canCatch(o.K) || o.flee > 0 || o.pause > 0) continue;
         const dx = o.cx() - b.cx(), dy = o.cy() - b.cy();
         if (Math.abs(dx) < b.w * .8 && Math.abs(dy) < b.h * .9) o.scare(b.cx());
       }

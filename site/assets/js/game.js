@@ -836,10 +836,74 @@ spr("boat", [         /* 낚싯배 - 흰 삼각돛, 밀짚모자 쓴 낚시꾼 *
   ".................ooooooooooooooooooooo................",
   "......................................................",
 ]);
+spr("boat2", [         /* 2단계 낚싯배 - 앞뒤로 말려 올라간 뱃머리, 네모돛을 단 롱십 */
+  "",
+  "",
+  "",
+  "",
+  "",
+  "........................o",
+  "...........oooooooooooookooooooooooooo",
+  "..........okkkkkkkkkkkkkkkkkkkkkkkkkkko...................o",
+  "...........owwwwwwwwwwwwkwwwwwwwwwwwwo...................odo",
+  "...........owwwwwlwwwwwwkwwwwwlwwwwwwo..................odyo",
+  "...........owwwwwwwwwwwwkwwwwwwwwwwwwo.................odoo",
+  "...........owwwwwwwwwwwwkwwwwwwwwwwwwo................odo",
+  "...........owwwwwlwwwwwwkwwwwwlwwwwwwo...............odo",
+  "...........owwwwwwwwwwwwkwwwwwwwwwwwwo..............odo",
+  "...........owwwwwwwwwwwwkwwwwwwwwwwwwo.............odo",
+  "....ooo....owwwwwlwwwwwwkwwwwwlwwwwwwo............odo",
+  "...omlmo...owwwwwwwwwwwwkwwwwwwwwwwwwo........oooodo",
+  "..omlmo....owwwwwwwwwwwwkwwwwwwwwwwwwo.......ohhhoo......ooo",
+  ".ommmo.....owwwwwlwwwwwwkwwwwwlwwwwwwo......ohhhhho.....omlmo",
+  ".ommo.......ooooooooooookoooooooooooo........owkwo.......ommo",
+  ".ommo..................oko..................orrrrro......ommo",
+  "..ommo.................oko..................orrrrro.....ommo",
+  "..ommoooooooooooooooooookoooooooooooooooooooooooooooooooommo",
+  "...ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  "...ollllllllllllllllllllllllllllllllllllllllllllllllllllllo",
+  "...ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  "....ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  ".....ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  "......ooddddddddddddddddddddddddddddddddddddddddddddddoo",
+  "........oooddddddddddddddddddddddddddddddddddddddddooo",
+  "...........ooooddddddddddddddddddddddddddddddddoooo",
+  "...............ooooooddddddddddddddddddddoooooo",
+  ".....................oooooooooooooooooooo",
+]);
+spr("boat3", [         /* 3단계 낚싯배 - 낮고 긴 모터요트. 남색 선체에 흰 선실과 레이더 */
+  ".......................................................................odo",
+  "........................................ooooooooo.....................odyo",
+  ".......................................occccccccco...................odoo",
+  "........................................okookooko...................odo",
+  ".........................................o.oko.o...................odo",
+  "..............................ooooooooooooookoooooooo.............odo",
+  "............................ooccccccccccccccccccccccco...........odo",
+  "..........................oosssssssssssssssssssssssssso.........odo",
+  "........................oosssggggggggggggssggggggggggsso.......odo",
+  "......................oosssggggggggggggggssggggggggggsso..ooo.odo",
+  "...............ooooooosssssssssssssssssssssssssssssssssooohhhooo",
+  ".............oosssssssssssssssssssssssssssssssssssssssssshhhhhsso",
+  "............ossssgggggggggggggggggssgggggggggggggggggssssswkwsssso",
+  "..........ooossssgggggggggggggggggssgggggggggggggggggssssrrrrrsssoooooooo",
+  ".......ooossssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssso",
+  ".....oommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  "...oommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  "..ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  "..ollllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllo",
+  "...ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  "....ommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmo",
+  ".....ooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddo",
+  ".......ooooddddddddddddddddddddddddddddddddddddddddddddddddddddddddddoo",
+  "...........ooooooddddddddddddddddddddddddddddddddddddddddddddddddoooo",
+  ".................ooooooooodddddddddddddddddddddddddddddddoooooooo",
+  "..........................ooooooooooooooooooooooooooooooo",
+]);
+
 /* 배는 단계마다 도안이 다르고, 낚싯대가 붙는 자리와 뱃전이 수면에 걸리는
    높이도 함께 달라진다. 치수를 코드 곳곳에 박아 두면 단계를 하나 더할 때
    빠뜨리는 자리가 생기므로 BOAT_TIERS 한 곳에서만 읽는다. */
-const boatTier = () => BOAT_TIERS[Math.min(upLv("boat"), BOAT_TIERS.length - 1)];
+const boatTier = () => BOAT_TIERS[Math.min(upLv("ship"), BOAT_TIERS.length - 1)];
 const boatSpr = () => SPR[boatTier().spr];
 /* 뱃전이 수면에 걸치도록 내려 앉히는 깊이. 배의 y 는 seaTop 에서 이만큼 위다. */
 const boatFloat = () => boatTier().float;
@@ -1557,7 +1621,8 @@ function bake(def, colors, flip, scale) {
 }
 /* 색표에 지문을 찍어 둔다. 매번 JSON 으로 만들면 그 자체가 비용이다. */
 function stamp(colors) {
-  colors.k4 = [colors.o, colors.d, colors.m, colors.l, colors.h, colors.r, colors.y].join("");
+  colors.k4 = [colors.o, colors.d, colors.m, colors.l, colors.h, colors.r, colors.y,
+               colors.s, colors.g, colors.c].join("");
   return colors;
 }
 
@@ -1787,6 +1852,7 @@ const STR = {
     "s.tank": "산소통",
     "s.tankV": "하트 한 칸",
     "s.fins": "오리발",
+    "s.ship": "더 큰 낚싯배",
     "s.finsV": "헤엄 속도",
     "s.lamp": "랜턴",
     "s.lampV": "심해 시야",
@@ -1968,6 +2034,7 @@ const STR = {
     "s.tank": "AIR TANK",
     "s.tankV": "ONE MORE HEART",
     "s.fins": "FINS",
+    "s.ship": "BIGGER BOAT",
     "s.finsV": "SWIM SPEED",
     "s.lamp": "LAMP",
     "s.lampV": "DEEP-WATER SIGHT",
@@ -2065,6 +2132,7 @@ Object.assign(STR.ko, {
   "s.effect.bait": "희귀 {0}%",
   "s.baitLevels": "희귀 확률 {0}% → {1}% → {2}%",
   "s.effect.reel": "줄 속도 {0}%",
+  "s.effect.ship": "배 속도 {0}%",
   "s.effect.hook": "챔질 {0}%",
   "s.now": "구매 후 바로 적용",
   "s.spawn": "새로 생성되는 생물부터 적용",
@@ -2092,6 +2160,7 @@ Object.assign(STR.en, {
   "s.effect.bait": "RARE {0}%",
   "s.baitLevels": "RARE CHANCE {0}% → {1}% → {2}%",
   "s.effect.reel": "LINE {0}%",
+  "s.effect.ship": "BOAT {0}%",
   "s.effect.hook": "HOOK {0}%",
   "s.now": "TAKES EFFECT IMMEDIATELY",
   "s.spawn": "APPLIES TO NEWLY SPAWNED CREATURES",
@@ -2478,6 +2547,7 @@ const UPGRADES = [
   { id: "reel", cost: [180, 430], role: "boat" },
   { id: "hook", cost: [220, 520], role: "boat" },
   { id: "sonar", cost: [400, 900], role: "both" },
+  { id: "ship", cost: [700, 1600], role: "boat" },
 ];
 const UP_MAX = 2;
 /* 복장은 한 번 구매해 계속 입는다. 성능 장비의 단계와는 별개다. */
@@ -2502,6 +2572,8 @@ const SHOP_ITEMS = [
 const upLv = k => (save.up && save.up[k]) || 0;
 const heartMax = () => 10 + upLv("tank") * 2;   /* 반 칸이 1 이므로 다섯 개 */
 const swimMul = () => 1 + upLv("fins") * .15;
+/* 배가 커지면 그만큼 잘 나간다 - 오리발이 잠수부에게 하는 일을 배에게 한다. */
+const shipMul = () => 1 + upLv("ship") * .2;
 const lampAdd = () => upLv("lamp") * 16;
 const rangeAdd = () => upLv("line") * 26;
 const rareMul = () => Math.pow(1.9, upLv("bait"));
@@ -3508,8 +3580,20 @@ const boatPalettes = {
 };
 /* 단계마다 도안·낚싯대 자리·수면 높이를 함께 적어 둔다. 지금은 한 단계뿐이고,
    윗단계는 이 표에 줄을 더하는 것으로 끝난다. */
+const yachtColors = stamp({
+  ...boatColors,
+  o: "#12182c",   /* 외곽선 */
+  d: "#121f42",   /* 물에 잠긴 선체 */
+  m: "#243c72",   /* 남색 선체 */
+  l: "#dfe9f2",   /* 수면에 닿는 흰 띠 */
+  s: "#e9f1f8",   /* 선실 */
+  g: "#6fa8d6",   /* 창 */
+  c: "#9db4cc",   /* 지붕과 레이더 */
+});
 const BOAT_TIERS = [
-  { spr: "boat", rodTip: { x: 52, y: 9 }, float: 14, colors: boatColors },
+  { spr: "boat",  rodTip: { x: 52, y: 9 }, float: 14, colors: boatColors },
+  { spr: "boat2", rodTip: { x: 58, y: 8 }, float: 14, colors: boatColors },
+  { spr: "boat3", rodTip: { x: 72, y: 0 }, float: 8, colors: yachtColors },
 ];
 /* 도색은 단계의 기본 빛깔 위에 선체 세 빛깔만 덮는다 - 윗단계 배의 제 빛깔을
    잃지 않으면서 사 둔 도색도 그대로 먹는다. */
@@ -4422,7 +4506,8 @@ function upgradeValue(id, level) {
   const values = {
     tank: 5 + level, fins: 100 + level * 15, lamp: level * 16,
     line: SPEAR_RANGE + level * 26, bait: +(RARE_CHANCE * Math.pow(1.9, level) * 100).toFixed(3),
-    reel: 100 + level * 20, hook: Math.round((HOOK_RATE + level * .05) * 100), sonar: [0,180,300][level]
+    reel: 100 + level * 20, hook: Math.round((HOOK_RATE + level * .05) * 100), sonar: [0,180,300][level],
+    ship: 100 + level * 20
   };
   return values[id];
 }
@@ -5641,7 +5726,7 @@ function stepDiver(u, fast) {
 
 /* ---- 낚싯배 ---- */
 function stepBoat(u, fast) {
-  const acc = (fast ? 1.9 : .8) * u * .25;
+  const acc = (fast ? 1.9 : .8) * u * .25 * shipMul();
   let ax = 0;
   if (pressed("arrowleft")) ax -= 1;
   if (pressed("arrowright")) ax += 1;

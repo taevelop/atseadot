@@ -281,7 +281,7 @@ test('every boat tier has a sprite, a rod tip inside it, and a hull row to paint
   tiers.forEach((name, level) => {
     app.context.level = level;
     const at = `tier ${level} (${name})`;
-    const info = app.data(`(() => { save.up.boat = level;
+    const info = app.data(`(() => { save.up.ship = level;
       const def = boatSpr();
       return { spr: def.name, w: def.w, h: def.h, hull: boatHullY(),
                tipX: boatTier().rodTip.x, tipY: boatTier().rodTip.y, float: boatFloat() }; })()`);
@@ -294,7 +294,7 @@ test('every boat tier has a sprite, a rod tip inside it, and a hull row to paint
     assert.ok(info.float > 0 && info.float < info.h, at + ' rests across the waterline');
   });
   /* 없는 단계를 가리켜도 마지막 배로 떨어진다 - 저장이 앞서가도 깨지지 않는다. */
-  app.run(`save.up.boat = BOAT_TIERS.length + 5`);
+  app.run(`save.up.ship = BOAT_TIERS.length + 5`);
   assert.equal(app.run('boatTier().spr'), tiers[tiers.length - 1]);
 });
 

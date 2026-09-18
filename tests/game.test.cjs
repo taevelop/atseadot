@@ -217,3 +217,84 @@ test('the chest lays out what it gave and any dismissal key closes the card', ()
   full.run('setLang("en")');
   assert.deepEqual(full.data('rewardRows().map(r=>r[0])'), ['SPECIAL BAIT']);
 });
+
+test('the moored boat is drawn once, with the player, and never over the title', () => {
+  const app = game();
+  app.run('startRun("boat"); swapRole(); globalThis.images=[]; g.drawImage=cv=>images.push(cv)');
+  const boat = 'images.filter(cv=>cv===equippedBoatImage(moored.dir===-1)).length';
+  /* 잠수 중에는 잠수부와 같은 차례에 딱 한 번 올라온다. 물을 칠하기 전에
+     한 번 더 그리면 앞을 지나는 물고기가 배를 뚫고 보인다. */
+  app.run('images=[]; render()');
+  assert.equal(app.run(boat), 1);
+  /* 시작 화면은 물과 빛만 남긴다 - 세워 둔 배가 제목을 가리면 안 된다. */
+  app.run('mode="title"; images=[]; render()');
+  assert.equal(app.run(boat), 0);
+});
+
+test('the boat turns the way it moves and its rod tip follows the bow', () => {
+  const app = game();
+  app.run('startRun("boat"); closeMsg(); beings=[]');
+  assert.equal(app.run('player.dir'), 1);
+  assert.equal(app.run('rodTipX()'), app.run('boatTier().rodTip.x'));
+  app.run('keys.arrowleft=true; for(let i=0;i<60;i++) update(1,16.67); keys.arrowleft=false');
+  assert.equal(app.run('player.dir'), -1);
+  /* 낚싯대는 뱃고물에 달려 있다 - 뱃머리가 돌면 줄도 반대쪽 끝에서 떨어진다. */
+  assert.equal(app.run('rodTipX()'), app.run('boatSpr().w - 1 - boatTier().rodTip.x'));
+  app.run('globalThis.images=[]; g.drawImage=cv=>images.push(cv); drawBoatAndLine()');
+  assert.equal(app.run('images.includes(equippedBoatImage(true))'), true, 'flipped sprite is drawn');
+  assert.equal(app.run('images.includes(equippedBoatImage(false))'), false, 'upright sprite is not');
+  app.run('action(); for(let i=0;i<200;i++) update(1,16.67)');
+  assert.equal(Math.round(app.run('rod.x - player.x')), app.run('rodTipX()'));
+  /* 도색한 배는 선체만 덧칠한 별도 그림이다 - 좌우를 따로 구워 두지 않으면
+     한쪽을 칠하고 다른 쪽은 기본색으로 남는다. */
+  app.run('save.coin=5000; buyCosmetic("boat","mint"); images=[]; drawBoatAndLine()');
+  assert.equal(app.run('images.includes(equippedBoatImage(true))'), true, 'painted boat mirrors');
+  assert.equal(app.run('equippedBoatImage(true) === equippedBoatImage(false)'), false, 'sides differ');
+});
+
+test('a boat left behind keeps the way it faced, and boarding it resumes that way', () => {
+  const app = game();
+  app.run('startRun("boat"); closeMsg(); beings=[]');
+  app.run('keys.arrowleft=true; for(let i=0;i<60;i++) update(1,16.67); keys.arrowleft=false');
+  app.run('swapRole()');
+  assert.deepEqual(app.data('({role:player.role,dir:moored.dir})'), {role:'diver', dir:-1});
+  /* 잠수부는 자기 방향을 새로 쓴다 - 세워 둔 배의 방향과 섞이지 않는다. */
+  assert.equal(app.run('player.dir'), 1);
+  /* 화면이 바뀌어도 세워 둔 자리는 바다와 함께 따라간다. 자리만 담던
+     시절의 계산을 그대로 두면 여기서 숫자가 아닌 것이 나온다. */
+  app.resize(390, 686);
+  assert.equal(typeof app.run('moored.x'), 'number');
+  assert.equal(app.run('moored.x > 0 && moored.x < worldW()'), true, 'moored x stays in the sea');
+  assert.equal(app.run('moored.dir'), -1);
+  app.run('swapRole()');
+  assert.deepEqual(app.data('({role:player.role,dir:player.dir,moored})'), {role:'boat', dir:-1, moored:null});
+  assert.equal(Math.round(app.run('rod.x - player.x')), app.run('rodTipX()'));
+  /* 새 플레이는 세워 둔 배를 물려받지 않는다. */
+  app.run('swapRole(); startRun("diver")');
+  assert.equal(app.run('moored'), null);
+});
+
+test('every boat tier has a sprite, a rod tip inside it, and a hull row to paint', () => {
+  const app = game();
+  const tiers = app.data('BOAT_TIERS.map(t=>t.spr)');
+  assert.ok(tiers.length > 0);
+  tiers.forEach((name, level) => {
+    app.context.level = level;
+    const at = `tier ${level} (${name})`;
+    const info = app.data(`(() => { save.up.ship = level;
+      const def = boatSpr();
+      return { spr: def.name, w: def.w, h: def.h, hull: boatHullY(),
+               tipX: boatTier().rodTip.x, tipY: boatTier().rodTip.y, float: boatFloat() }; })()`);
+    assert.equal(info.spr, name, at);
+    assert.ok(info.tipX >= 0 && info.tipX < info.w, at + ' rod tip x sits inside the sprite');
+    assert.ok(info.tipY >= 0 && info.tipY < info.h, at + ' rod tip y sits inside the sprite');
+    /* 도색은 선체 줄부터 아래만 덧칠한다 - 그 줄을 못 찾으면 배가 통째로 칠해진다. */
+    assert.ok(info.hull > 0 && info.hull < info.h, at + ' has a hull row to paint from');
+    /* 배는 수면에 걸쳐 앉는다 - 공중에 뜨거나 통째로 잠기면 안 된다. */
+    assert.ok(info.float > 0 && info.float < info.h, at + ' rests across the waterline');
+  });
+  /* 없는 단계를 가리켜도 마지막 배로 떨어진다 - 저장이 앞서가도 깨지지 않는다. */
+  app.run(`save.up.ship = BOAT_TIERS.length + 5`);
+  assert.equal(app.run('boatTier().spr'), tiers[tiers.length - 1]);
+});
+

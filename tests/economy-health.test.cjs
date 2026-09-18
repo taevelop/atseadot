@@ -54,10 +54,17 @@ test('partial and all sales use rare prices and never erase collection progress'
 
 test('inventory normalization excludes sightings and bounds rare stock by catches', () => {
   const app=game();
-  app.context.bad={economyVersion:1,caught:{fish3:1,shark:2},rare:{fish3:9,shark:3},
-    hold:{fish3:20,shark:2},holdR:{fish3:20,shark:20}};
+  /* 잠수함은 어떤 장비로도 잡히지 않는다 - 재고에 들어올 자리가 없다. */
+  app.context.bad={economyVersion:1,caught:{fish3:1,sub:2},rare:{fish3:9,sub:3},
+    hold:{fish3:20,sub:2},holdR:{fish3:20,sub:20}};
   assert.deepEqual(app.data('normalizeSave(bad).hold'),{});
   assert.deepEqual(app.data('normalizeSave(bad).holdR'),{fish3:1});
+  /* 상어는 작살줄을 끝까지 올린 사람이 잡아 온 것이다. 재고는 남기되
+     파는 것은 해금을 다시 본다. */
+  app.context.hunted={economyVersion:1,caught:{shark:3},rare:{shark:1},
+    hold:{shark:9},holdR:{shark:9}};
+  assert.deepEqual(app.data('normalizeSave(hunted).hold'),{shark:2});
+  assert.deepEqual(app.data('normalizeSave(hunted).holdR'),{shark:1});
 });
 
 test('purchases charge the correct tier once and reject poor or maxed purchases', () => {
@@ -152,3 +159,57 @@ test('overlapping predators do not stack damage during protection', () => {
   app.run('stepBeings(1)');
   assert.equal(app.run('player.hp'),8);
 });
+
+test('gear levels are capped per item and every step costs more than the one before', () => {
+  const app = game();
+  assert.equal(app.run('upMax("line")'), 15, 'the spear line goes all the way');
+  assert.equal(app.run('upMax("tank")'), app.run('UP_MAX'), 'the rest keep the old cap');
+  assert.equal(app.run('upMax("ship")'), 2, 'three boats');
+  const costs = app.data(`(() => { const item = UPGRADES.find(i => i.id === "line");
+    return Array.from({length: upMax("line")}, (_, level) => upCost(item, level)); })()`);
+  assert.equal(costs.length, 15);
+  /* 정해 둔 두 단계는 그대로 두고 그 위로만 새로 매긴다. */
+  assert.deepEqual(costs.slice(0, 2), app.data('UPGRADES.find(i=>i.id==="line").cost'));
+  for (let i = 1; i < costs.length; i++)
+    assert.ok(costs[i] > costs[i - 1], `step ${i} costs ${costs[i]}, not more than ${costs[i - 1]}`);
+  /* 사거리도 단계마다 늘되 화면을 가로지르지는 않는다. */
+  const range = app.data('Array.from({length:16},(_,l)=>upgradeValue("line",l))');
+  for (let i = 1; i < range.length; i++) assert.ok(range[i] > range[i - 1], 'range step ' + i);
+  assert.ok(range[15] < app.run('SW'), 'the spear stays inside the screen');
+});
+
+test('the spear line can be bought to its last step and stops there', () => {
+  const app = game();
+  app.run('save.coin = 1e9');
+  for (let i = 0; i < 15; i++) assert.equal(app.run('buyUpgrade("line")'), true, 'step ' + i);
+  assert.equal(app.run('upLv("line")'), 15);
+  assert.equal(app.run('buyUpgrade("line")'), false, 'there is no sixteenth step');
+  assert.equal(app.run('upgradeStatus("line")'), 's.maxed');
+  /* 값을 치를 수 없으면 사지 못한다. */
+  const app2 = game();
+  app2.run('save.coin = 0');
+  assert.equal(app2.run('upgradeStatus("line")'), 's.poor');
+});
+
+test('sharks are for watching until the spear line is maxed, then they can be caught and sold', () => {
+  const app = game();
+  app.run('startRun("diver"); closeMsg()');
+  assert.equal(app.run('huntUnlocked()'), false);
+  assert.equal(app.run('canCatch(KIND.shark)'), false, 'the spear bounces off first');
+  assert.equal(app.run('sellableId("shark")'), false);
+  app.run('save.coin = 1e9; for (let i = 0; i < upMax("line"); i++) buyUpgrade("line")');
+  assert.equal(app.run('huntUnlocked()'), true);
+  assert.equal(app.run('canCatch(KIND.shark)'), true);
+  assert.equal(app.run('sellableId("shark")'), true);
+  /* 메갈로돈과 잠수함은 끝까지 구경만 한다. */
+  for (const id of ['mega', 'sub']) {
+    app.context.id = id;
+    assert.equal(app.run('canCatch(KIND[id])'), false, id);
+    assert.equal(app.run('sellableId(id)'), false, id);
+  }
+  /* 끝판 사냥감이니 지금까지 중 가장 비싸다. */
+  assert.ok(app.run('priceOf("shark", false)') > app.run('priceOf("angler", false)'));
+  /* 칭호 조건은 그대로다 - 상어를 잡아야 도감을 다 채우는 것은 아니다. */
+  assert.equal(app.run('CATCH_IDS.includes("shark")'), false);
+});
+

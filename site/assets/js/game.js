@@ -4954,7 +4954,9 @@ function onPress(k) {
   if (mode === "catch") {
     if (k === "arrowdown" || k === "pagedown") { scrollInfo(lineH() * 3); return; }
     if (k === "arrowup" || k === "pageup") { scrollInfo(-lineH() * 3); return; }
-    if (back) { catchCard = null; mode = "dive"; }
+    /* 상자 카드와 같은 열쇠로 닫는다 - 한 손으로 계속 잡으러 가는 사람에게
+       창마다 닫는 법이 다른 것만큼 거슬리는 것이 없다. */
+    if (back || ok || k === "space") { catchCard = null; mode = "dive"; }
     return;
   }
   if (mode === "help") {

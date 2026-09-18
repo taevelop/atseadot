@@ -144,7 +144,7 @@ test('X and Escape close the current panel and dialogue before returning to the 
 });
 
 test('confirmation and old aliases do not close panels; the touch close button still does', () => {
-  for (const setup of ['onPress("h")', 'mode="catch"; catchCard={id:GUIDE[0].id}', 'onPress("g"); onPress("enter")']) {
+  for (const setup of ['onPress("h")', 'onPress("g"); onPress("enter")']) {
     const app = game();
     app.run('startRun("diver"); ' + setup);
     const before = app.data('({mode,guideDetail,catchCard})');
@@ -155,6 +155,33 @@ test('confirmation and old aliases do not close panels; the touch close button s
     app.run('controlAction("primary")');
     assert.equal(app.run('mode'), before.mode === 'guide' ? 'guide' : 'dive');
     assert.equal(app.run('guideDetail'), false);
+  }
+});
+
+/* 포획 카드와 상자 카드는 확인·액션 키로도 닫힌다. 예전 별칭은 아무 일도 하지 않는다. */
+test('the catch and reward cards close on the same keys, and old aliases do nothing', () => {
+  for (const [card, setup] of [
+    ['catch', 'mode="catch"; catchCard={id:GUIDE[0].id,rare:false,isNew:true,at:120}'],
+    ['reward', 'openChest()']]) {
+    const start = 'startRun("diver"); ' + setup;
+    const app = game();
+    app.run(start);
+    const before = app.data('({mode,guideDetail})');
+    assert.equal(before.mode, card);
+    tap(app, 'd');
+    assert.deepEqual(app.data('({mode,guideDetail})'), before, card + ' d keeps the card open');
+    for (const key of ['x', 'Escape', 'z', 'Enter', ' ']) {
+      const one = game();
+      one.run(start);
+      tap(one, key);
+      assert.equal(one.run('mode'), 'dive', card + ' ' + key);
+      assert.equal(one.run('catchCard'), null, card + ' ' + key);
+      assert.equal(one.run('rewardCard'), null, card + ' ' + key);
+    }
+    const touch = game();
+    touch.run(start);
+    touch.run('controlAction("primary")');
+    assert.equal(touch.run('mode'), 'dive', card + ' touch close');
   }
 });
 

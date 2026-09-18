@@ -1825,7 +1825,7 @@ const STR = {
     "app.title": "AT SEA :: DOT",
     "app.sub": "- DOT EDITION -",
     "menu.diver": "DIVE AS A DIVER",
-    "menu.boat": "FISH BY BOAT",
+    "menu.boat": "FISH FROM A BOAT",
     "menu.guide": "FIELD GUIDE",
     "menu.help": "HOW TO PLAY",
     "menu.lang": "LANG: ENGLISH",

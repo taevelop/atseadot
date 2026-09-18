@@ -217,3 +217,17 @@ test('the chest lays out what it gave and any dismissal key closes the card', ()
   full.run('setLang("en")');
   assert.deepEqual(full.data('rewardRows().map(r=>r[0])'), ['SPECIAL BAIT']);
 });
+
+test('the moored boat is drawn once, with the player, and never over the title', () => {
+  const app = game();
+  app.run('startRun("boat"); swapRole(); globalThis.images=[]; g.drawImage=cv=>images.push(cv)');
+  const boat = 'images.filter(cv=>cv===equippedBoatImage()).length';
+  /* 잠수 중에는 잠수부와 같은 차례에 딱 한 번 올라온다. 물을 칠하기 전에
+     한 번 더 그리면 앞을 지나는 물고기가 배를 뚫고 보인다. */
+  app.run('images=[]; render()');
+  assert.equal(app.run(boat), 1);
+  /* 시작 화면은 물과 빛만 남긴다 - 세워 둔 배가 제목을 가리면 안 된다. */
+  app.run('mode="title"; images=[]; render()');
+  assert.equal(app.run(boat), 0);
+});
+

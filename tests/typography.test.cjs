@@ -192,3 +192,30 @@ test('the info card starts below the divider so the first row is not clipped', (
     }
   }
 });
+
+test('the play hint names the aquarium, shop and sky keys instead of the arrows', () => {
+  const app = game();
+  app.run('startRun("diver"); closeMsg()');
+  for (const language of ['ko','en']) {
+    app.context.language = language;
+    app.run('setLang(language)');
+    /* 방향키 안내는 사라졌다. 손이 먼저 찾는 것을 한 줄에 적어 둘 이유가 없다. */
+    for (const key of ['hint.diver','hint.boat']) {
+      app.context.key = key;
+      assert.ok(!/[←-↓]/.test(app.run('T(key)')), language + ' ' + key);
+    }
+    for (const [width, height] of [[1258,622],[390,686],[360,482],[844,284],[320,322]]) {
+      app.resize(width, height);
+      for (const role of ['diver','boat']) {
+        app.context.role = role;
+        const where = `${language} ${role} ${width}x${height}`;
+        /* 아무리 좁아도 창을 여는 열쇠는 잘려 나가지 않는다. */
+        const shown = app.run(`(() => { player.role = role;
+          const space = UW - GAUGE_W - 9;
+          return fit(hintText(space), space - 13); })()`);
+        for (const cap of ['[A]','[S]','[T]']) assert.ok(shown.includes(cap), where + ' ' + cap);
+        assert.doesNotThrow(() => app.run('render()'), where);
+      }
+    }
+  }
+});

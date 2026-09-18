@@ -1656,9 +1656,10 @@ const STR = {
     "zone.MIDNIGHT": "암흑층", "zone.ABYSS": "심연",
     "zone.s.SUNLIGHT": "표층", "zone.s.TWILIGHT": "약광",
     "zone.s.MIDNIGHT": "암흑", "zone.s.ABYSS": "심연",
-    "hint.diver": "[↑][←][↓][→] 이동 · [Shift] 가속 · [Space] 작살 · [G] 도감",
-    "hint.boat": "[←][→] 배 · [↓][↑] 줄 · [Space] 액션",
-    "hint.short": "[Space] 액션 · [G] 도감",
+    "hint.diver": "[Shift] 가속 · [Space] 작살 · [G] 도감",
+    "hint.boat": "[Space] 액션 · [G] 도감",
+    "hint.keys": "[A] 수족관 · [S] 상점 · [T] 하늘",
+    "hint.keysShort": "[A][S][T]",
     "hint.swap": "[Tab] 배↔잠수부",
     "ui.paused": "일시정지",
     "help.title": "조작법",
@@ -1836,9 +1837,10 @@ const STR = {
     "zone.MIDNIGHT": "MIDNIGHT", "zone.ABYSS": "ABYSS",
     "zone.s.SUNLIGHT": "SUN", "zone.s.TWILIGHT": "TWI",
     "zone.s.MIDNIGHT": "MID", "zone.s.ABYSS": "ABY",
-    "hint.diver": "[↑][←][↓][→] SWIM   [Shift] DASH   [Space] SPEAR   [G] GUIDE",
-    "hint.boat": "[←][→] BOAT  [↓][↑] LINE  [Space] ACT",
-    "hint.short": "[Space] ACT   [G] GUIDE",
+    "hint.diver": "[Shift] DASH   [Space] SPEAR   [G] GUIDE",
+    "hint.boat": "[Space] ACT   [G] GUIDE",
+    "hint.keys": "[A] AQUARIUM   [S] SHOP   [T] SKY",
+    "hint.keysShort": "[A][S][T]",
     "ui.paused": "PAUSED",
     "help.title": "HOW TO PLAY",
     "help.close": "[X] / [Esc] CLOSE",
@@ -3985,16 +3987,27 @@ function drawMessage() {
 }
 
 /* 조작 안내 한 줄. 배경화면 모드에서는 사라진다. */
+/* 방향키는 손이 먼저 찾는다 - 한 줄을 그것으로 채우느니 창을 여는 열쇠를
+   적는다. 자리가 좁아지면 역할 전환·역할별 조작부터 접고 수족관·상점·하늘은
+   끝까지 남긴다. */
+function hintText(room) {
+  const role = player.role === "boat" ? T("hint.boat") : T("hint.diver");
+  const keys = T("hint.keys");
+  const full = role + "   " + keys + "   " + T("hint.swap");
+  const mid = role + "   " + keys;
+  const controls = document.getElementById("touch-controls");
+  /* 가장 좁은 화면에서는 열쇠만 남긴다 - 뜻은 [H] 조작법에 적혀 있고,
+     말머리만 남고 잘린 줄보다 온전한 키캡 석 장이 낫다. */
+  return controls && controls.offsetHeight > 0 ? T("hint.touch")
+       : textWidth(full) + 16 <= room ? full
+       : textWidth(mid) + 16 <= room ? mid
+       : textWidth(keys) + 16 <= room ? keys
+       : T("hint.keysShort");
+}
 function drawHints() {
   if (msg.lines.length) return;
   const room = UW - GAUGE_W - 9;
-  const full = (player.role === "boat" ? T("hint.boat") : T("hint.diver")) + "   " + T("hint.swap");
-  const mid = (player.role === "boat" ? T("hint.boat") : T("hint.diver"));
-  const controls = document.getElementById("touch-controls");
-  const str = controls && controls.offsetHeight > 0 ? T("hint.touch")
-            : textWidth(full) + 16 <= room ? full
-            : textWidth(mid) + 16 <= room ? mid
-            : T("hint.short") + "   " + T("hint.swap");
+  const str = hintText(room);
   // Keycaps need a little more height than plain touch instructions.
   const h = lineH(str) + 6, x = 3, y = UH - h - 3;
   drawWindow(x, y, Math.min(textWidth(str) + 13, room), h, { alpha: .7 });

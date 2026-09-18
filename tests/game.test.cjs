@@ -235,11 +235,11 @@ test('the boat turns the way it moves and its rod tip follows the bow', () => {
   const app = game();
   app.run('startRun("boat"); closeMsg(); beings=[]');
   assert.equal(app.run('player.dir'), 1);
-  assert.equal(app.run('rodTipX()'), app.run('ROD_TIP.x'));
+  assert.equal(app.run('rodTipX()'), app.run('boatTier().rodTip.x'));
   app.run('keys.arrowleft=true; for(let i=0;i<60;i++) update(1,16.67); keys.arrowleft=false');
   assert.equal(app.run('player.dir'), -1);
   /* 낚싯대는 뱃고물에 달려 있다 - 뱃머리가 돌면 줄도 반대쪽 끝에서 떨어진다. */
-  assert.equal(app.run('rodTipX()'), app.run('SPR.boat.w - 1 - ROD_TIP.x'));
+  assert.equal(app.run('rodTipX()'), app.run('boatSpr().w - 1 - boatTier().rodTip.x'));
   app.run('globalThis.images=[]; g.drawImage=cv=>images.push(cv); drawBoatAndLine()');
   assert.equal(app.run('images.includes(equippedBoatImage(true))'), true, 'flipped sprite is drawn');
   assert.equal(app.run('images.includes(equippedBoatImage(false))'), false, 'upright sprite is not');
@@ -272,5 +272,29 @@ test('a boat left behind keeps the way it faced, and boarding it resumes that wa
   /* 새 플레이는 세워 둔 배를 물려받지 않는다. */
   app.run('swapRole(); startRun("diver")');
   assert.equal(app.run('moored'), null);
+});
+
+test('every boat tier has a sprite, a rod tip inside it, and a hull row to paint', () => {
+  const app = game();
+  const tiers = app.data('BOAT_TIERS.map(t=>t.spr)');
+  assert.ok(tiers.length > 0);
+  tiers.forEach((name, level) => {
+    app.context.level = level;
+    const at = `tier ${level} (${name})`;
+    const info = app.data(`(() => { save.up.boat = level;
+      const def = boatSpr();
+      return { spr: def.name, w: def.w, h: def.h, hull: boatHullY(),
+               tipX: boatTier().rodTip.x, tipY: boatTier().rodTip.y, float: boatFloat() }; })()`);
+    assert.equal(info.spr, name, at);
+    assert.ok(info.tipX >= 0 && info.tipX < info.w, at + ' rod tip x sits inside the sprite');
+    assert.ok(info.tipY >= 0 && info.tipY < info.h, at + ' rod tip y sits inside the sprite');
+    /* 도색은 선체 줄부터 아래만 덧칠한다 - 그 줄을 못 찾으면 배가 통째로 칠해진다. */
+    assert.ok(info.hull > 0 && info.hull < info.h, at + ' has a hull row to paint from');
+    /* 배는 수면에 걸쳐 앉는다 - 공중에 뜨거나 통째로 잠기면 안 된다. */
+    assert.ok(info.float > 0 && info.float < info.h, at + ' rests across the waterline');
+  });
+  /* 없는 단계를 가리켜도 마지막 배로 떨어진다 - 저장이 앞서가도 깨지지 않는다. */
+  app.run(`save.up.boat = BOAT_TIERS.length + 5`);
+  assert.equal(app.run('boatTier().spr'), tiers[tiers.length - 1]);
 });
 

@@ -2614,6 +2614,22 @@ class Being {
     const w = worldW();
     return this.dir === 1 ? this.x > w + 40 : this.x + this.w < -40;
   }
+  /* 바다 끝에 닿은 것은 반대편에서 다시 들어온다. 예전에는 늘 같은 자리,
+     같은 깊이로 되돌려 보냈다 - 빠른 것이 느린 것을 따라잡을 때마다
+     둘이 가장자리에서 나란히 서서 다시 들어오고, 속도가 비슷하니 그대로
+     붙어 다녔다. 그렇게 한참 헤엄치고 나면 같은 종이 한 덩어리로 몰린다.
+     들어오는 자리와 깊이와 속도를 매번 새로 뽑아 흩어 놓는다. */
+  reenter() {
+    this.dir = -this.dir;
+    const margin = 10 + Math.random() * 190;
+    this.x = this.dir === 1 ? -this.w - margin : worldW() + margin;
+    const b = this.band();
+    this.top = b[0]; this.bottom = b[1];
+    this.y = this.top === this.bottom ? this.top : rnd(this.top, this.bottom);
+    this.speed = rnd(this.K.speed[0], this.K.speed[1]);
+    this.vy = rnd(this.K.drift[0], this.K.drift[1]) * (Math.random() < .5 ? 1 : -1);
+    this.phase = Math.random() * Math.PI * 2;
+  }
   /* 놀라 흩어진다. 놀란 자리에서 반대쪽으로 돈다. */
   scare(fromX) {
     this.flee = 1;
@@ -5702,8 +5718,7 @@ function stepBeings(u) {
     b.step(u);
     if (b.gone()) {
       if (b.kind === "sub" || b.kind === "mega") { beings.splice(i, 1); continue; }
-      b.dir = -b.dir;
-      b.x = b.dir === 1 ? -b.w - 10 : worldW() + 10;
+      b.reenter();
       continue;
     }
     if (b.K.glow || b.kind === "angler") {

@@ -2684,7 +2684,7 @@ function rescaleWorld(old) {
   for (const d of decor) { d.x = scaleX(d.x); d.y += seaBed - old.bed; }
   if (chest) { chest.x = scaleX(chest.x); chest.y += seaBed - old.bed; }
   for (const p of [...bubbles, ...motes]) { p.x = scaleX(p.x); p.y = scaleY(p.y); }
-  if (moored !== null) moored = scaleX(moored);
+  if (moored) moored.x = scaleX(moored.x);
   if (baitPuff) { baitPuff.x = scaleX(baitPuff.x); baitPuff.y = scaleY(baitPuff.y); }
   if (activeBait) { activeBait.x = scaleX(activeBait.x); activeBait.y = scaleY(activeBait.y); }
   cam = clamp(focusY() - SH * .5, 0, worldH - SH);
@@ -3298,7 +3298,7 @@ function resetPlayer() {
   if (player.role === "boat") {
     /* 뱃전(도안 15번째 줄)이 수면에 걸치도록 앉힌다. */
     player.y = seaTop - 14;
-    rod.x = player.x + ROD_TIP.x; rod.y = seaTop + 4;
+    rod.x = player.x + rodTipX(); rod.y = seaTop + 4;
   } else {
     player.y = seaTop + 16;
   }
@@ -3501,33 +3501,35 @@ const boatPalettes = {
 const equippedBoatColors = () => boatPalettes[save.boat] || boatColors;
 const boatImageCache = new Map();
 const BOAT_HULL_Y = SPR.boat.rows.findIndex(row => row.includes("llllllllllll"));
-function equippedBoatImage() {
-  if (save.boat === "default" || !boatPalettes[save.boat]) return bake(SPR.boat,boatColors,false);
-  if (!boatImageCache.has(save.boat)) {
+function equippedBoatImage(flip = false) {
+  if (save.boat === "default" || !boatPalettes[save.boat]) return bake(SPR.boat,boatColors,flip);
+  const key = save.boat + "|" + (flip ? 1 : 0);
+  if (!boatImageCache.has(key)) {
     const cv=document.createElement("canvas");
     cv.width=SPR.boat.w; cv.height=SPR.boat.h;
     const ctx=cv.getContext("2d");
-    ctx.drawImage(bake(SPR.boat,boatColors,false),0,0);
+    ctx.drawImage(bake(SPR.boat,boatColors,flip),0,0);
     // Reuse the sprite; paint only its hull. Sails and rod share palette keys.
     const height=SPR.boat.h-BOAT_HULL_Y;
-    ctx.drawImage(bake(SPR.boat,equippedBoatColors(),false),
+    ctx.drawImage(bake(SPR.boat,equippedBoatColors(),flip),
       0,BOAT_HULL_Y,SPR.boat.w,height,0,BOAT_HULL_Y,SPR.boat.w,height);
-    boatImageCache.set(save.boat,cv);
+    boatImageCache.set(key,cv);
   }
-  return boatImageCache.get(save.boat);
+  return boatImageCache.get(key);
 }
 /* 배에서 내려 물속으로 들어갔다면, 그 배는 내린 자리에 그대로 떠 있다.
    예전에는 아무 관계도 없는 장식용 배를 시차를 두고 띄웠는데, 배에서
    잠수부로 바꾸는 순간 유령선처럼 나타나 보였다.
    물을 칠하기 전에 그리면 수면 아래에 잠긴 뱃전이 물빛에 통째로 덮여
    돛대만 남는다 - 타고 있는 배와 같이 물 위에 얹는다. 그래서 이 그림은
-   물을 칠한 뒤 잠수부와 같은 차례에 한 번만 올린다. */
+   물을 칠한 뒤 잠수부와 같은 차례에 한 번만 올린다. 내릴 때 보던 뱃머리
+   방향도 그대로 두고, 돌아와 타면 그 방향에서 다시 출발한다. */
 function drawMooredBoat() {
   if (player.role === "boat" || moored === null) return;
-  const boatX=Math.round(moored-camX), surf=seaTop-cam;
+  const boatX=Math.round(moored.x-camX), surf=seaTop-cam;
   if (boatX < -SPR.boat.w || boatX > SW || surf < -SPR.boat.h || surf > SH+SPR.boat.h) return;
   const bob=Math.sin(clock*1.1)*1.2;
-  blit(equippedBoatImage(),boatX,Math.round(surf-14+bob));
+  blit(equippedBoatImage(moored.dir === -1),boatX,Math.round(surf-14+bob));
 }
 
 
@@ -3726,11 +3728,11 @@ function drawPlayer() {
 function drawBoatAndLine() {
   const bx = Math.round(player.x - camX), by = Math.round(player.y - cam);
   const bob = Math.round(Math.sin(clock * 1.4) * 1.2);
-  blit(equippedBoatImage(), bx, by + bob);
+  blit(equippedBoatImage(player.dir === -1), bx, by + bob);
   if (rod.state === "idle") return;
   /* 줄은 뱃전이 아니라 낚싯대 끝에서 떨어진다. 배가 움직이면 줄이
      비스듬히 끌리므로 두 점을 이어 그린다. */
-  const tipX = bx + ROD_TIP.x, tipY = by + bob + ROD_TIP.y + 1;
+  const tipX = bx + rodTipX(), tipY = by + bob + ROD_TIP.y + 1;
   const lx = Math.round(rod.x - camX), ly = Math.round(rod.y - cam);
   const steps = Math.max(1, Math.round((ly - tipY) / 2));
   for (let i = 0; i <= steps; i++) {
@@ -5359,7 +5361,7 @@ function rodAction() {
   if (rod.state === "idle") {
     rod.state = "out";
     rod.catchDepth = null;
-    rod.x = player.x + ROD_TIP.x;
+    rod.x = player.x + rodTipX();
     rod.y = seaTop + 6;
     say(T("m.cast"), C.textDim);
     return;
@@ -5632,7 +5634,7 @@ function stepBoat(u, fast) {
 
   if (rod.state === "idle") return;
   /* 줄은 배를 따라오되 한 박자 늦다 */
-  rod.x += ((player.x + ROD_TIP.x) - rod.x) * (1 - Math.pow(.90, u));
+  rod.x += ((player.x + rodTipX()) - rod.x) * (1 - Math.pow(.90, u));
 
   if (rod.state === "up" || rod.state === "reel") {
     /* 끌어올리는 중. 걸린 것이 있으면 줄을 따라 올라온다. */
@@ -5919,12 +5921,17 @@ function swapRole() {
   resetSonar();
   const role = player.role === "boat" ? "diver" : "boat";
   const keepX = clamp(player.x, 8, worldW() - 60);
-  /* 배에서 내리면 그 자리에 배를 세워 두고, 다시 타면 거두어 간다. */
-  moored = role === "diver" ? keepX : null;
+  /* 배에서 내리면 그 자리에 배를 세워 두고, 다시 타면 거두어 간다.
+     resetPlayer()가 뱃머리를 오른쪽으로 되돌리므로 방향은 그 전에 챙긴다. */
+  const boarding = role === "boat" ? moored : null;
+  moored = role === "diver" ? { x: keepX, dir: player.dir } : null;
   player.role = role;
   resetPlayer();
   player.x = keepX;
-  if (role === "boat") { player.y = seaTop - 14; rod.x = player.x + ROD_TIP.x; rod.y = seaTop + 4; }
+  if (role === "boat") {
+    if (boarding) player.dir = boarding.dir;
+    player.y = seaTop - 14; rod.x = player.x + rodTipX(); rod.y = seaTop + 4;
+  }
   else { player.y = seaTop + 16; }
   cam = clamp(focusY() - SH * .4, 0, worldH - SH);
   camX = clamp(player.x - SW * .5, 0, worldW() - SW);

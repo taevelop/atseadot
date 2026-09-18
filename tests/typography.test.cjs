@@ -167,3 +167,28 @@ test('switching language preserves shared UI sizing and title hit areas', () => 
     assert.deepEqual(layouts[0],layouts[1],width+'px language switch');
   }
 });
+
+test('the info card starts below the divider so the first row is not clipped', () => {
+  const app = game();
+  app.run(`startRun("diver"); mode="catch";
+    catchCard={id:GUIDE[0].id,rare:false,isNew:true,at:120}`);
+  /* 평범한 글자는 FONT_DY만큼, 키캡은 세 칸만큼 기준선 위로 올라온다.
+     잘라내는 칸은 head에서 시작하니 내용은 그만큼 아래에서 시작해야 한다. */
+  const rise = Math.max(-app.run('FONT_DY'), 3);
+  assert.ok(app.run('INFO_PAD') >= rise, `INFO_PAD ${app.run('INFO_PAD')} < ${rise}`);
+  for (const [width, height] of [[1258,622],[390,686],[360,482],[844,284],[320,322]]) {
+    app.resize(width, height);
+    for (const language of ['ko','en']) {
+      app.context.language = language;
+      app.run('setLang(language)');
+      const layout = app.data('infoLayout()');
+      const size = `${width}x${height} ${language}`;
+      assert.ok(layout.rows.length > 0, size);
+      assert.ok(layout.h <= app.run('UH') - 8, size + ' card fits');
+      /* 비워 둔 자리만큼 창도 자란다 - 화면에 눌리지 않은 카드라면
+         넘길 것이 없으니 스크롤도 생기지 않아야 한다. */
+      if (layout.h < app.run('UH') - 8) assert.equal(layout.maxScroll, 0, size + ' no idle scroll');
+      assert.doesNotThrow(() => app.run('render()'), size);
+    }
+  }
+});

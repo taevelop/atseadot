@@ -4304,6 +4304,10 @@ function currentInfo() {
     heading: isCatch ? T(catchCard.rare ? "c.rare" : catchCard.isNew ? "c.new" : "c.title") : spName(e.id),
     tag: isCatch ? spName(e.id) : e.sight ? T(known ? "g.sighted" : "g.none") : n ? T("g.count", n) : T("g.none") };
 }
+/* 글자는 기준선보다 두 칸 위에서 그려지고(FONT_DY) 키캡은 세 칸 위다.
+   잘라내는 칸이 기준선에서 시작하면 첫 줄 머리가 구분선에 먹힌다 -
+   안쪽 내용을 그만큼 내려서 자리를 비워 둔다. */
+const INFO_PAD = 3;
 function infoLayout(info = currentInfo()) {
   const w = Math.min(UW - 20, 266), LH = lineH(spNote(info.e.id));
   const headings = wrapLines(info.heading, w - 16);
@@ -4321,11 +4325,11 @@ function infoLayout(info = currentInfo()) {
   const artH = Math.max(rowY, Math.min(52, SPR[info.e.spr].h * 2 + 4));
   const notes = wrapLines(spNote(info.e.id), w - 16);
   const contentH = artH + 8 + notes.length * LH;
-  const h = Math.min(UH - 8, head + contentH + 28);
+  const h = Math.min(UH - 8, head + INFO_PAD + contentH + 28);
   const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
   const viewH = Math.max(1, h - head - 28), by = y + h - 22;
   return { w, h, x, y, LH, head, headings, tags, rows, artW, artH, kw, metaW, notes, viewH,
-    maxScroll: Math.max(0, contentH - viewH),
+    maxScroll: Math.max(0, contentH + INFO_PAD - viewH),
     close: { x: x + 6, y: by, w: w - 78, h: 18 },
     prev: { x: x + w - 68, y: by, w: 13, h: 18 },
     next: { x: x + w - 52, y: by, w: 13, h: 18 },
@@ -4347,7 +4351,7 @@ function drawInfoCard() {
   hline(x + 6, y + L.head - 3, w - 12, C.frameDim);
   g.save();
   g.beginPath(); g.rect(x + 6, y + L.head, w - 12, L.viewH); g.clip();
-  const top = y + L.head - infoScroll;
+  const top = y + L.head + INFO_PAD - infoScroll;
   fitSprite(bake(SPR[info.e.spr], guideColors(info.e, info.known, info.pale), false),
             x + 7, top, L.artW, Math.min(L.artH, 60), 2);
   const tx = x + 16 + L.artW;

@@ -245,6 +245,11 @@ test('the boat turns the way it moves and its rod tip follows the bow', () => {
   assert.equal(app.run('images.includes(equippedBoatImage(false))'), false, 'upright sprite is not');
   app.run('action(); for(let i=0;i<200;i++) update(1,16.67)');
   assert.equal(Math.round(app.run('rod.x - player.x')), app.run('rodTipX()'));
+  /* 도색한 배는 선체만 덧칠한 별도 그림이다 - 좌우를 따로 구워 두지 않으면
+     한쪽을 칠하고 다른 쪽은 기본색으로 남는다. */
+  app.run('save.coin=5000; buyCosmetic("boat","mint"); images=[]; drawBoatAndLine()');
+  assert.equal(app.run('images.includes(equippedBoatImage(true))'), true, 'painted boat mirrors');
+  assert.equal(app.run('equippedBoatImage(true) === equippedBoatImage(false)'), false, 'sides differ');
 });
 
 test('a boat left behind keeps the way it faced, and boarding it resumes that way', () => {

@@ -298,3 +298,34 @@ test('every boat tier has a sprite, a rod tip inside it, and a hull row to paint
   assert.equal(app.run('boatTier().spr'), tiers[tiers.length - 1]);
 });
 
+test('the water is one blit from a cached column, not a fill for every pixel', () => {
+  const app = game();
+  app.run(`startRun("diver"); player.y = seaTop + 400; cam = 300; render()`);
+  const calls = () => app.run(`(() => {
+    let n = 0;
+    const di = worldContext.drawImage, fr = worldContext.fillRect;
+    worldContext.drawImage = function(...a){ n++; return di.apply(this, a); };
+    worldContext.fillRect  = function(...a){ n++; return fr.apply(this, a); };
+    drawWater();
+    worldContext.drawImage = di; worldContext.fillRect = fr;
+    return n; })()`);
+  /* 예전에는 디더링 한 줄마다 화면 폭만큼 사각형을 찍었다. 이제 기둥에서
+     보이는 만큼만 한 번에 퍼 온다. */
+  assert.equal(calls(), 1);
+  assert.equal(app.run('waterColumn.width'), app.run('SW'));
+  assert.ok(app.run('waterColumn.height >= Math.round(seaBed) - Math.round(seaTop)'));
+
+  /* 시간대가 바뀌면 다시 굽는다 - 안 그러면 달밤에 정오의 물빛이 남는다. */
+  app.run('setTime(1); drawWater()');
+  const noon = app.run('waterKey');
+  app.run('setTime(3); drawWater()');
+  assert.notEqual(app.run('waterKey'), noon, 'a new sky rebuilds the column');
+  assert.equal(calls(), 1, 'and it is still one blit afterwards');
+
+  /* 화면이 바뀌어도 마찬가지다. */
+  app.resize(390, 686);
+  app.run('drawWater()');
+  assert.equal(app.run('waterColumn.width'), app.run('SW'));
+  assert.equal(calls(), 1);
+});
+

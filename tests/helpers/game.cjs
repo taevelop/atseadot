@@ -15,6 +15,7 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false, 
   const context2d = () => new Proxy({
     measureText: text => ({ width: [...String(text)].reduce((n, c) => n + (c.charCodeAt(0) > 127 ? 12 : c === ' ' ? 5 : 6), 0) }),
     getImageData: (x, y, w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }),
+    createImageData: (w, h) => ({ width: w, height: h, data: new Uint8ClampedArray(w * h * 4) }),
     createLinearGradient: () => ({ addColorStop() {} }),
     createRadialGradient: () => ({ addColorStop() {} })
   }, { get: (target, key) => key in target ? target[key] : () => {} });

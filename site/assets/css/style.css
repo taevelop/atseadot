@@ -9,7 +9,7 @@
   font-display: swap;
 }
 :root { color-scheme: dark; }
-html, body { margin: 0; padding: 0; height: 100%; background: #05070f; overflow: hidden; }
+html, body { margin: 0; padding: 0; height: 100%; background: #05070f; overflow: hidden; touch-action: none; }
 body {
   display: block;
   font-family: ui-monospace, monospace;
@@ -24,6 +24,7 @@ canvas#screen {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   cursor: crosshair;
+  touch-action: none;
 }
 /* 자바스크립트가 꺼져 있을 때만 보이는 줄. */
 noscript { color: #9fb6d8; display: block; padding: 20px; font-size: 14px; }

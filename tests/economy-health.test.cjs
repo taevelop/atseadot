@@ -191,15 +191,17 @@ test('the spear line can be bought to its last step and stops there', () => {
   assert.equal(app2.run('upgradeStatus("line")'), 's.poor');
 });
 
-test('sharks are for watching until the spear line is maxed, then they can be caught and sold', () => {
+test('sharks require hunting weapons and never enter the ordinary instant-catch path', () => {
   const app = game();
   app.run('startRun("diver"); closeMsg()');
   assert.equal(app.run('huntUnlocked()'), false);
   assert.equal(app.run('canCatch(KIND.shark)'), false, 'the spear bounces off first');
-  assert.equal(app.run('sellableId("shark")'), false);
+  assert.equal(app.run('sellFish("shark", false, 1)'), false);
   app.run('save.coin = 1e9; for (let i = 0; i < upMax("line"); i++) buyUpgrade("line")');
+  assert.equal(app.run('huntUnlocked()'), false, 'range upgrades do not unlock hunting');
+  app.run('buyUpgrade("weapon")');
   assert.equal(app.run('huntUnlocked()'), true);
-  assert.equal(app.run('canCatch(KIND.shark)'), true);
+  assert.equal(app.run('canCatch(KIND.shark)'), false);
   assert.equal(app.run('sellableId("shark")'), true);
   /* 메갈로돈과 잠수함은 끝까지 구경만 한다. */
   for (const id of ['mega', 'sub']) {

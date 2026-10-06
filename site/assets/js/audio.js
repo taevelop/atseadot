@@ -15,6 +15,7 @@
   const VARIATIONS = {
     damage: [12, null, 11, null, 7, null, 6, null],
     mega: [12, null, 15, 19, 12, null, 10, 7],
+    shark: [12, 10, null, 7, 12, null, 10, 7],
     sub: [12, 19, 24, 19, 16, 19, 26, 24]
   };
   const normalize = value => {
@@ -114,7 +115,7 @@
         const melody = (VARIATIONS[variant] || MOTIFS[(bar + Math.floor(bar / 8)) % 4])[beat];
         if (settings.music > 0) {
           if (melody !== null) tone(base + melody, next, variant === "sub" ? .4 : .23, .065, variant === "sub" ? "sine" : variant === "damage" ? "triangle" : "square");
-          if (beat % 2 === 0) tone(base - (variant === "mega" || variant === "damage" ? 17 : 12) + (beat === 4 ? 7 : 0), next, .4, .12);
+          if (beat % 2 === 0) tone(base - (["mega", "shark", "damage"].includes(variant) ? 17 : 12) + (beat === 4 ? 7 : 0), next, .4, .12);
           if (beat === 0 || beat === 4) tone(34, next, .11, .12, "sine", music, 20);
           if (variant === "mega" && (beat === 2 || beat === 6)) tone(29, next, .16, .1, "sine", music, 18);
           if (beat === 2 || beat === 6) hiss(next, .08, .055);
@@ -160,19 +161,20 @@
       spear: [55, 43], cast: [60, 72], reel: [72, 67, 60], bite: [84, 79, 84],
       catch: [72, 76, 79], rare: [72, 76, 79, 84, 88, 91], chest: [60, 67, 72, 76, 79],
       trade: [76, 79, 84], error: [43, 42], hurt: [48, 36], heal: [67, 72, 79],
-      over: [67, 63, 60, 48], mega: [36, 43, 39, 36], sub: [79, 91, 79]
+      over: [67, 63, 60, 48], mega: [36, 43, 39, 36], sub: [79, 91, 79],
+      sharkWarn: [43, 49, 43], sharkHit: [55, 38], sharkDefeat: [48, 55, 60, 67]
     };
     function playEffect(name) {
       const notes = PATTERNS[name];
       if (!running || scene.paused || settings.muted || !settings.effects || !notes) return false;
       const now = ctx.currentTime, delay = name === "move" ? .08 : .14;
       if (now - (cooldowns.get(name) ?? -Infinity) < delay) return false;
-      const splash = ["cast", "spear", "reel", "hurt"].includes(name);
+      const splash = ["cast", "spear", "reel", "hurt", "sharkHit"].includes(name);
       if ([...voices].filter(v => v.effect).length + notes.length + (splash ? 1 : 0) > 16) return false;
       cooldowns.set(name, now);
       const length = ["rare", "chest", "over", "mega", "sub"].includes(name) ? .18 : .09;
       notes.forEach((note, i) => tone(note, now + i * length, length * 1.3, .11,
-        ["hurt", "error", "spear", "mega"].includes(name) ? "triangle" : "sine", effects));
+        ["hurt", "error", "spear", "mega", "sharkWarn", "sharkHit"].includes(name) ? "triangle" : "sine", effects));
       if (splash) hiss(now, name === "hurt" ? .12 : .16, name === "hurt" ? .09 : .055, effects, name === "hurt" ? 1300 : 900);
       return true;
     }
@@ -181,7 +183,7 @@
       setScene(value) {
         const wasPaused = scene.paused;
         const nextScene = { depth: Math.max(0, Number(value.depth) || 0), overlay: !!value.overlay, paused: !!value.paused,
-          damaged: !!value.damaged, encounter: ["mega", "sub"].includes(value.encounter) ? value.encounter : "normal" };
+          damaged: !!value.damaged, encounter: ["mega", "shark", "sub"].includes(value.encounter) ? value.encounter : "normal" };
         const changed = Object.keys(nextScene).some(key => scene[key] !== nextScene[key]);
         scene = nextScene;
         if (scene.paused && !wasPaused) stop();

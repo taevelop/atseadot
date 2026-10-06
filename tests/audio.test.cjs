@@ -242,7 +242,7 @@ test('localized settings fit portrait, landscape and Retina; pointer plus/minus 
       assert.ok(L.x>=0 && L.y>=0 && L.x+L.w<=screen.w && L.y+L.h<=screen.h);
       assert.ok(L.rows.every(row => row.h * screen.scale / ratio >= 44));
       assert.ok(L.rows.every(row => row.plus.w * screen.scale / ratio >= 44));
-      assert.ok(app.run('audioLayout().rows.slice(0,3).every((row,i)=>wrapLines(T("audio."+["mute","music","effects"][i]),row.w-(i===0?88:row.controlsW+8)).length*lineH()<=row.h)'));
+      assert.ok(app.run('audioLayout().rows.slice(0,3).every((row,i)=>wrapLines(T("audio."+["enabled","music","effects"][i]),row.w-(i===0?88:row.controlsW+8)).length*lineH()<=row.h)')); // Changed
       for (let i=0;i<12;i++) app.click(L.rows[1].plus);
       assert.equal(app.run('audio.getSettings().music'),100);
       for (let i=0;i<12;i++) app.click(L.rows[1].minus);

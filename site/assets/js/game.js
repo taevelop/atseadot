@@ -2148,7 +2148,7 @@ const STR = {
 /* 종의 이름과 설명. 도감이 열리는 자리마다 이 표를 본다. */
 Object.assign(STR.ko, {
   "menu.audio": "소리 설정", "controls.audio": "소리 설정",
-  "audio.title": "소리 설정", "audio.mute": "전체 음소거", "audio.music": "배경음악",
+  "audio.title": "소리 설정", "audio.enabled": "전체 소리", "audio.music": "배경음악", // Changed
   "audio.effects": "효과음 / 환경음", "audio.on": "켜짐", "audio.off": "꺼짐",
   "audio.close": "닫기", "audio.unavailable": "오디오를 사용할 수 없습니다",
   "audio.hint": "[←] [→] 조절 · [X] 닫기", "help.audio": "[O] / [U]",
@@ -2171,7 +2171,7 @@ Object.assign(STR.ko, {
 });
 Object.assign(STR.en, {
   "menu.audio": "SOUND SETTINGS", "controls.audio": "Sound settings",
-  "audio.title": "SOUND SETTINGS", "audio.mute": "MUTE ALL", "audio.music": "MUSIC",
+  "audio.title": "SOUND SETTINGS", "audio.enabled": "SOUND", "audio.music": "MUSIC", // Changed
   "audio.effects": "SFX / AMBIENCE", "audio.on": "ON", "audio.off": "OFF",
   "audio.close": "CLOSE", "audio.unavailable": "AUDIO IS UNAVAILABLE",
   "audio.hint": "[←] [→] ADJUST · [X] CLOSE", "help.audio": "[O] / [U]",
@@ -5199,7 +5199,7 @@ function drawAudioPanel() {
   rect(0, 0, UW, UH, "rgba(5,7,15,.65)");
   drawWindow(L.x, L.y, L.w, L.h, {alpha: .98});
   drawText(L.x + 8, L.y + 6, T("audio.title"), C.textWarn);
-  const labels = ["mute", "music", "effects", "close"];
+  const labels = ["enabled", "music", "effects", "close"]; // Changed
   L.rows.forEach((row, i) => {
     if (i === audioSelection) rect(row.x, row.y, row.w, row.h, "#1c3869");
     const textY = row.y + Math.floor((row.h - GLYPH_H) / 2);
@@ -5213,7 +5213,7 @@ function drawAudioPanel() {
     labelLines.forEach((text, line) => drawText(row.x + 4, labelY + line * lineH(), text, C.text));
     if (i === 0) {
       const box = {...row, x: row.x + row.w - 80, w: 80};
-      smallButton(box, T(settings.muted ? "audio.on" : "audio.off"));
+      smallButton(box, T(settings.muted ? "audio.off" : "audio.on")); // Changed: show sound state, not mute state.
     } else {
       const value = settings[i === 1 ? "music" : "effects"];
       smallButton(row.minus, "-", value > 0);

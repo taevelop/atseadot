@@ -252,3 +252,75 @@ test('localized settings fit portrait, landscape and Retina; pointer plus/minus 
     }
   }
 });
+
+test('damage and special scenes change the music without restarting its beat or requiring SFX volume', async () => {
+  const h = audioHarness();
+  await h.audio.unlock();
+  const phase = h.audio.getState().step;
+  h.audio.setSettings({effects:0});
+  h.audio.setScene({encounter:'sub'});
+  assert.equal(h.audio.getState().step, phase);
+  h.advance(.3);
+  assert.ok(h.nodes.some(n=>n.kind==='oscillator' && n.type==='sine' && n.started>.1 && Math.abs(n.frequency.value-440*Math.pow(2,(67-69)/12))<.001));
+  h.audio.setScene({encounter:'mega',damaged:true});
+  assert.equal(h.audio.getState().variation,'damage');
+  assert.ok(Math.abs(h.nodes.filter(n=>n.kind==='gain')[1].gain.value-.165)<.00001);
+  h.audio.setScene({encounter:'mega'});
+  assert.equal(h.audio.getState().variation,'mega');
+  h.advance(.6);
+  h.audio.setScene({});
+  assert.equal(h.audio.getState().variation,'normal');
+  assert.equal(h.timers.size,1);
+  assert.equal(h.contexts[0].resumeCount,1);
+});
+
+test('special alerts remain bounded and mute or suspension never queues an arrival for replay', async () => {
+  const h = audioHarness();
+  await h.audio.unlock();
+  assert.equal(h.audio.playEffect('mega'),true);
+  assert.equal(h.audio.playEffect('mega'),false);
+  assert.equal(h.audio.playEffect('sub'),true);
+  h.audio.setSettings({muted:true});
+  assert.equal(h.audio.playEffect('mega'),false);
+  assert.equal(h.audio.getState().voices,0);
+  h.audio.setSettings({muted:false}); await h.audio.unlock();
+  assert.ok(h.audio.getState().voices<8);
+  h.audio.suspend();
+  assert.equal(h.audio.playEffect('sub'),false);
+});
+
+test('damage variation starts only on actual health loss, freezes with overlays and expires after 2.4 play seconds', () => {
+  const spy=spyAudio(), app=game({audio:spy.audio});
+  app.run('startRun("diver"); closeMsg(); player.invulnerable=0; const shark=new Being("shark"); shark.x=player.x+DV_CX-shark.w/2; shark.y=player.y+DV_CY-shark.h/2; beings=[shark]; stepBeings(0); beings=[]; syncAudioScene()');
+  assert.equal(app.run('audioDamageRemaining'),144);
+  assert.equal(spy.calls.filter(c=>c[0]==='scene').at(-1)[1].damaged,true);
+  app.run('hurtPlayer(1); paused=true; update(100,1600); paused=false; audioPanel=true; update(100,1600); audioPanel=false; mode="guide"; update(100,1600)');
+  assert.equal(app.run('audioDamageRemaining'),144);
+  assert.deepEqual(spy.effects(),['hurt']);
+  app.run('mode="dive"; update(120,2000); update(24,400); syncAudioScene()');
+  assert.equal(app.run('audioDamageRemaining'),0);
+  assert.equal(spy.calls.filter(c=>c[0]==='scene').at(-1)[1].damaged,false);
+  app.run('player.invulnerable=0; player.hp=1; hurtPlayer(1); syncAudioScene()');
+  assert.equal(app.run('audioDamageRemaining'),0);
+  assert.equal(spy.effects().at(-1),'over');
+});
+
+test('special arrivals announce once per visible individual and music prefers mega over sub then returns to normal', () => {
+  const spy=spyAudio(), app=game({audio:spy.audio});
+  app.run('startRun("diver"); closeMsg(); globalThis.visitor=new Being("sub"); visitor.x=camX+SW/2; visitor.y=cam+SH/2; beings=[visitor]; paused=true; announceSpecialAudio(); paused=false; audioPanel=true; announceSpecialAudio(); audioPanel=false');
+  assert.deepEqual(spy.effects(),[]);
+  app.run('update(0,0); update(0,0); syncAudioScene()');
+  assert.deepEqual(spy.effects(),['sub']);
+  assert.equal(spy.calls.filter(c=>c[0]==='scene').at(-1)[1].encounter,'sub');
+  app.run('visitor.x=camX+SW+1000; syncAudioScene(); announceSpecialAudio()');
+  assert.equal(spy.calls.filter(c=>c[0]==='scene').at(-1)[1].encounter,'normal');
+  app.run('visitor.x=camX+SW/2; announceSpecialAudio(); globalThis.predator=new Being("mega"); predator.x=camX+SW/2; predator.y=cam+SH/2; beings.push(predator); announceSpecialAudio(); syncAudioScene()');
+  assert.deepEqual(spy.effects(),['sub','mega']);
+  assert.equal(spy.calls.filter(c=>c[0]==='scene').at(-1)[1].encounter,'mega');
+  app.run('beings=[visitor]; syncAudioScene()');
+  assert.equal(spy.calls.filter(c=>c[0]==='scene').at(-1)[1].encounter,'sub');
+  app.run('beings=[]; syncAudioScene()');
+  assert.equal(spy.calls.filter(c=>c[0]==='scene').at(-1)[1].encounter,'normal');
+  app.run('globalThis.nextSub=new Being("sub"); nextSub.x=camX+SW/2; nextSub.y=cam+SH/2; beings=[nextSub]; announceSpecialAudio()');
+  assert.deepEqual(spy.effects(),['sub','mega','sub']);
+});

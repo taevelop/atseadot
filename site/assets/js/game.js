@@ -1700,10 +1700,27 @@ function blitGlow(cv, x, y, color, blur, opts) {
 const UI_LANGUAGES = ["ko", "en"];
 const audio = createAtSeaAudio();
 let audioPanel = false, audioSelection = 0;
+let audioDamageRemaining = 0;
+const audioAnnounced = new WeakSet();
+function specialAudioBeings() {
+  return mode !== "title" && returnMode !== "title" && mode !== "over"
+    ? beings.filter(b => (b.kind === "mega" || b.kind === "sub") && visible(b)) : [];
+}
+function announceSpecialAudio() {
+  if (mode !== "dive" || paused || audioPanel || document.visibilityState === "hidden") return;
+  const newcomers = specialAudioBeings().filter(b => !audioAnnounced.has(b));
+  newcomers.forEach(b => audioAnnounced.add(b));
+  // A simultaneous predator arrival takes priority over the submarine chime.
+  const visitor = newcomers.find(b => b.kind === "mega") || newcomers[0];
+  if (visitor) soundEffect(visitor.kind);
+}
 let audioNavigationDepth = 0, audioExplicitEffect = false;
 
 function syncAudioScene() {
+  const visitors = specialAudioBeings();
   audio.setScene({ depth: mode === "title" || returnMode === "title" ? 0 : metres(),
+    encounter: visitors.some(b => b.kind === "mega") ? "mega" : visitors.length ? "sub" : "normal",
+    damaged: mode !== "title" && mode !== "over" && returnMode !== "title" && audioDamageRemaining > 0,
     overlay: audioPanel || !["title", "dive"].includes(mode),
     paused: (paused && mode !== "title" && returnMode !== "title") || document.visibilityState === "hidden" });
 }
@@ -5863,6 +5880,7 @@ function update(u, dt) {
   if (flash > 0) flash = Math.max(0, flash - .08 * u);
   if (shake > 0) shake = Math.max(0, shake - .5 * u);
   if (mode !== "dive" || paused || audioPanel || document.visibilityState === "hidden") return;
+  audioDamageRemaining = Math.max(0, audioDamageRemaining - u);
 
   if (activeBait) {
     activeBait.remaining = Math.max(0, activeBait.remaining-u);
@@ -5884,6 +5902,7 @@ function update(u, dt) {
 
   stepBeings(u);
   if (mode !== "dive") return;
+  announceSpecialAudio();
   stepSonar(u);
   stepParticles(u);
   stepCamera(u);
@@ -5903,6 +5922,7 @@ function hurtPlayer(amount) {
   if (mode !== "dive" || paused || player.role !== "diver" || player.invulnerable > 0 || player.hp <= 0) return false;
   const before = player.hp;
   player.hp = Math.max(0, player.hp - amount);
+  if (player.hp < before) audioDamageRemaining = player.hp === 0 ? 0 : 144;
   if (player.hp < before) soundEffect(player.hp === 0 ? "over" : "hurt");
   player.invulnerable = 60;
   if (player.hp === 0) {
@@ -6273,6 +6293,7 @@ function swapRole() {
 }
 
 function startRun(role) {
+  audioDamageRemaining = 0;
   clearGameInput(); trade=null; tradeNotice="";
   player.hp = heartMax(); player.invulnerable = 0; capsulesUsed = 0; activeBait = null;
   player.role = role;

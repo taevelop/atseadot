@@ -1698,6 +1698,53 @@ function blitGlow(cv, x, y, color, blur, opts) {
    남는다. 한글은 위 drawText 가 함께 배포하는 픽셀 글꼴로 그린다.
    ========================================================================= */
 const UI_LANGUAGES = ["ko", "en"];
+const audio = createAtSeaAudio();
+let audioPanel = false, audioSelection = 0;
+let audioNavigationDepth = 0, audioExplicitEffect = false;
+
+function syncAudioScene() {
+  audio.setScene({ depth: mode === "title" || returnMode === "title" ? 0 : metres(),
+    overlay: audioPanel || !["title", "dive"].includes(mode),
+    paused: (paused && mode !== "title" && returnMode !== "title") || document.visibilityState === "hidden" });
+}
+function audioGesture() {
+  if (!worldReady || document.visibilityState === "hidden") return;
+  syncAudioScene();
+  audio.unlock();
+}
+function soundEffect(name) {
+  audioExplicitEffect = true;
+  syncAudioScene();
+  audio.playEffect(name);
+}
+function audioNavigation(action, back = false) {
+  const outer = audioNavigationDepth++ === 0;
+  const stamp = () => [mode, lang, menuIndex, guideTab, guideSel, guideDetail, guidePage,
+    helpPage, infoScroll, shopTab, tradeSel, tradeScroll, trade?.quantity, !!trade, bagPicking,
+    audioPanel, audioSelection, JSON.stringify(audio.getSettings())].join("|");
+  const before = outer ? stamp() : "", oldMode = mode, oldTrade = trade, oldPanel = audioPanel, oldDetail = guideDetail;
+  if (outer) audioExplicitEffect = false;
+  try { return action(); }
+  finally {
+    audioNavigationDepth--;
+    if (outer) {
+      audioGesture();
+      if (!audioExplicitEffect && before !== stamp()) {
+        const closing = back || (oldPanel && !audioPanel) || (oldTrade && !trade) || (oldDetail && !guideDetail) ||
+          (oldMode !== mode && (mode === "title" || (!["title", "over"].includes(oldMode) && mode === returnMode)));
+        soundEffect(closing ? "cancel" : oldMode !== mode || oldTrade !== trade || oldPanel !== audioPanel ? "confirm" : "move");
+      }
+    }
+  }
+}
+
+// Capture gestures from canvas, mobile controls and keyboard-operated buttons.
+addEventListener("pointerdown", audioGesture, { capture: true });
+addEventListener("click", audioGesture, { capture: true });
+addEventListener("keydown", e => {
+  if (!e.ctrlKey && !e.altKey && !e.metaKey && !e.isComposing) audioGesture();
+}, { capture: true });
+addEventListener("pagehide", () => audio.suspend());
 const LANG_KEY = "atseadot.lang";
 let lang = "ko";
 try {
@@ -2081,6 +2128,12 @@ const STR = {
 
 /* 종의 이름과 설명. 도감이 열리는 자리마다 이 표를 본다. */
 Object.assign(STR.ko, {
+  "menu.audio": "소리 설정", "controls.audio": "소리 설정",
+  "audio.title": "소리 설정", "audio.mute": "전체 음소거", "audio.music": "배경음악",
+  "audio.effects": "효과음 / 환경음", "audio.on": "켜짐", "audio.off": "꺼짐",
+  "audio.close": "닫기", "audio.unavailable": "오디오를 사용할 수 없습니다",
+  "audio.hint": "[←] [→] 조절 · [X] 닫기", "help.audio": "[O] / [U]",
+  "help.audioV": "소리 설정 / 전체 음소거",
   "hint.touch": "다이얼로 이동", "controls.pad": "이동 다이얼", "controls.padHint": "밀어서 이동 · 바깥쪽은 가속", "controls.actionHint": "이동하면서 액션", "g.tab.short.trophy": "트로피", "controls.label": "게임 조작",
   "controls.up": "위로", "controls.down": "아래로", "controls.left": "왼쪽으로", "controls.right": "오른쪽으로",
   "controls.fast": "가속", "controls.primary": "선택", "controls.spear": "작살", "controls.cast": "줄 던지기",
@@ -2098,6 +2151,12 @@ Object.assign(STR.ko, {
   "ui.tradeFailed": "거래할 수 없습니다. 재고와 코인을 확인하세요."
 });
 Object.assign(STR.en, {
+  "menu.audio": "SOUND SETTINGS", "controls.audio": "Sound settings",
+  "audio.title": "SOUND SETTINGS", "audio.mute": "MUTE ALL", "audio.music": "MUSIC",
+  "audio.effects": "SFX / AMBIENCE", "audio.on": "ON", "audio.off": "OFF",
+  "audio.close": "CLOSE", "audio.unavailable": "AUDIO IS UNAVAILABLE",
+  "audio.hint": "[←] [→] ADJUST · [X] CLOSE", "help.audio": "[O] / [U]",
+  "help.audioV": "SOUND SETTINGS / MUTE ALL",
   "hint.touch": "MOVE WITH DIAL", "controls.pad": "Movement dial", "controls.padHint": "Slide to move. Push further to dash.", "controls.actionHint": "Move + action", "g.tab.short.trophy": "CUPS", "controls.label": "Game controls",
   "controls.up": "Move up", "controls.down": "Move down", "controls.left": "Move left", "controls.right": "Move right",
   "controls.fast": "FAST", "controls.primary": "Choose", "controls.spear": "Spear", "controls.cast": "Cast",
@@ -2976,7 +3035,7 @@ function persist() {
 if (economyMigrated) flushSave();
 addEventListener("pagehide", flushSave);
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") { flushSave(); releaseTouchKeys(); pointer.down = false; }
+  if (document.visibilityState === "hidden") { audio.suspend(); flushSave(); releaseTouchKeys(); pointer.down = false; }
   else last = performance.now();
 });
 function markSeen(id) {
@@ -3434,7 +3493,7 @@ let flash = 0;            /* 무언가를 잡은 순간의 흰 번쩍임 */
 let shake = 0;
 
 /* 언어는 한 번 고르면 다시 건드릴 일이 없다 - 놀거리를 위로 올리고 맨 아래에 둔다. */
-const MENU_KEYS = ["menu.diver", "menu.boat", "menu.guide", "menu.help", "menu.aqua", "menu.shop", "menu.lang"];
+const MENU_KEYS = ["menu.diver", "menu.boat", "menu.guide", "menu.help", "menu.aqua", "menu.shop", "menu.audio", "menu.lang"];
 /* 자리가 아니라 이름으로 고른다. 차례를 바꿔도 하는 일은 따라오지 않는다. */
 const MENU_ACTIONS = {
   "menu.diver": () => startRun("diver"),
@@ -3443,10 +3502,11 @@ const MENU_ACTIONS = {
   "menu.help":  () => { returnMode = "title"; helpPage = 0; mode = "help"; },
   "menu.aqua":  () => openOverlay("aqua"),
   "menu.shop":  () => openOverlay("shop"),
+  "menu.audio": () => toggleAudioPanel(),
   "menu.lang":  () => setLang(lang === "ko" ? "en" : "ko"),
 };
 /* 타이틀에서도 듣는 한 글자 열쇠들. 눌러 보기 전에는 알 수 없으니 줄 끝에 세워 둔다. */
-const MENU_SHORTCUTS = { "menu.guide": "G", "menu.aqua": "A", "menu.shop": "S", "menu.lang": "L" };
+const MENU_SHORTCUTS = { "menu.guide": "G", "menu.aqua": "A", "menu.shop": "S", "menu.audio": "O", "menu.lang": "L" };
 const MENU_SHORTCUT_W = Math.max(...Object.values(MENU_SHORTCUTS).map(keyWidth)) + 4;
 
 /* =========================================================================
@@ -4657,19 +4717,19 @@ function beginTrade() {
     const species = item.kind === "baitSpecies" ? item.id : undefined;
     const id = bagPicking ? "targetBait" : item.id;
     const problem = consumableUseStatus(id,species);
-    if (problem) { tradeNotice=T(problem); return; }
+    if (problem) { soundEffect("error"); tradeNotice=T(problem); return; }
     if (id === "targetBait" && !bagPicking) {
       bagPicking=true; tradeSel=0; releaseTouchKeys(false); pointer.down=false; return;
     }
     trade={type:"use",id,species};
   } else if (mode === "shop") {
     if (["suit","boat"].includes(item.kind) && ownsCosmetic(item.kind,item.id)) {
-      if (equipCosmetic(item.kind,item.id)) tradeNotice = T("s.suitEquipped", shopItemName(item));
+      if (equipCosmetic(item.kind,item.id)) { soundEffect("confirm"); tradeNotice = T("s.suitEquipped", shopItemName(item)); }
       releaseTouchKeys(false); pointer.down = false;
       return;
     }
     const problem = item.kind === "consumable" ? consumablePurchaseStatus(item.id) : ["suit","boat"].includes(item.kind) ? cosmeticPurchaseStatus(item.kind,item.id) : upgradeStatus(item.id);
-    if (problem && !problem.startsWith("s.unlock.")) { tradeNotice = T(problem); return; }
+    if (problem && !problem.startsWith("s.unlock.")) { soundEffect("error"); tradeNotice = T(problem); return; }
     trade = { type: item.kind === "suit" ? "buySuit" : item.kind === "boat" ? "buyBoat" : item.kind === "consumable" ? "buyConsumable" : "buy", id: item.id };
   } else trade = item.all ? { type: "all" } : { type: "sell", id: item.id, rare: item.rare, quantity: 1 };
   releaseTouchKeys(false); pointer.down = false;
@@ -4692,25 +4752,34 @@ function changeQuantity(delta) {
 function finishTrade() {
   const pending = trade;
   if (!pending) return;
+  let success = false;
   const quote = tradeQuote();
   trade = null; // Consume confirmation before mutating; one input is one trade.
   if (pending.type === "use") {
     const problem=consumableUseStatus(pending.id,pending.species);
-    if (!problem && useConsumable(pending.id,pending.species)) {
+    success = !problem && useConsumable(pending.id,pending.species);
+    if (success) {
       bagPicking=false; mode=returnMode;
     } else tradeNotice=T(problem || "ui.tradeFailed");
   } else if (pending.type === "buyConsumable") {
-    tradeNotice=buyConsumable(pending.id)?T("bag.stock",save.consumables[pending.id],CONSUMABLES.find(item=>item.id===pending.id).cap):T(consumablePurchaseStatus(pending.id));
+    success = buyConsumable(pending.id);
+    tradeNotice=success?T("bag.stock",save.consumables[pending.id],CONSUMABLES.find(item=>item.id===pending.id).cap):T(consumablePurchaseStatus(pending.id));
   } else if (pending.type === "buySuit" || pending.type === "buyBoat") {
     const kind = pending.type === "buySuit" ? "suit" : "boat";
-    tradeNotice = buyCosmetic(kind,pending.id) ? T("s.suitBought", T("s." + kind + "." + pending.id)) : T(cosmeticPurchaseStatus(kind,pending.id));
+    success = buyCosmetic(kind,pending.id);
+    tradeNotice = success ? T("s.suitBought", T("s." + kind + "." + pending.id)) : T(cosmeticPurchaseStatus(kind,pending.id));
   } else if (pending.type === "buy") {
-    tradeNotice = buyUpgrade(pending.id) ? T("s.bought", T("s." + pending.id), upLv(pending.id)) : T(upgradeStatus(pending.id));
+    success = buyUpgrade(pending.id);
+    tradeNotice = success ? T("s.bought", T("s." + pending.id), upLv(pending.id)) : T(upgradeStatus(pending.id));
   } else {
     const ok = pending.type === "all" ? sellAllFish() : sellFish(pending.id, pending.rare, pending.quantity);
+    success = ok;
     tradeNotice = ok ? T("a.sold", T("ui.coin", quote)) : T("ui.tradeFailed");
   }
   tradeSel = clamp(tradeSel, 0, Math.max(0, commerceItems().length - 1));
+  // A capsule already emits its recovery sound; do not stack a purchase jingle.
+  if (!success || pending.type !== "use") soundEffect(success ? "trade" : "error");
+  else if (pending.id !== "oxygenCapsule") soundEffect("confirm");
   releaseTouchKeys(false); pointer.down = false;
 }
 function tradeProblem() {
@@ -4928,6 +4997,7 @@ const HELP_ROWS = [
   ["help.time", "help.timeV"],
   ["help.bare", "help.bareV"],
   ["help.lang", "help.langV"],
+  ["help.audio", "help.audioV"],
   ["help.back", "help.backV"],
 ];
 let helpPage = 0;
@@ -4985,6 +5055,82 @@ function drawBigText(cx, y, s, color, scale, shadowColor) {
   }
 }
 function menuLabel(i) { return T(MENU_KEYS[i]); }
+function toggleAudioPanel() {
+  audioPanel = !audioPanel;
+  audioSelection = 0;
+  clearGameInput();
+  screenCv.focus?.({preventScroll: true});
+  if (!audioPanel) last = performance.now();
+}
+function audioLayout() {
+  const columns = UH < 230 && UW >= 400 ? 2 : 1;
+  const w = Math.min(UW - 12, 286 * columns);
+  const minimumRow = Math.ceil(44 * (typeof devicePixelRatio === "number" ? devicePixelRatio : 1) / UI_PIXEL_SCALE) + 2;
+  const h = Math.min(UH - 8, Math.max(182, 46 + minimumRow * (4 / columns)));
+  const x = Math.round((UW - w) / 2), y = Math.round((UH - h) / 2);
+  const rowH = Math.floor((h - 46) / (4 / columns)), cellW = Math.floor((w - 12) / columns);
+  const buttonW = Math.max(24, minimumRow - 2), controlsW = buttonW * 2 + 50;
+  return { x, y, w, h, rows: Array.from({length: 4}, (_, i) => {
+    const rx = x + 6 + (i % columns) * cellW, ry = y + 24 + Math.floor(i / columns) * rowH;
+    return {x: rx, y: ry, w: cellW - 2, h: rowH - 2, controlsW,
+      minus: {x: rx + cellW - 4 - controlsW, y: ry, w: buttonW, h: rowH - 2},
+      plus: {x: rx + cellW - 4 - buttonW, y: ry, w: buttonW, h: rowH - 2}};
+  }) };
+}
+function changeAudio(delta = 1) {
+  const settings = audio.getSettings();
+  if (audioSelection === 0) audio.setSettings({muted: !settings.muted});
+  else if (audioSelection === 3) toggleAudioPanel();
+  else {
+    const key = audioSelection === 1 ? "music" : "effects";
+    audio.setSettings({[key]: clamp(settings[key] + delta * 10, 0, 100)});
+  }
+}
+function audioPress(k) {
+  if (k === "x" || k === "escape") toggleAudioPanel();
+  else if (k === "l") setLang(lang === "ko" ? "en" : "ko");
+  else if (k === "arrowup") audioSelection = (audioSelection + 3) % 4;
+  else if (k === "arrowdown") audioSelection = (audioSelection + 1) % 4;
+  else if (["arrowleft", "arrowright", "enter", "z", "space"].includes(k)) changeAudio(k === "arrowleft" ? -1 : 1);
+}
+function audioClick(p) {
+  const L = audioLayout();
+  const index = L.rows.findIndex(row => inBox(p, row));
+  if (index < 0) return;
+  audioSelection = index;
+  if (index === 0 || index === 3) changeAudio();
+  else if (inBox(p, L.rows[index].minus)) changeAudio(-1);
+  else if (inBox(p, L.rows[index].plus)) changeAudio(1);
+}
+function drawAudioPanel() {
+  const L = audioLayout(), settings = audio.getSettings();
+  rect(0, 0, UW, UH, "rgba(5,7,15,.65)");
+  drawWindow(L.x, L.y, L.w, L.h, {alpha: .98});
+  drawText(L.x + 8, L.y + 6, T("audio.title"), C.textWarn);
+  const labels = ["mute", "music", "effects", "close"];
+  L.rows.forEach((row, i) => {
+    if (i === audioSelection) rect(row.x, row.y, row.w, row.h, "#1c3869");
+    const textY = row.y + Math.floor((row.h - GLYPH_H) / 2);
+    if (i === 3) {
+      smallButton(row, T("audio.close"));
+      if (i === audioSelection) drawText(row.x + 6, textY, ">", C.textWarn);
+      return;
+    }
+    const labelLines = wrapLines(T("audio." + labels[i]), row.w - (i === 0 ? 88 : row.controlsW + 8));
+    const labelY = row.y + Math.floor((row.h - labelLines.length * lineH()) / 2);
+    labelLines.forEach((text, line) => drawText(row.x + 4, labelY + line * lineH(), text, C.text));
+    if (i === 0) {
+      const box = {...row, x: row.x + row.w - 80, w: 80};
+      smallButton(box, T(settings.muted ? "audio.on" : "audio.off"));
+    } else {
+      const value = settings[i === 1 ? "music" : "effects"];
+      smallButton(row.minus, "-", value > 0);
+      smallButton(row.plus, "+", value < 100);
+      drawTextCenter(row.plus.x - 25, textY, value + "%", C.textWarn);
+    }
+  });
+  drawText(L.x + 8, L.y + L.h - 16, fit(T(audio.getState().available ? "audio.hint" : "audio.unavailable"), L.w - 16), C.textDim);
+}
 function titleLayout() {
   const labelWidths = UI_LANGUAGES.flatMap(language => MENU_KEYS.map(key => textWidth(translate(language, key))));
   const columns = UH < 240 && UW >= 300 ? 2 : 1;
@@ -5050,8 +5196,8 @@ function keyName(e) {
 
 addEventListener("keydown", e => {
   if (e.ctrlKey || e.altKey || e.metaKey || e.isComposing) return;
-  if (e.target && e.target.closest && e.target.closest("#touch-controls")) return;
   const k = keyName(e);
+  if (e.target && e.target.closest && e.target.closest("#touch-controls") && !["u", "o"].includes(k)) return;
   /* 화면을 스크롤시키는 키는 여기서 막는다. 이 페이지는 스크롤하지 않는다. */
   if (["arrowup","arrowdown","arrowleft","arrowright","space","tab"].includes(k)) e.preventDefault();
   if (keys[k] || e.repeat) return; /* 화면 전환에서 해제한 키도 자동 반복으로 다시 실행하지 않는다. */
@@ -5060,13 +5206,20 @@ addEventListener("keydown", e => {
 }, { passive: false });
 addEventListener("keyup", e => { keys[keyName(e)] = false; });
 addEventListener("blur", () => {
+  audio.suspend();
   for (const k in keys) keys[k] = false;
   releaseTouchKeys();
   pointer.down = false;
 });
 
 function onPress(k) {
+  return audioNavigation(() => handlePress(k), k === "x" || k === "escape");
+}
+function handlePress(k) {
   if (!worldReady) return;
+  if (k === "u") { audio.setSettings({ muted: !audio.getSettings().muted }); return; }
+  if (k === "o") { toggleAudioPanel(); return; }
+  if (audioPanel) { audioPress(k); return; }
   const ok = (k === "z" || k === "enter");
   const back = (k === "x" || k === "escape");
   if (mode === "over") {
@@ -5178,12 +5331,13 @@ function toLogical(e, ui = false) {
     y: (e.clientY - r.top) / r.height * screenCv.height / scale,
   };
 }
-screenCv.addEventListener("pointerdown", e => {
+screenCv.addEventListener("pointerdown", e => audioNavigation(() => {
   if (!worldReady) return;
   if (e.button !== 0 || (pointer.down && pointer.id !== e.pointerId)) return;
   screenCv.setPointerCapture(e.pointerId);
   pointer.id = e.pointerId;
-  const p = toLogical(e, mode !== "dive");
+  const p = toLogical(e, audioPanel || mode !== "dive");
+  if (audioPanel) { pointer.down = false; audioClick(p); return; }
   pointer.down = true; pointer.x = p.x; pointer.y = p.y; pointer.moved = 0; pointer.scrollY = 0;
   if (mode === "over") {
     const L=overLayout(); pointer.down=false;
@@ -5250,8 +5404,9 @@ screenCv.addEventListener("pointerdown", e => {
   }
   if (advanceMsg()) return;
   scatterAt(p.x + camX, p.y + cam);
-});
+}));
 screenCv.addEventListener("pointermove", e => {
+  if (audioPanel) return;
   if (pointer.down && pointer.id !== e.pointerId) return;
   const p = toLogical(e, mode !== "dive");
   if (pointer.down && pointer.id === e.pointerId && (mode === "catch" || (mode === "guide" && guideDetail)))
@@ -5269,6 +5424,7 @@ for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) screen
 });
 /* 바퀴로도 오르내린다. */
 screenCv.addEventListener("wheel", e => {
+  if (audioPanel) { e.preventDefault(); return; }
   if (!e.deltaY) return;
   if (mode === "aqua" || mode === "shop" || mode === "bag") { if (trade) scrollTrade(Math.sign(e.deltaY)); else moveCommerce(Math.sign(e.deltaY)); e.preventDefault(); return; }
   if (mode === "help") { turnHelpPage(Math.sign(e.deltaY)); e.preventDefault(); return; }
@@ -5293,7 +5449,7 @@ const primaryPress = { button: null, active: new Set() };
 const DIRECTIONS = ["arrowup", "arrowright", "arrowdown", "arrowleft"];
 
 // Eight-way movement in the sea; one axis at a time in menus and cards.
-function dialInput(dx, dy, radius, moving = mode === "dive" && !paused) {
+function dialInput(dx, dy, radius, moving = mode === "dive" && !paused && !audioPanel) {
   const distance = Math.hypot(dx, dy), result = { x: 0, y: 0, keys: [] };
   if (radius <= 0 || distance <= radius * .22) return result;
   const scale = Math.min(1, radius / distance);
@@ -5403,6 +5559,16 @@ function openOverlay(next) {
   mode = next; guideDetail = false; infoScroll = 0; helpPage = 0;
 }
 function controlAction(name) {
+  return audioNavigation(() => handleControlAction(name), name === "back");
+}
+function handleControlAction(name) {
+  if (name === "audio") { toggleAudioPanel(); syncControls(); return; }
+  if (audioPanel) {
+    if (name === "back") onPress("escape");
+    else if (name === "primary") onPress("enter");
+    else if (name === "lang") setLang(lang === "ko" ? "en" : "ko");
+    syncControls(); return;
+  }
   if (mode === "over" && !["primary","back","lang"].includes(name)) return;
   if (trade && !["primary","back"].includes(name)) return;
   if (name === "primary") {
@@ -5423,12 +5589,12 @@ let controlsMotionScope = "";
 function syncControls() {
   const controls = document.getElementById("touch-controls");
   if (!controls) return;
-  const scope = [mode, player.role, paused, guideDetail, trade ? trade.type : ""].join("|");
+  const scope = [mode, player.role, paused, guideDetail, trade ? trade.type : "", audioPanel].join("|");
   if (controlsMotionScope && controlsMotionScope !== scope) releaseTouchKeys(false);
   controlsMotionScope = scope;
   const state = [scope, lang, rod.state, tradeSel, save.coin, aquariumStock().length,
     mode === "shop" ? shopTab + ":" + upLv(commerceItems()[tradeSel]?.id) : "", save.suit, save.suits.black, save.boat, bagPicking, player.hp, capsulesUsed,
-    save.consumables.targetBait,save.consumables.oxygenCapsule,!!activeBait].join("|");
+    save.consumables.targetBait,save.consumables.oxygenCapsule,!!activeBait, audioSelection, JSON.stringify(audio.getSettings())].join("|");
   if (state === controlsState) return;
   controlsState = state;
   controls.setAttribute("aria-label", T("controls.label"));
@@ -5448,14 +5614,18 @@ function syncControls() {
   else if (mode === "help" || mode === "catch" || guideDetail) label = "close";
   primary.querySelector(".action-label").textContent = T("controls." + label);
   primary.dataset.kind = label;
-  primary.disabled = !!tradeProblem() || label === "wait" || (mode === "aqua" && !commerceItems().length) || (!trade && !!shopView?.disabled);
+  if (audioPanel) label = audioSelection === 3 ? "close" : "primary";
+  primary.querySelector(".action-label").textContent = T("controls." + label);
+  primary.dataset.kind = label;
+  primary.disabled = !audioPanel && (!!tradeProblem() || label === "wait" || (mode === "aqua" && !commerceItems().length) || (!trade && !!shopView?.disabled));
   controls.querySelectorAll("[data-action]").forEach(el => {
     if (el === primary) return;
-    el.disabled = (mode === "over" && !["back","lang"].includes(el.dataset.action)) || (!!trade && el.dataset.action !== "back");
+    el.disabled = audioPanel ? !["back","lang","audio"].includes(el.dataset.action)
+      : (mode === "over" && !["back","lang","audio"].includes(el.dataset.action)) || (!!trade && !["back","audio"].includes(el.dataset.action));
   });
   const swap = controls.querySelector('[data-action="swap"]');
   swap.textContent = T("controls." + (player.role === "boat" ? "diver" : "boat"));
-  controls.querySelectorAll("[data-play-only]").forEach(el => { el.disabled = mode !== "dive"; });
+  controls.querySelectorAll("[data-play-only]").forEach(el => { el.disabled = audioPanel || mode !== "dive"; });
   controls.querySelector('[data-action="pause"]').textContent = T("controls." + (paused ? "resume" : "pause"));
 }
 function initControls() {
@@ -5504,7 +5674,7 @@ function scatterAt(wx, wy) {
    작살과 상자
    ========================================================================= */
 function action() {
-  if (paused) return;
+  if (paused || audioPanel) return;
   /* 스페이스 하나로 두 판을 다 조종한다. 잠수부면 작살, 배면 줄이다. */
   if (player.role === "boat") return rodAction();
   return fireSpear();
@@ -5513,6 +5683,7 @@ function action() {
 function rodAction() {
   if (rod.state === "up" || rod.state === "reel") return;
   if (rod.state === "idle") {
+    soundEffect("cast");
     rod.state = "out";
     rod.catchDepth = null;
     rod.x = player.x + rodTipX();
@@ -5521,6 +5692,7 @@ function rodAction() {
     return;
   }
   if (rod.state === "bite") {
+    soundEffect("reel");
     /* 챔질. 물었다고 반드시 걸리면 기다린 1.5초가 아무 뜻도 없어진다. */
     const b = rod.target;
     rod.target = null;
@@ -5539,11 +5711,13 @@ function rodAction() {
     return;
   }
   resetRod();
+  soundEffect("reel");
   say(T("m.reel"), C.textDim);
 }
 
 function fireSpear() {
   if (spear.on) return;                       /* 돌아오는 중에는 못 쏜다 */
+  soundEffect("spear");
   spear.on = 1; spear.back = 0; spear.gone = 0;
   spear.dir = player.dir;
   spear.x = player.x + DV_CX + player.dir * 16;
@@ -5597,6 +5771,7 @@ function stepSpear(u) {
 function openChest() {
   if (!chest || chest.open) return;
   const hpBefore = player.hp;
+  soundEffect("chest");
   healPlayer(2);
   const healed = player.hp - hpBefore;
   chest.open = 1; save.chest = 1; persist();
@@ -5611,6 +5786,7 @@ function openChest() {
 }
 
 function caught(b, depth = metres()) {
+  soundEffect(b.rare ? "rare" : "catch");
   const wasNew = !save.seen[b.gid];
   markCaught(b, depth);
   /* 귀한 것은 화면이 한 번 더 밝게 튄다 - 글보다 이쪽이 먼저 눈에 든다. */
@@ -5686,7 +5862,7 @@ function update(u, dt) {
   stepMsg(u, dt);
   if (flash > 0) flash = Math.max(0, flash - .08 * u);
   if (shake > 0) shake = Math.max(0, shake - .5 * u);
-  if (mode !== "dive" || paused || document.visibilityState === "hidden") return;
+  if (mode !== "dive" || paused || audioPanel || document.visibilityState === "hidden") return;
 
   if (activeBait) {
     activeBait.remaining = Math.max(0, activeBait.remaining-u);
@@ -5721,12 +5897,13 @@ function healPlayer(amount, message = "m.heal") {
   if (player.hp <= 0) return;
   const before = player.hp;
   player.hp = Math.min(heartMax(), player.hp + amount);
-  if (player.hp > before) say(T(message), C.lure);
+  if (player.hp > before) { soundEffect("heal"); say(T(message), C.lure); }
 }
 function hurtPlayer(amount) {
   if (mode !== "dive" || paused || player.role !== "diver" || player.invulnerable > 0 || player.hp <= 0) return false;
   const before = player.hp;
   player.hp = Math.max(0, player.hp - amount);
+  if (player.hp < before) soundEffect(player.hp === 0 ? "over" : "hurt");
   player.invulnerable = 60;
   if (player.hp === 0) {
     mode = "over"; returnMode = "dive"; bare = false; activeBait = null; resetSonar();
@@ -5871,6 +6048,7 @@ function stepBoat(u, fast) {
     best.y += dy / len * best.speed * 1.2 * u;
     if (len < 7) {
       rod.state = "bite"; rod.target = best; rod.timer = BITE_TIME;
+      soundEffect("bite");
       best.pause = BITE_TIME;
       say(T("m.bite"), C.textWarn);
     }
@@ -6058,6 +6236,7 @@ function render() {
     else if (mode === "reward") drawReward();
     else if (mode === "aqua" || mode === "shop" || mode === "bag") drawCommerce();
     else if (mode === "over") drawGameOver();
+    if (audioPanel) drawAudioPanel();
 
   } finally {
     g = worldContext;
@@ -6116,6 +6295,7 @@ function loop(now) {
   /* 60프레임 한 걸음을 1 로 둔다. 화면이 느려도 빨라도 바다는 같은 속도다. */
   const u = paused && mode === "dive" ? 0 : dt / 16.67;
   update(u, dt);
+  syncAudioScene();
   render();
   requestAnimationFrame(loop);
 }

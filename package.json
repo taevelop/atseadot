@@ -8,7 +8,7 @@
   },
   "scripts": {
     "icons:generate": "node scripts/generate-icons.mjs",
-    "check": "node --check site/assets/js/game.js",
+    "check": "node --check site/assets/js/audio.js && node --check site/assets/js/game.js",
     "build": "npm run check && npm test",
     "dev": "wrangler dev --ip 127.0.0.1 --port 8788",
     "preview": "npm run dev",

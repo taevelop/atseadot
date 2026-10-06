@@ -3,10 +3,11 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const source = fs.readFileSync(path.join(__dirname, '../../site/assets/js/game.js'), 'utf8');
+const audioSource = fs.readFileSync(path.join(__dirname, '../../site/assets/js/audio.js'), 'utf8');
 
 // Execute the actual browser script with deterministic time/randomness. Canvas
 // painting is mocked here; real font metrics and controls are checked in Chrome.
-function game({ raw = null, width = 1258, height = 622, storageBlocked = false, fonts, pixelRatio = 1 } = {}) {
+function game({ raw = null, width = 1258, height = 622, storageBlocked = false, fonts, pixelRatio = 1, audio } = {}) {
   const viewport = { width, height, left: 0, top: 0 };
   const events = new Map(), canvasEvents = new Map(), documentEvents = new Map();
   const storage = new Map([['atseadot.v4', raw]]), timers = new Map(), frames = [];
@@ -32,11 +33,15 @@ function game({ raw = null, width = 1258, height = 622, storageBlocked = false, 
     addEventListener: listen(events), requestAnimationFrame: fn => { frames.push(fn); return frames.length; },
     setTimeout: fn => { timers.set(++timerId, fn); return timerId; },
     clearTimeout: id => timers.delete(id),
+    setInterval: fn => { timers.set(++timerId, fn); return timerId; },
+    clearInterval: id => timers.delete(id),
     localStorage: {
       getItem(key) { if (storageBlocked) throw Error('Storage unavailable'); return storage.get(key) ?? null; },
       setItem(key, value) { if (storageBlocked) throw Error('Storage unavailable'); storage.set(key, value); }
     }
   });
+  vm.runInContext(audioSource, context, { filename: 'audio.js' });
+  if (audio) context.createAtSeaAudio = () => audio;
   vm.runInContext(source, context, { filename: 'game.js' });
   const run = code => vm.runInContext(code, context);
   const data = code => JSON.parse(JSON.stringify(run(code)));

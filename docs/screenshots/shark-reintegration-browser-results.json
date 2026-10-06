@@ -1,0 +1,38 @@
+{
+  "status": "blocked",
+  "verifiedCurrentRecoveryInBrowser": false,
+  "attemptedAt": "2026-10-06T12:59:40.547Z",
+  "reason": "Playwright is available, but no Chromium binary is installed. The official playwright install chromium command could not retrieve a valid archive (0 MiB / invalid ZIP). Browser execution and new screenshots were not possible.",
+  "scriptSyntaxCheck": "passed",
+  "plannedViewports": [
+    [
+      1258,
+      622
+    ],
+    [
+      402,
+      844
+    ],
+    [
+      844,
+      390
+    ]
+  ],
+  "plannedAssertions": [
+    "weapon level 1 / shark HP 30 -> 20 -> 10 -> 0",
+    "desktop keyboard and mobile primary input",
+    "three spear round trips and 12-tick cooldown",
+    "one reward persisted across reload",
+    "HUD / gauge / message / hint bounds",
+    "Korean and English commerce flow",
+    "OfflineAudioContext synthesis"
+  ],
+  "historicalEvidence": {
+    "note": "The following results and existing PNGs predate this recovery and do not validate the restored PR #14 health model.",
+    "screenshots": [
+      "shark-warning-402x844.png",
+      "shark-catch-402x844.png"
+    ],
+    "resultsFile": "shark-browser-results.json"
+  }
+}

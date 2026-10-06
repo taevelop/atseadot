@@ -3,160 +3,252 @@ const assert = require('node:assert/strict');
 const { game } = require('./helpers/game.cjs');
 const { audioHarness } = require('./helpers/audio.cjs');
 
-function encounter(options) {
-  const app = game(options);
-  app.run(`startRun("diver"); closeMsg(); chest=null; player.x=worldW()/2; player.y=seaTop+150;
-    globalThis.enemy=new Being("shark");
-    enemy.x=player.x+DV_CX+150-enemy.w/2; enemy.y=player.y+DV_CY-enemy.h/2;
-    beings=[enemy]; camX=player.x-SW/2; cam=player.y-SH/2;`);
-  return app;
-}
-function shoot(app) {
-  app.run(`enemy.step=()=>{}; enemy.x=player.x+DV_CX+60-enemy.w/2;
-    enemy.y=player.y+16-enemy.h/2; controlAction("primary");
-    for(let n=0;n<100 && spear.on;n++) stepSpear(1);`);
+function combat(options = {}) {
+  const effects = [], scenes = [];
+  const audio = { unlock() {}, suspend() {}, playEffect(name) { effects.push(name); },
+    setScene(scene) { scenes.push(scene); }, getSettings() { return {muted:false,music:30,effects:50}; },
+    setSettings() {} };
+  const app = game({ ...options, audio });
+  app.run(`startRun("diver"); closeMsg(); beings=[]; player.x=worldW()/2; player.y=seaTop+200;
+    globalThis.target=new Being("shark"); target.aggressive=false; target.hp=target.maxHp=30;
+    target.x=player.x+DV_CX+60; target.y=player.y+DV_CY-target.h/2; beings=[target];`);
+  effects.length = 0;
+  return { ...app, effects, scenes };
 }
 
-test('shark chases, warns, commits to a dodgeable dash and recovers', () => {
-  const app=encounter();
-  app.run('enemy.step(1)');
-  assert.equal(app.run('enemy.combat.state'),'chase');
-  app.run('enemy.x=player.x+DV_CX+80-enemy.w/2;enemy.step(1)');
-  assert.equal(app.run('enemy.combat.state'),'warn');
-  const position=app.data('({x:enemy.x,y:enemy.y})');
-  app.run('enemy.step(41)');
-  assert.deepEqual(app.data('({x:enemy.x,y:enemy.y})'),position);
-  app.run('enemy.step(1)');
-  assert.equal(app.run('enemy.combat.state'),'dash');
-  app.run('player.y+=100;enemy.step(30)');
-  assert.equal(app.run('enemy.y'),position.y,'dash never homes after launch');
-  assert.equal(app.run('enemy.combat.state'),'recover');
-  app.run('enemy.step(90)');
-  assert.equal(app.run('enemy.combat.state'),'roam');
+test('depth controls shark health independently of aggression and rarity; starts are safe', () => {
+  const app = combat();
+  assert.deepEqual(app.data(`[.05,.45,.85].map(depth=>new Being("shark",{y:seaTop+(seaBed-seaTop)*depth}).maxHp)`), [30,60,90]);
+  app.run('Math.random=()=>0; startRun("diver"); closeMsg()');
+  assert.equal(app.run('beings.filter(b=>b.kind==="shark"&&sharkDistance(b)<140).every(b=>!b.aggressive)'),true);
+  assert.equal(app.run('beings.filter(b=>b.kind==="shark").every(b=>b.rare&&b.aggressive=== (sharkDistance(b)>=140))'),true);
 });
 
-test('distant divers and fishing boats do not initiate combat', () => {
-  const app=encounter();
-  app.run('enemy.x+=400;enemy.step(1)');
-  assert.equal(app.run('enemy.combat.state'),'roam');
-  app.run('enemy.x=player.x+DV_CX-enemy.w/2;player.role="boat";enemy.step(1)');
-  assert.equal(app.run('enemy.combat.state'),'roam');
+test('weapon purchases enforce prices, tiers, funds and only line upgrades change range', () => {
+  const app = combat();
+  app.run('save.coin=2550');
+  for (const damage of [10,20,30]) {
+    assert.equal(app.run('buyUpgrade("weapon")'),true);
+    assert.equal(app.run('weaponStats().damage'),damage);
+  }
+  assert.equal(app.run('save.coin'),0);
+  assert.equal(app.run('buyUpgrade("weapon")'),false);
+  assert.equal(app.run('SPEAR_RANGE+rangeAdd()'),92);
+  app.run('save.up.line=15');
+  assert.equal(app.run('SPEAR_RANGE+rangeAdd()'),app.run('upgradeValue("line",15)'));
+  const poor = combat();
+  assert.equal(poor.run('buyUpgrade("weapon")'),false);
 });
 
-test('pause, menus, audio settings and hidden tabs freeze combat and health', () => {
-  const app=encounter();app.run('enemy.step(1)');
-  for(const setup of ['paused=true','audioPanel=true','mode="guide"','document.visibilityState="hidden"']) {
-    app.run('paused=false;audioPanel=false;mode="dive";document.visibilityState="visible";'+setup);
-    const before=app.data('({c:enemy.combat,x:enemy.x,y:enemy.y,hp:player.hp})');
-    app.run('update(60,1000)');
-    assert.deepEqual(app.data('({c:enemy.combat,x:enemy.x,y:enemy.y,hp:player.hp})'),before);
+test('base spear blocks damage but triggers retaliation; passive sharks otherwise patrol', () => {
+  const app = combat();
+  app.run('target.step(1)');
+  assert.equal(app.run('target.state'),'patrol');
+  app.run('hitShark(target,0)');
+  assert.equal(app.run('target.hp'),30);
+  assert.equal(app.run('target.hostile'),true);
+  assert.deepEqual(app.effects,['sharkAlert','sharkBlock']);
+  app.run('target.step(1)');
+  assert.equal(app.run('target.state'),'warn');
+});
+
+test('all weapons require the specified hit counts; fatal hits reward once without a hit sound', () => {
+  for (const [level, hp, hits] of [[1,30,3],[1,60,6],[1,90,9],[2,30,2],[2,60,3],[2,90,5],[3,30,1],[3,60,2],[3,90,3]]) {
+    const app = combat();
+    app.run(`save.up.weapon=${level}; target.hp=target.maxHp=${hp}`);
+    for(let i=1;i<=hits;i++) {
+      app.run('hitShark(target,weaponStats().damage)');
+      assert.equal(app.run('mode'), i===hits?'catch':'dive');
+    }
+    assert.equal(app.run('save.caught.shark'),1);
+    assert.equal(app.run('save.hold.shark'),1);
+    assert.equal(app.run('save.coin'),0);
+    assert.equal(app.run('beings.includes(target)'),false);
+    assert.equal(app.effects.filter(n=>n==='sharkHit').length,hits-1);
+    assert.equal(app.effects.filter(n=>n==='sharkKill').length,1);
+    assert.equal(app.effects.includes('catch'),false);
+    app.run('caught(target); hitShark(target,30)');
+    assert.equal(app.run('save.caught.shark'),1);
+    assert.equal(app.run('sellFish("shark",false,1)'),true);
+    assert.equal(app.run('save.coin'),150);
   }
 });
 
-test('line level 14 cannot damage sharks; level 15 needs three real spear trips', () => {
-  const app=encounter();app.run('save.up.line=14');shoot(app);
-  assert.equal(app.run('enemy.combat.hp'),3);
-  assert.equal(app.run('save.hold.shark || 0'),0);
-  app.run('save.up.line=15');shoot(app);
-  assert.equal(app.run('enemy.combat.hp'),2);
-  assert.equal(app.run('save.hold.shark || 0'),0);
-  shoot(app);assert.equal(app.run('enemy.combat.hp'),1);
-  shoot(app);assert.equal(app.run('mode'),'catch');
-  assert.equal(app.run('save.hold.shark'),1);
-  assert.equal(app.run('save.caught.shark'),1);
-  assert.equal(app.run('beings.includes(enemy)'),false);
-  assert.equal(app.run('beings[0].combat.hp'),3);
-  app.run('flushSave()');
-  const raw=app.storage.get('atseadot.v4');
-  assert.ok(!raw.includes('combat'),'temporary enemy state is never persisted');
-  const loaded=game({raw});assert.equal(loaded.run('save.hold.shark'),1);
-  assert.equal(loaded.run('huntUnlocked()'),true);
-  assert.equal(loaded.run('sellFish("shark",false,1)'),true);
-  assert.equal(loaded.run('save.hold.shark || 0'),0);
+test('spear snapshots stats, returns after hitting and enforces cooldown without duplicate sound', () => {
+  const app = combat();
+  app.run('save.up.weapon=1; fireSpear(); save.up.weapon=3; fireSpear(); spear.x=target.cx(); spear.y=target.cy(); spearHit()');
+  assert.equal(app.run('target.hp'),20);
+  assert.equal(app.run('spear.weapon.speed'),4.4);
+  assert.equal(app.effects.filter(n=>n==='spear1').length,1);
+  app.run('spear.back=1; spear.x=player.x+DV_CX+spear.dir*10; spear.y=player.y+16; stepSpear(1); fireSpear()');
+  assert.equal(app.run('spear.on'),0);
+  assert.equal(app.run('spear.cooldown'),12);
+  app.run('stepSpear(12); fireSpear()');
+  assert.equal(app.run('spear.weapon.damage'),30);
+  assert.equal(app.effects.at(-1),'spear3');
 });
 
-test('rare shark rewards retain rarity after three hits', () => {
-  const app=encounter();app.run('save.up.line=15;enemy.rare=true');
-  shoot(app);shoot(app);shoot(app);
-  assert.equal(app.run('save.holdR.shark'),1);
+test('aggression transitions once through warning, fixed-direction dash and recovery', () => {
+  const app = combat();
+  app.run('target.aggressive=true; target.step(1)');
+  assert.equal(app.run('target.state'),'warn');
+  assert.deepEqual(app.effects,['sharkAlert','sharkWarn']);
+  app.run('target.step(41)');
+  assert.equal(app.run('target.state'),'warn');
+  app.run('target.step(1)');
+  assert.equal(app.run('target.state'),'dash');
+  const direction = app.data('[target.dashX,target.dashY]');
+  app.run('player.x+=300; target.step(10)');
+  assert.deepEqual(app.data('[target.dashX,target.dashY]'),direction);
+  app.run('target.step(26)');
+  assert.equal(app.run('target.state'),'recover');
+  app.run('target.step(71)');
+  assert.equal(app.run('target.state'),'recover');
+  app.run('target.step(1)');
+  assert.equal(app.run('target.state'),'chase');
+  assert.equal(app.effects.filter(n=>n==='sharkDash').length,1);
+});
+
+test('two attack slots bound a crowd and waiting retaliators take a released slot', () => {
+  const app = combat();
+  app.run(`beings=Array.from({length:3},()=>{const b=new Being("shark");b.aggressive=false;b.x=target.x;b.y=target.y;return b;});
+    for(const b of beings)hitShark(b,0);`);
+  assert.equal(app.run('beings.filter(b=>b.state!=="patrol").length'),2);
+  assert.equal(app.run('beings[2].hostile'),true);
+  app.run('releaseShark(beings[0]); beings[2].step(1)');
+  assert.notEqual(app.run('beings[2].state'),'patrol');
+  assert.equal(app.run('beings.filter(b=>b.state!=="patrol").length'),2);
+});
+
+test('distance disengages after three seconds, boat immediately disengages, and healing waits eight seconds', () => {
+  const app = combat();
+  app.run('hitShark(target,10); target.x=player.x+DV_CX+1000; target.step(179)');
+  assert.equal(app.run('target.hostile'),true);
+  app.run('target.step(1)');
+  assert.equal(app.run('target.state'),'patrol');
+  app.run('target.step(478)');
+  assert.equal(app.run('target.hp'),20);
+  app.run('target.step(61)');
+  assert.equal(app.run('target.hp'),30);
+  app.run('hitShark(target,10); swapRole()');
+  assert.equal(app.run('target.hostile'),false);
+  assert.equal(app.run('target.hp'),20);
+  app.run('target.reenter()');
+  assert.equal(app.run('target.hp'),20);
+});
+
+test('contact costs half a heart, dash costs one, and a dash cannot damage again after protection expires', () => {
+  for(const state of ['patrol','dash']) {
+    const app = combat();
+    app.run(`target.state="${state}"; target.step=()=>{}; target.x=player.x+DV_CX-target.w/2; target.y=player.y+DV_CY-target.h/2;
+      player.invulnerable=0; stepBeings(0);`);
+    assert.equal(app.run('player.hp'),state==='dash'?8:9);
+    app.run('stepBeings(1)');
+    assert.equal(app.run('player.hp'),state==='dash'?8:9);
+    if(state==='dash') {
+      app.run('player.invulnerable=0; stepBeings(1); target.state="recover"; stepBeings(1)');
+      assert.equal(app.run('player.hp'),8);
+    }
+  }
+});
+
+test('overlays, pauses and page hiding freeze combat, regeneration, spear and music-release time', () => {
+  const app = combat();
+  app.run('hitShark(target,10); target.step(1); fireSpear(); audioCombatRemaining=90');
+  const snapshot = () => app.data('[target.hp,target.stateTime,target.x,spear.x,spear.cooldown,audioCombatRemaining]');
+  const before = snapshot();
+  for(const mode of ['shop','guide','catch','bag','reward']) {
+    app.run(`mode="${mode}"; update(60,1000)`);
+    assert.deepEqual(snapshot(),before);
+  }
+  app.run('mode="dive"; paused=true; update(60,1000); paused=false; audioPanel=true; update(60,1000); audioPanel=false');
+  app.hide(); app.run('update(60,1000)'); app.show();
+  assert.deepEqual(snapshot(),before);
+  app.run('mode="over"; update(60,1000)');
+  assert.deepEqual(snapshot(),before);
+});
+
+test('rare observations never create stock; rare hunts survive sale and reload separately', () => {
+  const app = combat();
+  app.run('target.rare=true; target.x=camX+SW/2-target.w/2; target.y=cam+SH/2-target.h/2; stepBeings(0)');
   assert.equal(app.run('save.rare.shark'),1);
-  assert.equal(app.run('catchCard.rare'),true);
+  assert.equal(app.run('save.sharkRareCaught'),0);
+  assert.equal(app.run('sellFish("shark",true,1)'),false);
+  app.run('hitShark(target,30); flushSave()');
+  assert.equal(app.run('save.rare.shark'),1);
+  assert.equal(app.run('save.sharkRareCaught'),1);
+  assert.equal(app.effects.filter(n=>n==='sharkRareKill').length,1);
+  const loaded = game({raw:app.storage.get('atseadot.v4')});
+  assert.equal(loaded.run('save.holdR.shark'),1);
+  loaded.run('sellFish("shark",true,1); flushSave()');
+  const sold = game({raw:loaded.storage.get('atseadot.v4')});
+  assert.equal(sold.run('save.holdR.shark||0'),0);
+  assert.equal(sold.run('save.coin'),450);
+  assert.equal(sold.run('save.sharkRareCaught'),1);
 });
 
-test('returning spears cannot inflict repeated damage', () => {
-  const app=encounter();app.run('save.up.line=15');shoot(app);
-  assert.equal(app.run('enemy.combat.hp'),2);
-  app.run('spear.on=1;spear.back=1;spear.x=enemy.cx();spear.y=enemy.cy();stepSpear(1)');
-  assert.equal(app.run('enemy.combat.hp'),2);
+test('legacy max-line ownership grants one weapon once and preserves mixed observation stock', () => {
+  const app = game({raw:JSON.stringify({economyVersion:1,up:{line:15},coin:321,caught:{shark:4},rare:{shark:20},hold:{shark:2},holdR:{shark:1}})});
+  assert.deepEqual(app.data('[save.up.weapon,save.up.line,save.coin,save.hold.shark,save.holdR.shark,save.sharkRareCaught]'),[1,15,321,2,1,1]);
+  app.run('save.up.weapon=0; flushSave()');
+  const again = game({raw:app.storage.get('atseadot.v4')});
+  assert.equal(again.run('save.up.weapon||0'),0);
+  assert.equal(again.run('save.rare.shark'),20);
+  const invalid = game({raw:JSON.stringify({combatVersion:1,up:{weapon:99},caught:{shark:2},sharkRareCaught:99,holdR:{shark:99}})});
+  assert.equal(invalid.run('upLv("weapon")'),3);
+  assert.equal(invalid.run('save.sharkRareCaught'),2);
 });
 
-test('overlapping sharks respect protection and fatal damage cancels the spear', () => {
-  const app=encounter();app.run(`enemy.step=()=>{};enemy.x=player.x+DV_CX-enemy.w/2;
-    const other=new Being("shark");other.step=()=>{};other.x=enemy.x;other.y=enemy.y;
-    beings.push(other);stepBeings(1)`);
-  assert.equal(app.run('player.hp'),9);
-  app.run('stepBeings(1)');assert.equal(app.run('player.hp'),9);
-  app.run('player.hp=1;player.invulnerable=0;fireSpear();stepBeings(1)');
-  assert.equal(app.run('mode'),'over');assert.equal(app.run('spear.on'),0);
+test('real shop confirmation emits only a weapon-upgrade effect and cancels without mutation', () => {
+  const app = combat();
+  app.run('save.coin=300; openOverlay("shop"); tradeSel=commerceItems().findIndex(i=>i.id==="weapon"); onPress("enter"); onPress("escape")');
+  assert.equal(app.run('save.coin'),300);
+  app.effects.length=0;
+  app.run('onPress("enter"); onPress("enter")');
+  assert.equal(app.run('upLv("weapon")'),1);
+  assert.equal(app.run('save.coin'),0);
+  assert.deepEqual(app.effects.filter(n=>n==='trade'||n==='weaponUpgrade'),['weaponUpgrade']);
 });
 
-test('wounded sharks reset on world reentry and a new run', () => {
-  const app=encounter();app.run('enemy.combat.hp=1;enemy.combat.state="dash";enemy.reenter()');
-  assert.equal(app.run('enemy.combat.hp'),3);assert.equal(app.run('enemy.combat.state'),'roam');
-  app.run('startRun("diver")');assert.equal(app.run('beings.filter(b=>b.combat).every(b=>b.combat.hp===3)'),true);
-});
-
-test('combat emits one warning per attack, hit effects and one defeat', () => {
-  const effects=[], scenes=[];
-  const audio={setScene:s=>scenes.push(s),playEffect:s=>effects.push(s),unlock(){},suspend(){},
-    getSettings:()=>({muted:false,music:30,effects:50}),setSettings(){}};
-  const app=encounter({audio});
-  app.run('enemy.x=player.x+DV_CX+80-enemy.w/2;enemy.step(1);enemy.step(1);syncAudioScene()');
-  assert.equal(effects.filter(x=>x==='sharkWarn').length,1);
-  assert.equal(scenes.at(-1).encounter,'shark');
-  app.run('save.up.line=15');shoot(app);shoot(app);shoot(app);
-  assert.equal(effects.filter(x=>x==='sharkHit').length,2);
-  assert.equal(effects.filter(x=>x==='sharkDefeat').length,1);
-  app.run('syncAudioScene()');assert.equal(scenes.at(-1).encounter,'normal');
-});
-
-test('shark music preserves beat, respects damage priority and works with muted effects', async () => {
-  const h=audioHarness();await h.audio.unlock();h.audio.setSettings({effects:0});
-  const before=h.audio.getState().step;
-  h.audio.setScene({encounter:'shark'});
-  assert.equal(h.audio.getState().variation,'shark');assert.equal(h.audio.getState().step,before);
-  h.audio.setScene({encounter:'shark',damaged:true});assert.equal(h.audio.getState().variation,'damage');
-  h.audio.setScene({});assert.equal(h.audio.getState().variation,'normal');
-  h.audio.setSettings({effects:50});
-  for(const name of ['sharkWarn','sharkHit','sharkDefeat']) {
-    h.advance(1);assert.equal(h.audio.playEffect(name),true);assert.equal(h.audio.playEffect(name),false);
+test('combat music follows engagement, holds for two seconds and gives precedence to existing scenes', async () => {
+  const app = combat();
+  app.run('syncAudioScene()');
+  assert.equal(app.scenes.at(-1).combat,false);
+  app.run('hitShark(target,10); syncAudioScene()');
+  assert.equal(app.scenes.at(-1).combat,true);
+  app.run('beings=[]; update(119,1983); syncAudioScene()');
+  assert.equal(app.scenes.at(-1).combat,true);
+  app.run('update(1,17); syncAudioScene()');
+  assert.equal(app.scenes.at(-1).combat,false);
+  const h = audioHarness(); await h.audio.unlock();
+  h.audio.setSettings({effects:0});
+  const beat = h.audio.getState().step;
+  for(const [scene,expected] of [[{combat:true,encounter:'sub'},'combat'],[{combat:true,encounter:'mega'},'mega'],[{combat:true,encounter:'mega',damaged:true},'damage'],[{},'normal']]) {
+    h.audio.setScene(scene);
+    assert.equal(h.audio.getState().variation,expected);
+    assert.equal(h.audio.getState().step,beat);
   }
-  h.audio.suspend();assert.equal(h.audio.getState().voices,0);
+  h.audio.setScene({combat:true});
+  assert.ok(Math.abs(h.nodes.filter(n=>n.kind==='gain')[1].gain.value-.24)<.00001);
 });
 
-test('portrait and landscape primary actions use the same three-hit combat', () => {
-  for(const [width,height] of [[402,844],[844,390]]) {
-    const app=encounter({width,height});app.run('save.up.line=15');
-    shoot(app);shoot(app);shoot(app);
-    assert.equal(app.run('catchCard.id'),'shark');
-    assert.doesNotThrow(()=>app.run('render()'));
+test('new synthesized effects obey warning cooldown, voice limits, mute and suspension', async () => {
+  const h = audioHarness(); await h.audio.unlock();
+  assert.equal(h.audio.playEffect('sharkWarn'),true);
+  h.advance(.2);
+  assert.equal(h.audio.playEffect('sharkWarn'),false);
+  h.advance(.26);
+  assert.equal(h.audio.playEffect('sharkWarn'),true);
+  for(const name of ['spear1','spear2','spear3','sharkHit','sharkBlock','sharkAlert','sharkDash','sharkKill','sharkRareKill','weaponUpgrade']) {
+    h.advance(h.contexts[0].currentTime+2);
+    assert.equal(h.audio.playEffect(name),true,name);
   }
-});
-
-test('combat markers stay clear of the gauge and header even when the shark center is offscreen', () => {
-  for(const [width,height] of [[402,844],[844,390],[1258,622]]) {
-    const app=encounter({width,height});app.run('enemy.x=camX+SW-80;enemy.combat.state="warn"');
-    const m=app.data('sharkCombatMarker(enemy)');assert.ok(m);
-    assert.ok(m.x+13<app.run('UW-GAUGE_W'));
-    assert.ok(m.y-14>app.run('headerLayout().y+headerLayout().h'));
-    assert.doesNotThrow(()=>app.run('render()'));
-  }
-});
-
-test('boat bait still snaps near a shark and mega remains uncatchable at max level', () => {
-  const app=encounter();app.run(`save.up.line=15;player.role="boat";
-    rod.state="out";rod.x=player.x+rodTipX();enemy.x=rod.x-enemy.w/2;rod.y=enemy.cy();stepBoat(1,false);`);
-  assert.equal(app.run('rod.state'),'reel');assert.equal(app.run('save.stat.snap'),1);
-  app.run('player.role="diver";const mega=new Being("mega");beings=[mega];spear.x=mega.cx();spear.y=mega.cy();spearHit()');
-  assert.equal(app.run('save.caught.mega || 0'),0);
+  for(let i=0;i<100;i++)h.audio.playEffect('sharkHit');
+  assert.ok(h.audio.getState().voices<=64);
+  h.audio.setSettings({muted:true});
+  assert.equal(h.audio.getState().voices,0);
+  assert.equal(h.audio.playEffect('sharkAlert'),false);
+  h.audio.setSettings({muted:false}); await h.audio.unlock(); h.audio.suspend();
+  assert.equal(h.audio.playEffect('sharkWarn'),false);
+  assert.equal(h.timers.size,0);
 });

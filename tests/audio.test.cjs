@@ -163,7 +163,7 @@ test('settings preserve an active transaction, catch, death, pause and held-inpu
   assert.equal(app.run('trade===originalTrade'), true);
   assert.equal(app.run('audio.getSettings().music'), 40);
   assert.equal(app.run('mode'), 'shop');
-  for (const mode of ['catch','over','dive']) {
+  for (const mode of ['catch','reward','over','dive']) {
     app.context.testMode = mode;
     app.run('mode=testMode; paused=true; controlAction("audio"); controlAction("back")');
     assert.equal(app.run('mode'), mode);
@@ -207,7 +207,7 @@ test('real actions emit effects once; rejected spears, healing and damage remain
 
 test('fishing emits bite only at the transition and transactions distinguish success and failure', () => {
   const spy = spyAudio(), app = game({audio:spy.audio});
-  app.run('startRun("boat"); closeMsg(); rod.state="out"; rod.x=player.x+ROD_TIP.x; rod.y=seaTop+100; const fish=beings.find(b=>b.K.catchable); beings=[fish]; fish.x=rod.x-fish.w/2; fish.y=rod.y-fish.h/2; fish.pause=0; stepBoat(1,false); stepBoat(1,false)');
+  app.run('startRun("boat"); closeMsg(); rod.state="out"; rod.x=player.x+rodTipX(); rod.y=seaTop+100; const fish=beings.find(b=>b.K.catchable); beings=[fish]; fish.x=rod.x-fish.w/2; fish.y=rod.y-fish.h/2; fish.pause=0; stepBoat(1,false); stepBoat(1,false)');
   assert.deepEqual(spy.effects(), ['bite']);
   app.run('onPress("s"); beginTrade(); save.coin=1000; beginTrade(); finishTrade(); beginTrade(); save.coin=0; finishTrade()');
   assert.ok(spy.effects().includes('trade'));

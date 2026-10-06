@@ -23,7 +23,11 @@
     await suspension;
     if (i % 10 === 0 && i < 180) sound.playEffect(["bite","catch","rare","chest","spear","cast","reel","hurt","heal","trade","error","over"][i / 10 % 12]);
     if (i === 200) sound.setScene({depth:900});
+    if (i === 220) { sound.setScene({depth:900,encounter:"mega"}); sound.playEffect("mega"); }
+    if (i === 240) { sound.setScene({depth:900,encounter:"mega",damaged:true}); sound.playEffect("hurt"); }
+    if (i === 264) sound.setScene({depth:900,encounter:"mega"});
     if (i === 300) sound.setScene({depth:900,overlay:true});
+    if (i === 340) { sound.setScene({depth:900,encounter:"sub"}); sound.playEffect("sub"); }
     if (i === 400) sound.setScene({depth:0});
     if (i === 500) sound.setSettings({music:100,effects:100});
     for (const callback of callbacks) callback();

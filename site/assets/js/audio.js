@@ -12,6 +12,11 @@
     [16, 14, 12, null, 7, 14, 12, null]
   ];
   const ROOTS = [48, 53, 57, 55, 48, 57, 53, 55];
+  const VARIATIONS = {
+    damage: [12, null, 11, null, 7, null, 6, null],
+    mega: [12, null, 15, 19, 12, null, 10, 7],
+    sub: [12, 19, 24, 19, 16, 19, 26, 24]
+  };
   const normalize = value => {
     if (!value || typeof value !== "object" || typeof value.muted !== "boolean" ||
         ![value.music, value.effects].every(n => Number.isInteger(n) && n >= 0 && n <= 100 && n % 10 === 0))
@@ -28,7 +33,8 @@
     let settings = { ...DEFAULTS };
     try { settings = normalize(JSON.parse(storage.getItem(KEY))); } catch (_) {}
     let ctx, master, music, effects, ambient, filter, noise;
-    let scene = { depth: 0, overlay: false, paused: false };
+    let scene = { depth: 0, overlay: false, paused: false, damaged: false, encounter: "normal" };
+    const variation = () => scene.damaged ? "damage" : scene.encounter;
     let running = false, available = !!Context, timer = null, pending = null, revision = 0;
     let step = 0, next = 0, seed = 0x51ea2026;
     const voices = new Set(), cooldowns = new Map();
@@ -38,7 +44,7 @@
       if (!ctx || !master || !music || !effects || !filter) return;
       const now = ctx.currentTime;
       master.gain.setTargetAtTime(settings.muted ? 0 : .65, now, .025);
-      music.gain.setTargetAtTime(settings.music / 100 * (scene.overlay ? .4 : 1), now, .08);
+      music.gain.setTargetAtTime(settings.music / 100 * (scene.overlay ? .4 : 1) * (scene.damaged ? .55 : 1), now, .08);
       effects.gain.setTargetAtTime(settings.effects / 100, now, .025);
       filter.frequency.setTargetAtTime(4800 * Math.pow(.18, Math.min(1, scene.depth / 900)), now, .18);
     }
@@ -104,11 +110,13 @@
       while (next < ctx.currentTime + .18) {
         const bar = Math.floor(step / 8), beat = step % 8;
         const base = ROOTS[Math.floor(bar / 4)];
-        const melody = MOTIFS[(bar + Math.floor(bar / 8)) % 4][beat];
+        const variant = variation();
+        const melody = (VARIATIONS[variant] || MOTIFS[(bar + Math.floor(bar / 8)) % 4])[beat];
         if (settings.music > 0) {
-          if (melody !== null) tone(base + melody, next, .23, .065, "square");
-          if (beat % 2 === 0) tone(base - 12 + (beat === 4 ? 7 : 0), next, .4, .12);
+          if (melody !== null) tone(base + melody, next, variant === "sub" ? .4 : .23, .065, variant === "sub" ? "sine" : variant === "damage" ? "triangle" : "square");
+          if (beat % 2 === 0) tone(base - (variant === "mega" || variant === "damage" ? 17 : 12) + (beat === 4 ? 7 : 0), next, .4, .12);
           if (beat === 0 || beat === 4) tone(34, next, .11, .12, "sine", music, 20);
+          if (variant === "mega" && (beat === 2 || beat === 6)) tone(29, next, .16, .1, "sine", music, 18);
           if (beat === 2 || beat === 6) hiss(next, .08, .055);
           if (beat % 2 === 1) hiss(next, .045, .025, music, 3600);
         }
@@ -152,27 +160,28 @@
       spear: [55, 43], cast: [60, 72], reel: [72, 67, 60], bite: [84, 79, 84],
       catch: [72, 76, 79], rare: [72, 76, 79, 84, 88, 91], chest: [60, 67, 72, 76, 79],
       trade: [76, 79, 84], error: [43, 42], hurt: [48, 36], heal: [67, 72, 79],
-      over: [67, 63, 60, 48]
+      over: [67, 63, 60, 48], mega: [36, 43, 39, 36], sub: [79, 91, 79]
     };
     function playEffect(name) {
       const notes = PATTERNS[name];
       if (!running || scene.paused || settings.muted || !settings.effects || !notes) return false;
       const now = ctx.currentTime, delay = name === "move" ? .08 : .14;
       if (now - (cooldowns.get(name) ?? -Infinity) < delay) return false;
-      const splash = ["cast", "spear", "reel"].includes(name);
+      const splash = ["cast", "spear", "reel", "hurt"].includes(name);
       if ([...voices].filter(v => v.effect).length + notes.length + (splash ? 1 : 0) > 16) return false;
       cooldowns.set(name, now);
-      const length = ["rare", "chest", "over"].includes(name) ? .18 : .09;
+      const length = ["rare", "chest", "over", "mega", "sub"].includes(name) ? .18 : .09;
       notes.forEach((note, i) => tone(note, now + i * length, length * 1.3, .11,
-        ["hurt", "error", "spear"].includes(name) ? "triangle" : "sine", effects));
-      if (splash) hiss(now, .16, .055, effects, 900);
+        ["hurt", "error", "spear", "mega"].includes(name) ? "triangle" : "sine", effects));
+      if (splash) hiss(now, name === "hurt" ? .12 : .16, name === "hurt" ? .09 : .055, effects, name === "hurt" ? 1300 : 900);
       return true;
     }
     return {
       unlock, playEffect, suspend: stop,
       setScene(value) {
         const wasPaused = scene.paused;
-        const nextScene = { depth: Math.max(0, Number(value.depth) || 0), overlay: !!value.overlay, paused: !!value.paused };
+        const nextScene = { depth: Math.max(0, Number(value.depth) || 0), overlay: !!value.overlay, paused: !!value.paused,
+          damaged: !!value.damaged, encounter: ["mega", "sub"].includes(value.encounter) ? value.encounter : "normal" };
         const changed = Object.keys(nextScene).some(key => scene[key] !== nextScene[key]);
         scene = nextScene;
         if (scene.paused && !wasPaused) stop();
@@ -186,7 +195,7 @@
         return { ...settings };
       },
       getSettings: () => ({ ...settings }),
-      getState: () => ({ available, running, voices: voices.size, step, settings: { ...settings } })
+      getState: () => ({ available, running, voices: voices.size, step, variation: variation(), settings: { ...settings } })
     };
   }
   root.createAtSeaAudio = createAtSeaAudio;

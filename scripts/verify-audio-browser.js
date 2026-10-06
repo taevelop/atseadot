@@ -29,7 +29,16 @@
     if (i === 300) sound.setScene({depth:900,overlay:true});
     if (i === 340) { sound.setScene({depth:900,encounter:"sub"}); sound.playEffect("sub"); }
     if (i === 400) sound.setScene({depth:0});
+    if (i === 410) { sound.setScene({depth:300,combat:true}); sound.playEffect("sharkAlert"); }
+    if (i === 420) sound.playEffect("sharkWarn");
+    if (i === 427) sound.playEffect("sharkDash");
+    if (i === 440) sound.playEffect("sharkHit");
+    if (i === 450) sound.playEffect("sharkKill");
+    if (i === 470) sound.setScene({depth:300});
     if (i === 500) sound.setSettings({music:100,effects:100});
+    if (i === 510) sound.setScene({combat:true});
+    if (i >= 520 && i <= 610 && i % 10 === 0) sound.playEffect(["spear1","spear2","spear3","sharkBlock","sharkAlert","sharkWarn","sharkDash","sharkHit","sharkRareKill","weaponUpgrade"][(i-520)/10]);
+    if (i === 640) sound.setScene({});
     for (const callback of callbacks) callback();
     if (i < duration * 10 - 1) suspension = offline.suspend((i + 1) / 10);
     await offline.resume();
@@ -43,7 +52,7 @@
     return Math.sqrt(sum / Math.floor((end-start)*rate));
   };
   const report = {seconds:duration, sampleRate:rate, peak, rms:Math.sqrt(squares/data.length),
-    loopBoundaryRms:rms(76.6,77.2), nonfinite, voicesAfterRender:sound.getState().voices};
+    loopBoundaryRms:rms(76.6,77.2), combatRms:rms(41,47), transitionRms:rms(46.8,47.2), nonfinite, voicesAfterRender:sound.getState().voices};
   assert(nonfinite===0 && peak>0 && peak<1, "Invalid or clipped audio output");
   assert(report.loopBoundaryRms>.001, "Silent loop boundary");
   sound.suspend();

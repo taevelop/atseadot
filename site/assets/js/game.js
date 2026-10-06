@@ -1701,6 +1701,7 @@ const UI_LANGUAGES = ["ko", "en"];
 const audio = createAtSeaAudio();
 let audioPanel = false, audioSelection = 0;
 let audioDamageRemaining = 0;
+let audioCombatRemaining = 0;
 const audioAnnounced = new WeakSet();
 function specialAudioBeings() {
   return mode !== "title" && returnMode !== "title" && mode !== "over"
@@ -1719,6 +1720,7 @@ let audioNavigationDepth = 0, audioExplicitEffect = false;
 function syncAudioScene() {
   const visitors = specialAudioBeings();
   audio.setScene({ depth: mode === "title" || returnMode === "title" ? 0 : metres(),
+    combat: mode !== "title" && mode !== "over" && returnMode !== "title" && (audioCombatRemaining > 0 || beings.some(b => b.kind === "shark" && b.state !== "patrol" && !b.dead)),
     encounter: visitors.some(b => b.kind === "mega") ? "mega" : visitors.length ? "sub" : "normal",
     damaged: mode !== "title" && mode !== "over" && returnMode !== "title" && audioDamageRemaining > 0,
     overlay: audioPanel || !["title", "dive"].includes(mode),
@@ -2365,7 +2367,7 @@ const SP = {
     lantern: ["발광어", "몸에 청록빛 점을 켜고 다니는 작은 등불. 몇 마리 없어서, 마주치면 그날은 운이 좋은 날이다."],
     octopus: ["문어", "바닥에 붙어 다리를 꼬물거린다. 모래까지 내려가야 겨우 얼굴을 보여 준다."],
     angler: ["초롱아귀", "머리에 등불을 달고 다닌다. 예쁘다고 따라가면 이빨이 먼저 반겨 주니 조심하자."],
-    shark: ["상어", "물지는 않는다. 대신 어깨로 쿵 밀치고 지나가니 길은 비켜 주자."],
+    shark: ["상어", "일부는 먼저 추격하고, 평온한 개체도 작살에 맞으면 반격한다. 사냥 무기를 구매해 체력을 깎자. 점멸과 경고음 뒤에는 돌진! 접촉은 반 하트, 돌진은 한 하트 피해다."],
     sub: ["잠수함", "물고기가 아니다. [B]를 누르면 탐조등을 켜고 슬쩍 들어왔다가 조용히 사라진다."],
     mega: ["메갈로돈", "상어 여덟 마리를 합쳐 놓은 크기에 몸까지 빛난다. 보고 싶으면 미끼를 뿌리고 기다리되, 너무 가까이는 가지 말자."],
   },
@@ -2385,7 +2387,7 @@ const SP = {
     lantern: ["LANTERNFISH", "A TINY LAMP WITH TEAL DOTS ALONG ITS BELLY. THERE ARE ONLY A FEW, SO MEETING ONE IS A GOOD DAY."],
     octopus: ["OCTOPUS", "STAYS ON THE BOTTOM, WIGGLING ITS ARMS. YOU HAVE TO GO ALL THE WAY DOWN TO THE SAND FOR A LOOK."],
     angler: ["ANGLERFISH", "CARRIES A LANTERN ON ITS HEAD. FOLLOW THE PRETTY LIGHT AND THE TEETH SAY HELLO FIRST."],
-    shark: ["SHARK", "IT DOES NOT BITE. IT JUST SHOULDERS PAST YOU, SO GIVE IT THE ROOM."],
+    shark: ["SHARK", "SOME CHASE FIRST; ALL RETALIATE WHEN HIT. BUY A HUNTING WEAPON TO DEAL DAMAGE. A FLASH AND ALERT PRECEDE A DASH! CONTACT COSTS HALF A HEART; A DASH COSTS ONE."],
     sub: ["SUBMARINE", "NOT A FISH. PRESS [B] AND IT SLIDES IN WITH ITS LAMPS ON, THEN QUIETLY LEAVES AGAIN."],
     mega: ["MEGALODON", "EIGHT SHARKS PUT TOGETHER, AND IT GLOWS. SCATTER THE BAIT AND WAIT - BUT DO NOT GET TOO CLOSE."],
   },
@@ -2433,6 +2435,26 @@ const TITLE_TEXT = {
   },
 };
 
+Object.assign(STR.ko, {
+  "s.weapon": "사냥 무기", "s.effect.weapon": "상어 공격력 {0}",
+  "s.weaponInfo": "사냥 작살 → 강화 작살 → 작살총. 일부 상어는 먼저 공격하며 모든 상어는 피격 시 반격합니다. 경고 점멸과 소리 뒤 돌진을 피하세요.",
+  "s.lineInfo": "사거리만 늘어납니다. 상어 사냥에는 사냥 무기가 필요합니다.",
+  "weapon.0": "채집 작살", "weapon.1": "사냥 작살", "weapon.2": "강화 작살", "weapon.3": "작살총",
+  "weapon.ready": "준비", "weapon.return": "회수", "weapon.wait": "대기",
+  "m.needWeapon": "사냥 무기가 필요합니다! 상어가 반격합니다.",
+  "help.hunt": "[Space]", "help.huntV": "상어 사냥: 무기 구매 후 공격 · 점멸과 경고음 뒤 돌진 회피",
+  "g.hunted": "사냥", "g.rareHunted": "희귀 사냥", "g.rareSeen": "희귀 목격"
+});
+Object.assign(STR.en, {
+  "s.weapon": "HUNTING WEAPON", "s.effect.weapon": "SHARK DAMAGE {0}",
+  "s.weaponInfo": "HUNTING SPEAR → REINFORCED SPEAR → SPEARGUN. SOME SHARKS ATTACK FIRST; ALL RETALIATE WHEN HIT. DODGE AFTER THE FLASH AND WARNING SOUND.",
+  "s.lineInfo": "EXTENDS RANGE ONLY. BUY A HUNTING WEAPON TO HUNT SHARKS.",
+  "weapon.0": "COLLECTOR", "weapon.1": "HUNT SPEAR", "weapon.2": "REINFORCED", "weapon.3": "SPEARGUN",
+  "weapon.ready": "READY", "weapon.return": "RETURN", "weapon.wait": "WAIT",
+  "m.needWeapon": "BUY A HUNTING WEAPON! THE SHARK RETALIATES.",
+  "help.hunt": "[Space]", "help.huntV": "HUNT: BUY A WEAPON; DODGE AFTER THE FLASH AND ALERT",
+  "g.hunted": "HUNTED", "g.rareHunted": "RARE HUNTED", "g.rareSeen": "RARE SEEN"
+});
 function translate(language, key, ...values) {
   const table = STR[language] || STR.en;
   let out = table[key] !== undefined ? table[key] : (STR.en[key] !== undefined ? STR.en[key] : key);
@@ -2548,12 +2570,12 @@ for (const e of GUIDE) GUIDE_BY_ID[e.id] = e;
    '무언가 더 있다'가 새어나가 이스터에그가 아니게 된다. */
 const guideList = () => GUIDE.filter(e => !e.egg || save.seen[e.id]);
 const CATCH_IDS = GUIDE.filter(e => !e.sight).map(e => e.id);
-/* 상어는 원래 구경만 하는 것이다. 작살줄을 끝까지 올린 사람에게만 열린다 -
-   도감의 채집 대상과 칭호 조건은 그대로 두고, 이쪽만 따로 센다. */
+/* Hunting uses its own weapon/health path; collection trophy requirements stay unchanged. */
 const HUNT_IDS = ["shark"];
-const huntUnlocked = () => upLv("line") >= upMax("line");
-const canCatch = K => !!(K && (K.catchable || (K.hunt && huntUnlocked())));
-const sellableId = id => CATCH_IDS.includes(id) || (HUNT_IDS.includes(id) && huntUnlocked());
+const huntUnlocked = () => upLv("weapon") > 0;
+// Sharks use health-based hunting, never the ordinary instant-catch path.
+const canCatch = K => !!(K && K.catchable);
+const sellableId = id => STOCK_IDS.includes(id);
 const STOCK_IDS = CATCH_IDS.concat(HUNT_IDS);
 const SMALL_FISH = ["fish3", "fish5", "puffer", "tang", "tuna", "marlin"];
 
@@ -2631,6 +2653,7 @@ const UPGRADES = [
   { id: "hook", cost: [220, 520], role: "boat" },
   { id: "sonar", cost: [400, 900], role: "both" },
   { id: "ship", cost: [700, 1600], role: "boat" },
+  { id: "weapon", cost: [300, 750, 1500], role: "diver", max: 3 },
 ];
 const UP_MAX = 2;                  /* 따로 적지 않은 장비의 상한 */
 /* 작살줄만 끝까지 올린다. 릴과 바늘은 성공률이 백 퍼센트를 넘어 버리고,
@@ -2663,12 +2686,19 @@ const SHOP_ITEMS = [
   ...BOATS.map(item => ({ ...item, kind: "boat" })),
 ];
 const upLv = k => (save.up && save.up[k]) || 0;
+const WEAPONS = [
+  { damage: 0, speed: 4.4, back: 6, cooldown: 12 },
+  { damage: 10, speed: 4.4, back: 6, cooldown: 12 },
+  { damage: 20, speed: 5.2, back: 7, cooldown: 9 },
+  { damage: 30, speed: 6, back: 8, cooldown: 6 }
+];
+const weaponStats = () => WEAPONS[upLv("weapon")];
 const heartMax = () => 10 + upLv("tank") * 2;   /* 반 칸이 1 이므로 다섯 개 */
 const swimMul = () => 1 + upLv("fins") * .15;
 /* 배가 커지면 그만큼 잘 나간다 - 오리발이 잠수부에게 하는 일을 배에게 한다. */
 const shipMul = () => 1 + upLv("ship") * .2;
 const lampAdd = () => upLv("lamp") * 16;
-const rangeAdd = () => upLv("line") * 26;
+const rangeAdd = () => upgradeValue("line", upLv("line")) - SPEAR_RANGE;
 const rareMul = () => Math.pow(1.9, upLv("bait"));
 const reelMul = () => 1 + upLv("reel") * .2;
 const hookRate = () => HOOK_RATE + upLv("hook") * .05;
@@ -2715,6 +2745,14 @@ class Being {
       this.y = o.y !== undefined ? o.y : rnd(this.top, this.bottom);
       this.x = o.offscreen ? (this.dir === 1 ? -this.w - rnd(0, 60) : worldW() + rnd(0, 60))
                            : rnd(-this.w, worldW());
+    }
+    if (kind === "shark") {
+      const tier = clamp(Math.floor((this.cy() - seaTop) / Math.max(1, seaBed - seaTop) * 3), 0, 2);
+      this.hp = this.maxHp = [30, 60, 90][tier];
+      this.aggressive = Math.random() < [.1, .25, .4][tier];
+      this.hostile = false; this.state = "patrol"; this.stateTime = 0;
+      this.farTime = 0; this.healWait = 480; this.dashHit = false; this.dead = false;
+      this.dashX = 0; this.dashY = 0;
     }
   }
   makeColors() {
@@ -2773,6 +2811,7 @@ class Being {
   }
   step(u) {
     this.phase += u * (this.kind === "jelly" ? .06 : .18);
+    if (this.kind === "shark" && stepShark(this, u)) return;
     if (this.pause > 0) { this.pause -= u; return; }
     if (this.flee <= 0 && attractToBait(this,u)) return;
     const sp = this.flee > 0 ? Math.max(this.speed, .5) * 2.6 : this.speed;
@@ -2915,7 +2954,7 @@ function makeDecor() {
 const LANTERN_SHARE = .01;
 
 function respawnAll() {
-  resetSonar(); activeBait = null;
+  resetSonar(); activeBait = null; audioCombatRemaining = 0;
   beings = [];
   for (const k in KIND) {
     const K = KIND[k];
@@ -2937,6 +2976,7 @@ function respawnAll() {
   for (let i = 0; i < nL; i++)
     beings.push(new Being("lantern", { slot: i, slots: nL }));
 
+  for (const b of beings) if (b.kind === "shark" && sharkDistance(b, worldW()/2 + DV_CX, seaTop + 16 + DV_CY) < 140) b.aggressive = false;
   makeDecor();
   bubbles = [];
   motes = [];
@@ -2961,7 +3001,7 @@ function emptySave() {
   return { seen: {}, caught: {}, rare: {}, at: {}, titles: {},
            stat: { snap: 0, seabed: 0 }, chest: 0, deepest: 0,
            /* 팔기 전까지 수족관에 머무는 것들과, 그것으로 산 것 */
-           coin: 0, up: {}, hold: {}, holdR: {}, stocked: 0, economyVersion: 1,
+           coin: 0, up: {}, hold: {}, holdR: {}, stocked: 0, economyVersion: 1, combatVersion: 1, sharkRareCaught: 0,
            suits: Object.fromEntries(SUITS.filter(item => item.cost).map(item => [item.id, false])), suit: "yellow",
            consumables: Object.fromEntries(CONSUMABLES.map(item => [item.id, 0])),
            boats: Object.fromEntries(BOATS.filter(item => item.cost).map(item => [item.id, false])), boat: "default" };
@@ -2972,6 +3012,9 @@ function normalizeSave(value) {
   const count = v => Number.isSafeInteger(v) && v >= 0;
   const flag = v => v === true || (count(v) && v > 0);
   if (!record(value)) return out;
+  const combatCurrent = value.combatVersion === 1;
+  out.sharkRareCaught = combatCurrent && count(value.sharkRareCaught) && record(value.caught) && count(value.caught.shark)
+    ? Math.min(value.sharkRareCaught, value.caught.shark) : 0;
   for (const id of Object.keys(GUIDE_BY_ID)) {
     for (const field of ["caught", "rare"])
       if (record(value[field]) && count(value[field][id])) out[field][id] = value[field][id];
@@ -2982,9 +3025,10 @@ function normalizeSave(value) {
     /* 수족관에 든 것은 잡은 수를 넘을 수 없다. 손으로 고친 저장값이
        들어와도 없는 물고기를 팔지는 못하게 한다. */
     for (const field of ["hold", "holdR"]) {
+      const rareCaught = id === "shark" && combatCurrent ? out.sharkRareCaught : out.rare[id] || 0;
       const cap = !STOCK_IDS.includes(id) ? 0 : field === "hold"
-        ? Math.max(0, (out.caught[id] || 0) - (out.rare[id] || 0))
-        : Math.min(out.caught[id] || 0, out.rare[id] || 0);
+        ? Math.max(0, (out.caught[id] || 0) - rareCaught)
+        : Math.min(out.caught[id] || 0, rareCaught);
       if (record(value[field]) && count(value[field][id]) && cap > 0)
         out[field][id] = Math.min(value[field][id], cap);
     }
@@ -2997,6 +3041,13 @@ function normalizeSave(value) {
     for (const u of UPGRADES)
       if (count(value.up[u.id]) && value.up[u.id] > 0)
         out.up[u.id] = Math.min(upMax(u.id), value.up[u.id]);
+  }
+  if (!combatCurrent) {
+    out.sharkRareCaught = out.holdR.shark || 0;
+    // Preserve known stock even though legacy rare counts mixed sightings/catches.
+    if (record(value.hold) && count(value.hold.shark))
+      out.hold.shark = Math.min(value.hold.shark, Math.max(0, (out.caught.shark || 0) - out.sharkRareCaught));
+    if (upMax("line") === out.up.line) out.up.weapon = Math.max(1, out.up.weapon || 0);
   }
   out.stocked = flag(value.stocked) ? 1 : 0;
   out.economyVersion = value.economyVersion === 1 ? 1 : 0;
@@ -3018,8 +3069,12 @@ function normalizeSave(value) {
   if (count(value.deepest)) out.deepest = Math.min(MAX_METRES, value.deepest);
   return out;
 }
-let save = emptySave();
-try { save = normalizeSave(JSON.parse(localStorage.getItem(SAVE_KEY))); }
+let save = emptySave(), combatMigrated = false;
+try {
+  const previous = JSON.parse(localStorage.getItem(SAVE_KEY));
+  combatMigrated = !!previous && typeof previous === "object" && !Array.isArray(previous) && previous.combatVersion !== 1;
+  save = normalizeSave(previous);
+}
 catch (e) { /* Unreadable storage or JSON starts with a valid in-memory record. */ }
 const economyMigrated = stockAquarium();
 /* 수족관이 생기기 전에 잡아 둔 것을 한 번만 옮겨 싣는다. 이것이 없으면
@@ -3049,7 +3104,7 @@ function persist() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(flushSave, 300);
 }
-if (economyMigrated) flushSave();
+if (economyMigrated || combatMigrated) flushSave();
 addEventListener("pagehide", flushSave);
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") { audio.suspend(); flushSave(); releaseTouchKeys(); pointer.down = false; }
@@ -3064,7 +3119,13 @@ function markCaught(b, depth = metres()) {
   if (!sellableId(b.gid)) return;
   save.caught[b.gid] = (save.caught[b.gid] || 0) + 1;
   save.seen[b.gid] = 1;
-  if (b.rare) save.rare[b.gid] = (save.rare[b.gid] || 0) + 1;
+  if (b.rare) {
+    if (b.kind === "shark") {
+      save.sharkRareCaught++;
+      if (!b.logged) { save.rare.shark = (save.rare.shark || 0) + 1; b.logged = true; }
+    }
+    else save.rare[b.gid] = (save.rare[b.gid] || 0) + 1;
+  }
   const stock = b.rare ? save.holdR : save.hold;
   stock[b.gid] = (stock[b.gid] || 0) + 1;
   /* 처음 올린 수심을 남긴다. 도감을 다시 열었을 때 어디서 만났는지가
@@ -3364,7 +3425,7 @@ const diverPalettes = {
 const SPEAR_SPEED = 4.4;      /* 한 걸음에 나아가는 칸 */
 const SPEAR_BACK  = 6.0;      /* 돌아올 때는 줄이 감기니 더 빠르다 */
 const SPEAR_RANGE = 92;       /* 이만큼 나아가면 스스로 돌아온다 */
-const spear = { on: 0, x: 0, y: 0, dir: 1, gone: 0, back: 0 };
+const spear = { on: 0, x: 0, y: 0, dir: 1, gone: 0, back: 0, cooldown: 0, weapon: { ...WEAPONS[0] } };
 const spearColors = stamp({
   o: "#0b111c", d: "#7b6242", m: "#a8865a", l: "#c9d8e8",
   h: "#eef6ff", r: "#8fb8d8", w: "#ffffff", k: "#0b1018", y: C.lure,
@@ -3872,6 +3933,12 @@ function drawBeing(b) {
                               (b.kind === "mega" ? 2.2 : b.kind === "shark" ? 1.6 : 1.2) * b.sc,
                               b.phase, right);
 
+  if (b.kind === "shark") {
+    if (b.rare) withGlow(C.rare, 12, swim); else swim();
+    drawSharkStatus(b, sx, sy);
+    return;
+  }
+
   if (b.rare) { withGlow(C.rare, 12, K.tail ? swim : () => blit(cv, sx, sy)); return; }
 
   if (b.kind === "angler") {
@@ -4167,7 +4234,7 @@ function drawGauge() {
 function headerLayout() {
   const got = T("hud.got", caughtTotal()), seen = seenCount() + "/" + guideList().length;
   const gotW = Math.max(...UI_LANGUAGES.map(language => textWidth(translate(language, "hud.got", caughtTotal()))));
-  return { x: 3, y: 3, w: Math.min(UW - GAUGE_W - 12, Math.max(120, gotW + textWidth(seen) + 22)), h: 60, got, seen };
+  return { x: 3, y: 3, w: Math.min(UW - GAUGE_W - 12, Math.max(120, gotW + textWidth(seen) + 22)), h: 90, got, seen };
 }
 function pauseLayout() {
   const w = Math.max(...UI_LANGUAGES.map(language => textWidth(translate(language, "ui.paused")))) + 20;
@@ -4188,6 +4255,9 @@ function drawHeader() {
     }
   }
   drawText(L.x+5,L.y+44,fit(T("ui.coin",save.coin),L.w-10),C.coin);
+  const status = spear.on ? "return" : spear.cooldown > 0 ? "wait" : "ready";
+  drawText(L.x+5,L.y+60,fit(T("weapon."+upLv("weapon")),L.w-10),C.textWarn);
+  drawText(L.x+5,L.y+74,fit(T("weapon."+status),L.w-10),C.textDim);
 }
 
 /* 아래 대사창. 알피지 만들기의 그 창이다. */
@@ -4532,7 +4602,11 @@ function currentInfo() {
     : [[T("g.depth"), bandText(e.kind), C.lure], [T("g.zone"), zoneText(e.kind)],
        [T("g.pace"), paceText(e.kind)], [T("g.net"), sellableId(e.id) ? T("g.yes") : T("g.no")]];
   if (!isCatch && Object.hasOwn(save.at, e.id)) rows.push([T("g.first"), save.at[e.id] + "M"]);
-  if (rare) rows.push([T("g.tab.rare"), T("g.count", rare), C.rare]);
+  if (rare) rows.push([T(e.id === "shark" ? "g.rareSeen" : "g.tab.rare"), T("g.count", rare), C.rare]);
+  if (e.id === "shark") {
+    rows.push([T("g.hunted"),T("g.count",n),C.textWarn]);
+    rows.push([T("g.rareHunted"),T("g.count",save.sharkRareCaught),C.rare]);
+  }
   return { e, rows, known, pale: isCatch ? catchCard.rare : guideTab === 1,
     heading: isCatch ? T(catchCard.rare ? "c.rare" : catchCard.isNew ? "c.new" : "c.title") : spName(e.id),
     tag: isCatch ? spName(e.id) : e.sight ? T(known ? "g.sighted" : "g.none") : n ? T("g.count", n) : T("g.none") };
@@ -4632,7 +4706,7 @@ function upgradeValue(id, level) {
        계속 26씩 더하면 작살이 화면을 가로지른다. */
     line: SPEAR_RANGE + (level <= 2 ? level * 26 : 52 + Math.round((level - 2) * 11.7)), bait: +(RARE_CHANCE * Math.pow(1.9, level) * 100).toFixed(3),
     reel: 100 + level * 20, hook: Math.round((HOOK_RATE + level * .05) * 100), sonar: [0,180,300][level],
-    ship: 100 + level * 20
+    ship: 100 + level * 20, weapon: WEAPONS[clamp(level, 0, 3)].damage
   };
   return values[id];
 }
@@ -4652,7 +4726,8 @@ function shopDescription(item) {
   ];
   const text = [T("s.role." + item.role), upgradeEffect(item)];
   if (item.id === "bait") text.push(T("s.baitLevels", ...[0,1,2].map(level => upgradeValue("bait",level))));
-  if (["tank", "lamp", "reel", "hook", "sonar"].includes(item.id)) text.push(T("s." + item.id + "Info"));
+  if (["tank", "lamp", "reel", "hook", "sonar", "weapon", "line"].includes(item.id)) text.push(T("s." + item.id + "Info"));
+  if (item.id === "weapon") text.push(T("weapon." + Math.min(3, upLv("weapon") + 1)));
   text.push(T(item.id === "bait" ? "s.spawn" : "s.now"), T("s.noLock"));
   return text;
 }
@@ -4795,7 +4870,7 @@ function finishTrade() {
   }
   tradeSel = clamp(tradeSel, 0, Math.max(0, commerceItems().length - 1));
   // A capsule already emits its recovery sound; do not stack a purchase jingle.
-  if (!success || pending.type !== "use") soundEffect(success ? "trade" : "error");
+  if (!success || pending.type !== "use") soundEffect(success ? pending.type === "buy" && pending.id === "weapon" ? "weaponUpgrade" : "trade" : "error");
   else if (pending.id !== "oxygenCapsule") soundEffect("confirm");
   releaseTouchKeys(false); pointer.down = false;
 }
@@ -4998,6 +5073,7 @@ const HELP_ROWS = [
   ["help.move", "help.moveV"],
   ["help.dash", "help.dashV"],
   ["help.act", "help.actV"],
+  ["help.hunt", "help.huntV"],
   ["help.swap", "help.swapV"],
   ["help.line", "help.lineV"],
   ["help.ok", "help.okV"],
@@ -5733,8 +5809,9 @@ function rodAction() {
 }
 
 function fireSpear() {
-  if (spear.on) return;                       /* 돌아오는 중에는 못 쏜다 */
-  soundEffect("spear");
+  if (spear.on || spear.cooldown > 0) return;
+  spear.weapon = { ...weaponStats() };
+  soundEffect(upLv("weapon") ? "spear" + upLv("weapon") : "spear");
   spear.on = 1; spear.back = 0; spear.gone = 0;
   spear.dir = player.dir;
   spear.x = player.x + DV_CX + player.dir * 16;
@@ -5753,9 +5830,12 @@ function spearHit() {
   for (const b of beings) {
     const dx = Math.abs(b.cx() - spear.x), dy = Math.abs(b.cy() - spear.y);
     if (dx > b.w * .5 + 3 || dy > b.h * .5 + 3) continue;
+    if (b.kind === "shark") {
+      hitShark(b, spear.weapon.damage);
+      return 1;
+    }
     if (!canCatch(b.K)) {
-      /* 메갈로돈과 잠수함에는 작살이 들지 않는다. 상어는 작살줄을 끝까지
-         올리기 전까지 같은 대접을 받는다. */
+      /* Megalodon and submarines remain non-huntable encounters. */
       b.scare(spear.x);
       say(b.kind === "sub" ? T("m.subignore") : T("m.toobig"), C.textWarn);
       if (markSeen(b.gid)) sighted(b);
@@ -5768,19 +5848,20 @@ function spearHit() {
 }
 
 function stepSpear(u) {
+  spear.cooldown = Math.max(0, spear.cooldown - u);
   if (!spear.on) return;
   if (spear.back) {
     /* 줄이 감긴다. 잠수부의 손으로 돌아오면 끝난다. */
     const hx = player.x + DV_CX + spear.dir * 10, hy = player.y + 16;
     const dx = hx - spear.x, dy = hy - spear.y;
     const d = Math.hypot(dx, dy);
-    if (d < SPEAR_BACK * u + 1) { spear.on = 0; return; }
-    spear.x += dx / d * SPEAR_BACK * u;
-    spear.y += dy / d * SPEAR_BACK * u;
+    if (d < spear.weapon.back * u + 1) { spear.on = 0; spear.cooldown = spear.weapon.cooldown; return; }
+    spear.x += dx / d * spear.weapon.back * u;
+    spear.y += dy / d * spear.weapon.back * u;
     return;
   }
-  spear.x += spear.dir * SPEAR_SPEED * u;
-  spear.gone += SPEAR_SPEED * u;
+  spear.x += spear.dir * spear.weapon.speed * u;
+  spear.gone += spear.weapon.speed * u;
   if (spearHit() || spear.gone >= SPEAR_RANGE + rangeAdd() ||
       spear.x < 2 || spear.x > worldW() - 2) spear.back = 1;
 }
@@ -5803,7 +5884,9 @@ function openChest() {
 }
 
 function caught(b, depth = metres()) {
-  soundEffect(b.rare ? "rare" : "catch");
+  if (b.kind === "shark" && (!b.dead || b.rewarded)) return;
+  b.rewarded = true;
+  soundEffect(b.kind === "shark" ? b.rare ? "sharkRareKill" : "sharkKill" : b.rare ? "rare" : "catch");
   const wasNew = !save.seen[b.gid];
   markCaught(b, depth);
   /* 귀한 것은 화면이 한 번 더 밝게 튄다 - 글보다 이쪽이 먼저 눈에 든다. */
@@ -5881,6 +5964,7 @@ function update(u, dt) {
   if (shake > 0) shake = Math.max(0, shake - .5 * u);
   if (mode !== "dive" || paused || audioPanel || document.visibilityState === "hidden") return;
   audioDamageRemaining = Math.max(0, audioDamageRemaining - u);
+  audioCombatRemaining = Math.max(0, audioCombatRemaining - u);
 
   if (activeBait) {
     activeBait.remaining = Math.max(0, activeBait.remaining-u);
@@ -5901,6 +5985,7 @@ function update(u, dt) {
   }
 
   stepBeings(u);
+  if (beings.some(b => b.kind === "shark" && b.state !== "patrol" && !b.dead)) audioCombatRemaining = 120;
   if (mode !== "dive") return;
   announceSpecialAudio();
   stepSonar(u);
@@ -6075,10 +6160,99 @@ function stepBoat(u, fast) {
   }
 }
 
+/* ---- Shark combat. Times use 60 simulation ticks per second. ---- */
+function sharkDistance(b, x = player.x + DV_CX, y = player.y + DV_CY) {
+  return Math.hypot(Math.max(b.x-x, 0, x-b.x-b.w), Math.max(b.y-y, 0, y-b.y-b.h));
+}
+function releaseShark(b) {
+  b.hostile = false; b.state = "patrol"; b.stateTime = 0;
+  b.farTime = 0; b.healWait = 480;
+}
+function activateShark(b) {
+  if (b.dead || b.state !== "patrol" || player.role !== "diver") return false;
+  if (beings.filter(o => o.kind === "shark" && o.state !== "patrol" && !o.dead).length >= 2) return false;
+  b.hostile = true; b.state = "chase"; b.flee = 0; b.farTime = 0;
+  audioCombatRemaining = 120;
+  soundEffect("sharkAlert");
+  return true;
+}
+function hitShark(b, damage) {
+  if (b.dead || mode !== "dive" || paused || audioPanel || player.role !== "diver" || document.visibilityState === "hidden") return false;
+  b.hostile = true; b.healWait = 480;
+  b.hp = Math.max(0, b.hp - damage);
+  if (b.hp === 0) { b.dead = true; caught(b); return true; }
+  activateShark(b);
+  if (damage > 0) soundEffect("sharkHit");
+  else { soundEffect("sharkBlock"); say(T("m.needWeapon"), C.textWarn); }
+  return true;
+}
+function stepShark(b, u) {
+  if (b.dead) return true;
+  const distance = sharkDistance(b);
+  if (player.role !== "diver") {
+    if (b.hostile || b.state !== "patrol") releaseShark(b);
+  } else {
+    if (distance > 240 && b.hostile) b.farTime += u;
+    else b.farTime = 0;
+    if (b.farTime >= 180) releaseShark(b);
+    if (b.state === "patrol" && (b.hostile || b.aggressive && distance <= 160)) activateShark(b);
+  }
+  if (b.state === "patrol") {
+    if (!b.hostile) {
+      const healing = Math.max(0, u - b.healWait);
+      b.healWait = Math.max(0, b.healWait-u);
+      b.hp = Math.min(b.maxHp, b.hp + healing / 6);
+    }
+    return false;
+  }
+  const dx = player.x+DV_CX-b.cx(), dy = player.y+DV_CY-b.cy();
+  const d = Math.hypot(dx,dy) || 1;
+  if (b.state === "chase") {
+    if (dx) b.dir = Math.sign(dx);
+    if (distance <= 100) {
+      b.state = "warn"; b.stateTime = 42; soundEffect("sharkWarn");
+    } else { b.x += dx/d*.8*u; b.y = clamp(b.y+dy/d*.8*u,b.top,b.bottom); }
+  } else if (b.state === "warn") {
+    b.stateTime = Math.max(0,b.stateTime-u);
+    if (!b.stateTime) {
+      b.state = "dash"; b.stateTime = 36; b.dashX = dx/d; b.dashY = dy/d;
+      b.dashHit = false; if (dx) b.dir = Math.sign(dx); soundEffect("sharkDash");
+    }
+  } else if (b.state === "dash") {
+    b.dashingThisStep = true;
+    const travel = Math.min(u,b.stateTime);
+    b.x += b.dashX*2.4*travel; b.y = clamp(b.y+b.dashY*2.4*travel,b.top,b.bottom);
+    b.stateTime = Math.max(0,b.stateTime-u);
+    if (!b.stateTime) { b.state = "recover"; b.stateTime = 72; }
+  } else if (b.state === "recover") {
+    b.stateTime = Math.max(0,b.stateTime-u);
+    if (!b.stateTime) b.state = "chase";
+  }
+  return true;
+}
+function drawSharkStatus(b, sx, sy) {
+  const x = Math.round(sx+b.w/2), y = Math.round(sy)-9;
+  // World pixels and UI pixels have different scales. Keep warnings clear of the gauge/HUD.
+  const right = Math.max(40, SW-Math.ceil((GAUGE_W+6)*UI_PIXEL_SCALE/PIXEL_SCALE));
+  const top = Math.min(SH-20, Math.ceil((headerLayout().h+32)*UI_PIXEL_SCALE/PIXEL_SCALE));
+  if (b.hp < b.maxHp || b.hostile) {
+    const bx = clamp(x-18, 2, right-38), by = clamp(y, top+10, SH-6);
+    rect(bx,by,36,4,C.frameDim); rect(bx+1,by+1,Math.ceil(34*b.hp/b.maxHp),2,C.danger);
+  }
+  if (b.aggressive || b.hostile) {
+    // Exclamation mark also conveys danger without color or sound.
+    const mx = clamp(x,3,right-4), my = clamp(y-9,top,SH-12);
+    if (b.state !== "warn" || Math.floor(b.stateTime/6)%2 === 0) {
+      rect(mx,my,2,5,C.textWarn); rect(mx,my+7,2,2,C.textWarn);
+    }
+  }
+}
+
 /* ---- 바닷속의 것들 ---- */
 function stepBeings(u) {
   for (let i = beings.length - 1; i >= 0; i--) {
     const b = beings[i];
+    b.dashingThisStep = false;
     b.step(u);
     if (b.gone()) {
       if (b.kind === "sub" || b.kind === "mega") { beings.splice(i, 1); continue; }
@@ -6103,10 +6277,12 @@ function stepBeings(u) {
         say(T("m.gotrare", spName(b.gid)), C.rare);
       }
     }
-    /* 상어 충돌. 밀림과 피격 보호 시간은 독립적으로 처리한다. */
+    /* A dash can damage only once, including during recovery from that dash. */
     if (player.role === "diver" && (b.kind === "shark" || b.kind === "mega") && player.invulnerable <= 0) {
       const dx = b.cx() - (player.x + DV_CX), dy = b.cy() - (player.y + DV_CY);
-      if (Math.abs(dx) < b.w * .45 && Math.abs(dy) < b.h * .45 && hurtPlayer(b.kind === "mega" ? 2 : 1)) {
+      const dashProtected = b.kind === "shark" && b.dashHit && ["dash","recover"].includes(b.state);
+      if (!dashProtected && Math.abs(dx) < b.w * .45 && Math.abs(dy) < b.h * .45 && hurtPlayer(b.kind === "mega" || b.state === "dash" || b.dashingThisStep ? 2 : 1)) {
+        if (b.kind === "shark" && (b.state === "dash" || b.dashingThisStep)) b.dashHit = true;
         player.bump = 22;
         player.vx = (dx > 0 ? -1 : 1) * 1.6;
         player.vy = (dy > 0 ? -1 : 1) * .9;
@@ -6280,6 +6456,7 @@ function swapRole() {
   const boarding = role === "boat" ? moored : null;
   moored = role === "diver" ? { x: keepX, dir: player.dir } : null;
   player.role = role;
+  if (role === "boat") for (const b of beings) if (b.kind === "shark") releaseShark(b);
   resetPlayer();
   player.x = keepX;
   if (role === "boat") {
@@ -6294,6 +6471,7 @@ function swapRole() {
 
 function startRun(role) {
   audioDamageRemaining = 0;
+  audioCombatRemaining = 0; spear.cooldown = 0;
   clearGameInput(); trade=null; tradeNotice="";
   player.hp = heartMax(); player.invulnerable = 0; capsulesUsed = 0; activeBait = null;
   player.role = role;

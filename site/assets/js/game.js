@@ -1718,8 +1718,10 @@ let audioNavigationDepth = 0, audioExplicitEffect = false;
 
 function syncAudioScene() {
   const visitors = specialAudioBeings();
+  const fighting = mode !== "title" && returnMode !== "title" && mode !== "over" &&
+    player.role === "diver" && beings.some(b => b.combat && b.combat.state !== "roam" && visible(b));
   audio.setScene({ depth: mode === "title" || returnMode === "title" ? 0 : metres(),
-    encounter: visitors.some(b => b.kind === "mega") ? "mega" : visitors.length ? "sub" : "normal",
+    encounter: visitors.some(b => b.kind === "mega") ? "mega" : fighting ? "shark" : visitors.length ? "sub" : "normal",
     damaged: mode !== "title" && mode !== "over" && returnMode !== "title" && audioDamageRemaining > 0,
     overlay: audioPanel || !["title", "dive"].includes(mode),
     paused: (paused && mode !== "title" && returnMode !== "title") || document.visibilityState === "hidden" });
@@ -2365,7 +2367,7 @@ const SP = {
     lantern: ["발광어", "몸에 청록빛 점을 켜고 다니는 작은 등불. 몇 마리 없어서, 마주치면 그날은 운이 좋은 날이다."],
     octopus: ["문어", "바닥에 붙어 다리를 꼬물거린다. 모래까지 내려가야 겨우 얼굴을 보여 준다."],
     angler: ["초롱아귀", "머리에 등불을 달고 다닌다. 예쁘다고 따라가면 이빨이 먼저 반겨 주니 조심하자."],
-    shark: ["상어", "물지는 않는다. 대신 어깨로 쿵 밀치고 지나가니 길은 비켜 주자."],
+    shark: ["상어", "가까이 오면 뒤쫓는다. 느낌표가 뜨면 돌진을 피하자. 작살줄 15단계부터 세 번 맞혀 잡을 수 있다."],
     sub: ["잠수함", "물고기가 아니다. [B]를 누르면 탐조등을 켜고 슬쩍 들어왔다가 조용히 사라진다."],
     mega: ["메갈로돈", "상어 여덟 마리를 합쳐 놓은 크기에 몸까지 빛난다. 보고 싶으면 미끼를 뿌리고 기다리되, 너무 가까이는 가지 말자."],
   },
@@ -2385,7 +2387,7 @@ const SP = {
     lantern: ["LANTERNFISH", "A TINY LAMP WITH TEAL DOTS ALONG ITS BELLY. THERE ARE ONLY A FEW, SO MEETING ONE IS A GOOD DAY."],
     octopus: ["OCTOPUS", "STAYS ON THE BOTTOM, WIGGLING ITS ARMS. YOU HAVE TO GO ALL THE WAY DOWN TO THE SAND FOR A LOOK."],
     angler: ["ANGLERFISH", "CARRIES A LANTERN ON ITS HEAD. FOLLOW THE PRETTY LIGHT AND THE TEETH SAY HELLO FIRST."],
-    shark: ["SHARK", "IT DOES NOT BITE. IT JUST SHOULDERS PAST YOU, SO GIVE IT THE ROOM."],
+    shark: ["SHARK", "IT CHASES NEARBY DIVERS. DODGE WHEN THE ! APPEARS. A LEVEL 15 SPEAR LINE UNLOCKS A THREE-HIT HUNT."],
     sub: ["SUBMARINE", "NOT A FISH. PRESS [B] AND IT SLIDES IN WITH ITS LAMPS ON, THEN QUIETLY LEAVES AGAIN."],
     mega: ["MEGALODON", "EIGHT SHARKS PUT TOGETHER, AND IT GLOWS. SCATTER THE BAIT AND WAIT - BUT DO NOT GET TOO CLOSE."],
   },
@@ -2551,6 +2553,9 @@ const CATCH_IDS = GUIDE.filter(e => !e.sight).map(e => e.id);
 /* 상어는 원래 구경만 하는 것이다. 작살줄을 끝까지 올린 사람에게만 열린다 -
    도감의 채집 대상과 칭호 조건은 그대로 두고, 이쪽만 따로 센다. */
 const HUNT_IDS = ["shark"];
+// Combat values use the same 60 Hz play-time units as movement and invulnerability.
+const SHARK_COMBAT = { hp: 3, detect: 190, abandon: 300, strike: 105,
+  warning: 42, dash: 30, recovery: 90, speed: 3.2 };
 const huntUnlocked = () => upLv("line") >= upMax("line");
 const canCatch = K => !!(K && (K.catchable || (K.hunt && huntUnlocked())));
 const sellableId = id => CATCH_IDS.includes(id) || (HUNT_IDS.includes(id) && huntUnlocked());
@@ -2702,6 +2707,8 @@ class Being {
     this.phase = Math.random() * Math.PI * 2;
     this.flee = 0;
     this.pause = 0;
+    if (kind === "shark") this.combat = { hp: SHARK_COMBAT.hp, state: "roam", timer: 0,
+      dx: 0, dy: 0, hit: 0 };
     const b = this.band();
     this.top = b[0]; this.bottom = b[1];
     if (o.slots && !o.offscreen) {
@@ -2774,6 +2781,7 @@ class Being {
   step(u) {
     this.phase += u * (this.kind === "jelly" ? .06 : .18);
     if (this.pause > 0) { this.pause -= u; return; }
+    if (this.combat && stepSharkCombat(this, u)) return;
     if (this.flee <= 0 && attractToBait(this,u)) return;
     const sp = this.flee > 0 ? Math.max(this.speed, .5) * 2.6 : this.speed;
     this.x += this.dir * sp * u;
@@ -2795,6 +2803,9 @@ class Being {
      붙어 다녔다. 그렇게 한참 헤엄치고 나면 같은 종이 한 덩어리로 몰린다.
      들어오는 자리와 깊이와 속도를 매번 새로 뽑아 흩어 놓는다. */
   reenter() {
+    // Leaving the world ends an encounter; wounded sharks heal when they re-enter.
+    if (this.combat) this.combat = { hp: SHARK_COMBAT.hp, state: "roam", timer: 0,
+      dx: 0, dy: 0, hit: 0 };
     this.dir = -this.dir;
     const margin = 10 + Math.random() * 190;
     this.x = this.dir === 1 ? -this.w - margin : worldW() + margin;
@@ -2807,12 +2818,68 @@ class Being {
   }
   /* 놀라 흩어진다. 놀란 자리에서 반대쪽으로 돈다. */
   scare(fromX) {
+    if (this.combat) { this.combat.state = "recover"; this.combat.timer = SHARK_COMBAT.recovery; }
     this.flee = 1;
     this.dir = this.x + this.w / 2 < fromX ? -1 : 1;
     this.vy = (Math.random() < .5 ? -1 : 1) * Math.abs(this.vy || .04);
   }
   cx() { return this.x + this.w / 2; }
   cy() { return this.y + this.h / 2; }
+}
+
+function stepSharkCombat(b, u) {
+  const c = b.combat;
+  if (u <= 0 || mode !== "dive" || paused || audioPanel || document.visibilityState === "hidden") return true;
+  c.hit = Math.max(0, c.hit - u);
+  if (player.role !== "diver" || player.hp <= 0) {
+    c.state = "roam"; c.timer = 0;
+    return false;
+  }
+  const dx = player.x + DV_CX - b.cx(), dy = player.y + DV_CY - b.cy();
+  const distance = Math.hypot(dx, dy);
+  if (c.state !== "dash" && distance > SHARK_COMBAT.abandon) {
+    c.state = "roam"; c.timer = 0;
+    return false;
+  }
+  if (c.state === "roam") {
+    if (distance > SHARK_COMBAT.detect || b.flee > 0) return false;
+    c.state = "chase";
+  }
+  if (c.state === "chase") {
+    b.dir = dx >= 0 ? 1 : -1;
+    if (distance <= SHARK_COMBAT.strike) {
+      c.state = "warn"; c.timer = SHARK_COMBAT.warning;
+      if (visible(b)) soundEffect("sharkWarn");
+      return true;
+    }
+    const amount = Math.min(distance, .65 * u);
+    b.x += dx / distance * amount;
+    b.y = clamp(b.y + dy / distance * amount, b.top, b.bottom);
+    return true;
+  }
+  if (c.state === "warn") {
+    c.timer = Math.max(0, c.timer - u);
+    if (!c.timer) {
+      c.state = "dash"; c.timer = SHARK_COMBAT.dash;
+      c.dx = distance ? dx / distance : b.dir; c.dy = distance ? dy / distance : 0;
+      b.dir = c.dx >= 0 ? 1 : -1;
+    }
+    return true;
+  }
+  if (c.state === "dash") {
+    const elapsed = Math.min(u, c.timer);
+    b.x += c.dx * SHARK_COMBAT.speed * elapsed;
+    b.y = clamp(b.y + c.dy * SHARK_COMBAT.speed * elapsed, b.top, b.bottom);
+    c.timer = Math.max(0, c.timer - u);
+    if (!c.timer) { c.state = "recover"; c.timer = SHARK_COMBAT.recovery; }
+    return true;
+  }
+  if (c.state === "recover") {
+    c.timer = Math.max(0, c.timer - u);
+    if (!c.timer) { c.state = "roam"; b.flee = 0; }
+    return false;
+  }
+  return false;
 }
 
 /* 바다의 너비. 화면 세 장이 넘는다 - 좌우로도 갈 데가 있어야 바다다. */
@@ -4139,6 +4206,28 @@ function drawParticles() {
 
 /* 오른쪽 수심계. 눈금이자 계기판이다. */
 const GAUGE_W = 44;
+function sharkCombatMarker(b) {
+  if (mode !== "dive" || player.role !== "diver" || !b.combat || !visible(b) ||
+      (b.combat.state === "roam" && b.combat.hp === SHARK_COMBAT.hp)) return null;
+  const ratio = PIXEL_SCALE / UI_PIXEL_SCALE;
+  const bottom = UH - (msg.lines.length ? msg.lines.length * lineH(msg.text) + 30 : 32);
+  return {
+    x: Math.round(clamp((b.cx() - camX) * ratio, 17, UW - GAUGE_W - 20)),
+    y: Math.round(clamp((b.y - cam) * ratio - 7, headerLayout().h + 22,
+      Math.max(headerLayout().h + 22, bottom)))
+  };
+}
+function drawSharkCombat() {
+  for (const b of beings) {
+    const point = sharkCombatMarker(b);
+    if (!point) continue;
+    const c = b.combat;
+    rect(point.x - 13, point.y, 26, 4, C.frameDim);
+    rect(point.x - 12, point.y + 1, Math.ceil(24 * c.hp / SHARK_COMBAT.hp), 2,
+      c.hit > 0 ? C.rare : C.danger);
+    if (c.state === "warn") drawTextCenter(point.x, point.y - 14, "!", C.danger);
+  }
+}
 function drawGauge() {
   const x = UW - GAUGE_W - 3, y = 3, h = UH - 6;
   drawWindow(x, y, GAUGE_W, h, { alpha: .86 });
@@ -5761,6 +5850,17 @@ function spearHit() {
       if (markSeen(b.gid)) sighted(b);
       return 1;
     }
+    if (b.combat) {
+      b.combat.hp = Math.max(0, b.combat.hp - 1);
+      b.combat.hit = 12;
+      if (b.combat.hp > 0) {
+        b.scare(spear.x);
+        soundEffect("sharkHit");
+        for (let n = 0; n < 5; n++) bubble(b.cx() + rnd(-5, 5), b.cy() + rnd(-4, 4));
+        return 1;
+      }
+      soundEffect("sharkDefeat");
+    }
     caught(b);
     return 1;
   }
@@ -6094,7 +6194,7 @@ function stepBeings(u) {
     if (!save.seen[b.gid] && visible(b) && (b.kind === "shark" || b.kind === "mega")) {
       markSeen(b.gid); sighted(b);
     }
-    /* 흰빛 개체는 눈에 든 것만으로 기록에 남는다 - 상어는 올릴 수가 없다. */
+    /* 흰빛 상어와 메갈로돈은 눈에 든 것만으로도 기록에 남는다. */
     if (b.rare && !b.logged && visible(b)) {
       b.logged = true;
       if (b.kind === "shark" || b.kind === "mega") {
@@ -6243,6 +6343,7 @@ function render() {
     } else if (!bare) {
       drawHeader(); drawGauge(); drawMessage();
       if (!msg.lines.length) drawHints();
+      if (mode === "dive") drawSharkCombat();
       if (paused) {
         const P = pauseLayout();
         drawWindow(P.x, P.y, P.w, P.h, { alpha: .9 });

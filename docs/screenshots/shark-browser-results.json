@@ -1,0 +1,29 @@
+[
+  {
+    "width": 1258,
+    "height": 622,
+    "warning": true,
+    "threeHits": true,
+    "reward": 1,
+    "reload": true,
+    "errors": []
+  },
+  {
+    "width": 402,
+    "height": 844,
+    "warning": true,
+    "threeHits": true,
+    "reward": 1,
+    "reload": true,
+    "errors": []
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "warning": true,
+    "threeHits": true,
+    "reward": 1,
+    "reload": true,
+    "errors": []
+  }
+]
